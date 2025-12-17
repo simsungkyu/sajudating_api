@@ -1,0 +1,27 @@
+schema:
+  - admgql/*.graphql
+exec:
+  layout: follow-schema
+  dir: admgql/admgql_generated
+  package: admgql_generated
+model:
+  filename: admgql/model/models_gen.go
+  package: model
+resolver:
+  layout: follow-schema
+  dir: admgql
+  package: admgql
+  type: Resolver
+  filename_template: "{name}.resolvers.go"
+models:
+  BigInt: 
+    model: 
+    - sajudating_api/api/config.BigInt
+  SajuProfile:
+    fields:
+      image:
+        resolver: true
+  PhyIdealPartner:
+    fields:
+      image:
+        resolver: true

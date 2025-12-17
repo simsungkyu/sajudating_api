@@ -1,0 +1,86 @@
+# sxtwl_service.py 테스트 예시 커맨드
+
+## 기본 사용 (날짜만, UTC 타임존)
+python3 sxtwl_service.py --y 1990 --m 5 --d 15
+
+## 한국 시간대로 조회 (날짜만)
+python3 sxtwl_service.py --y 1990 --m 5 --d 15 --tz Asia/Seoul
+
+## 한국 시간대 + 시간 포함
+python3 sxtwl_service.py --y 1990 --m 5 --d 15 --hh 14 --mm 30 --tz Asia/Seoul
+
+## 서울 경도로 태양시 보정 적용
+python3 sxtwl_service.py --y 1990 --m 5 --d 15 --hh 14 --mm 30 --tz Asia/Seoul --lng 126.98
+
+## 미국 뉴욕 시간대
+python3 sxtwl_service.py --y 1990 --m 5 --d 15 --hh 14 --mm 30 --tz America/New_York
+
+## 일본 도쿄 시간대 + 도쿄 경도
+python3 sxtwl_service.py --y 1990 --m 5 --d 15 --hh 14 --mm 30 --tz Asia/Tokyo --lng 139.69
+
+## UTC 시간대
+python3 sxtwl_service.py --y 1990 --m 5 --d 15 --hh 14 --mm 30 --tz UTC
+
+## 출력 예시 (JSON 포맷):
+# {
+#   "input": {
+#     "y": 1990,
+#     "m": 5,
+#     "d": 15,
+#     "hh": 14,
+#     "mm": 30,
+#     "tz": "Asia/Seoul",
+#     "lng": 126.98
+#   },
+#   "pillars": {
+#     "year": {"tg": 6, "dz": 6},      # 연주: 경오(庚午)
+#     "month": {"tg": 1, "dz": 5},     # 월주: 신사(辛巳)
+#     "day": {"tg": 4, "dz": 9},       # 일주: 무유(戊酉)
+#     "hour_hint": {
+#       "tg": 1,                        # 시천간: 辛(신)
+#       "dz": 7,                        # 시지지: 未(미)
+#       "dz_index": 7,                  # (하위 호환성 유지)
+#       "actual_hour": 14,
+#       "actual_minute": 30
+#     }
+#   },
+#   "meta": {
+#     "isJieQi": false,
+#     "jieQi": null,
+#     "timezone_info": {
+#       "tz": "Asia/Seoul",
+#       "utc_time": "1990-05-15T05:30:00+00:00",
+#       "local_time": "1990-05-15T14:30:00+09:00"
+#     }
+#   }
+# }
+#
+# 천간(天干) 인덱스: 0=甲(갑), 1=乙(을), 2=丙(병), 3=丁(정), 4=戊(무),
+#                   5=己(기), 6=庚(경), 7=辛(신), 8=壬(임), 9=癸(계)
+# 지지(地支) 인덱스: 0=子(자), 1=丑(축), 2=寅(인), 3=卯(묘), 4=辰(진), 5=巳(사),
+#                   6=午(오), 7=未(미), 8=申(신), 9=酉(유), 10=戌(술), 11=亥(해)
+
+## 주요 타임존 목록:
+# - Asia/Seoul (한국)
+# - Asia/Tokyo (일본)
+# - Asia/Shanghai (중국)
+# - America/New_York (미국 동부)
+# - America/Los_Angeles (미국 서부)
+# - Europe/London (영국)
+# - UTC (협정 세계시)
+
+## 주요 도시 경도:
+# - 서울: 126.98
+# - 도쿄: 139.69
+# - 베이징: 116.40
+# - 뉴욕: -74.01
+# - 런던: -0.13
+
+## venv 사용 시:
+./venv/bin/python sxtwl_service.py --y 1990 --m 5 --d 15 --tz Asia/Seoul
+
+## JSON 출력을 파일로 저장:
+python3 sxtwl_service.py --y 1990 --m 5 --d 15 --hh 14 --mm 30 --tz Asia/Seoul > output.json
+
+## jq로 포맷팅하여 출력 (jq 설치 필요):
+python3 sxtwl_service.py --y 1990 --m 5 --d 15 --tz Asia/Seoul | jq .

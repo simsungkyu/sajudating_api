@@ -1,0 +1,9 @@
+overwrite: true
+schema: "../api/admgql/admgql.graphql"
+documents: "./src/graphql/*.graphql"
+generates:
+  src/graphql/generated.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"

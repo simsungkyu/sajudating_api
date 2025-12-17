@@ -1,0 +1,207 @@
+scalar BigInt
+
+interface Node {
+  id: ID!
+}
+
+type SimpleResult {
+  ok: Boolean!
+  uid: String
+  msg: String
+  value: String
+  node: Node
+  nodes: [Node!]
+  total: Int
+  limit: Int
+  offset: Int
+}
+
+type Query {
+  sajuProfiles(input: SajuProfileSearchInput!): SimpleResult!
+  sajuProfile(uid: String!): SimpleResult!
+  sajuProfileSimilarPartners(
+    uid: String!
+    limit: Int!
+    offset: Int!
+  ): SimpleResult!
+  phyIdealPartners(input: PhyIdealPartnerSearchInput!): SimpleResult!
+  phyIdealPartner(uid: String!): SimpleResult!
+  aiMetas(input: AiMetaSearchInput!): SimpleResult!
+  aiMeta(uid: String!): SimpleResult!
+  aiExecutions(input: AiExecutionSearchInput!): SimpleResult!
+  aiExecution(uid: String!): SimpleResult!
+  palja(birthdate: String!, timezone: String!): SimpleResult!
+}
+
+type Mutation {
+  createSajuProfile(input: SajuProfileCreateInput!): SimpleResult
+  deleteSajuProfile(uid: String!): SimpleResult
+
+  createPhyIdealPartner(input: PhyIdealPartnerCreateInput!): SimpleResult
+  deletePhyIdealPartner(uid: String!): SimpleResult
+
+  putAiMeta(input: AiMetaInput!): SimpleResult # AI Meta 생성 및 수정
+  delAiMeta(uid: String!): SimpleResult # AI Meta 삭제
+  setAiMetaDefault(uid: String!): SimpleResult # AI Meta 기본 설정
+  runAiExecution(input: AiExcutionInput!): SimpleResult!
+}
+
+type SajuProfile implements Node {
+  id: ID!
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  sex: String!
+  birthdate: String!
+  palja: String!
+  email: String!
+  image: String! # base64 encoded image
+  imageMimeType: String!
+  nickname: String!
+  #
+  sajuSummary: String!
+  sajuContent: String!
+  #
+  phySummary: String!
+  phyContent: String!
+  #
+  myFeatureEyes: String!
+  myFeatureNose: String!
+  myFeatureMouth: String!
+  myFeatureFaceShape: String!
+  myFeatureNotes: String!
+  #
+  partnerMatchTips: String!
+  #
+  partnerSummary: String!
+  partnerFeatureEyes: String!
+  partnerFeatureNose: String!
+  partnerFeatureMouth: String!
+  partnerFeatureFaceShape: String!
+  partnerPersonalityMatch: String!
+  partnerSex: String!
+  partnerAge: Int!
+
+  #
+  phyPartnerUid: String!
+  phyPartnerSimilarity: Float!
+}
+
+input SajuProfileSearchInput {
+  limit: Int!
+  offset: Int!
+  orderBy: String
+  orderDirection: String
+}
+
+input SajuProfileCreateInput {
+  image: String! # base64 encoded image
+  birthdate: String! # yyyymmddhhmm format (hhmm optional)
+  sex: String!
+}
+
+# phy ideal partner
+type PhyIdealPartner implements Node {
+  id: ID!
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  # input
+  summary: String!
+  featureEyes: String!
+  featureNose: String!
+  featureMouth: String!
+  featureFaceShape: String!
+  personalityMatch: String!
+  sex: String!
+  age: Int!
+  # Image Data (Generated or Uploaded)
+  image: String!
+
+  # 유사도
+  similarityScore: Float!
+}
+
+input PhyIdealPartnerCreateInput {
+  summary: String!
+  featureEyes: String!
+  featureNose: String!
+  featureMouth: String!
+  featureFaceShape: String!
+  personalityMatch: String!
+  sex: String!
+  age: Int!
+  image: String # base64 encoded image (optional)
+}
+
+input PhyIdealPartnerSearchInput {
+  limit: Int!
+  offset: Int!
+  sex: String
+}
+
+# ai meta
+type AiMeta implements Node {
+  id: ID!
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  metaType: String!
+
+  name: String!
+  desc: String!
+  prompt: String!
+}
+
+input AiMetaInput {
+  uid: String # optional
+  name: String!
+  desc: String!
+  prompt: String!
+  metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
+}
+
+input AiMetaSearchInput {
+  limit: Int!
+  offset: Int!
+  metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
+}
+
+# AI Excution
+type AiExecution implements Node {
+  id: ID!
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  metaUid: String!
+  metaType: String!
+  status: String!
+  # real Request
+  prompt: String!
+  params: [String!]!
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String!
+  # result
+  outputText: String
+  outputImage: String # if exists return base64 encoded image
+}
+
+input AiExcutionInput {
+  metaUid: String!
+  metaType: String!
+  prompt: String!
+  params: [String!]!
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String!
+}
+
+input AiExecutionSearchInput {
+  limit: Int!
+  offset: Int!
+  metaType: String
+  metaUid: String
+}

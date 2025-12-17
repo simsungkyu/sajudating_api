@@ -1,0 +1,196 @@
+fragment sajuProfileBasic on SajuProfile {
+  uid
+  createdAt
+  updatedAt
+  sex
+  birthdate
+  palja
+  email
+  # image
+  imageMimeType
+  sajuSummary
+  sajuContent
+  nickname
+  phySummary
+  phyContent
+  myFeatureEyes
+  myFeatureNose
+  myFeatureMouth
+  myFeatureFaceShape
+  myFeatureNotes
+  partnerMatchTips
+  partnerSummary
+  partnerFeatureEyes
+  partnerFeatureNose
+  partnerFeatureMouth
+  partnerFeatureFaceShape
+  partnerPersonalityMatch
+  partnerSex
+  partnerAge
+  phyPartnerUid
+  phyPartnerSimilarity
+}
+
+fragment phyIdealPartnerBasic on PhyIdealPartner {
+  uid
+  createdAt
+  updatedAt
+  summary
+  featureEyes
+  featureNose
+  featureMouth
+  featureFaceShape
+  personalityMatch
+  sex
+  age
+  # image
+  similarityScore
+}
+
+query sajuProfiles($input: SajuProfileSearchInput!) {
+  sajuProfiles(input: $input) {
+    ok
+    msg
+    nodes {
+      ... on SajuProfile {
+        ...sajuProfileBasic
+      }
+    }
+  }
+}
+
+query sajuProfile($uid: String!) {
+  sajuProfile(uid: $uid) {
+    ok
+    node {
+      ... on SajuProfile {
+        ...sajuProfileBasic
+      }
+    }
+  }
+}
+
+query sajuProfileSimilarPartners($uid: String!, $limit: Int!, $offset: Int! ) {
+  sajuProfileSimilarPartners(uid: $uid, limit: $limit, offset: $offset) {
+    ok
+    nodes {
+      ... on PhyIdealPartner {
+        ...phyIdealPartnerBasic
+      }
+    }
+  }
+}
+
+query phyIdealPartners($input: PhyIdealPartnerSearchInput!) {
+  phyIdealPartners(input: $input) {
+    ok
+    msg
+    nodes {
+      ... on PhyIdealPartner {
+        ...phyIdealPartnerBasic
+      }
+    }
+  }
+}
+
+query phyIdealPartner($uid: String!) {
+  phyIdealPartner(uid: $uid) {
+    ok
+    node {
+      ... on PhyIdealPartner {
+        ...phyIdealPartnerBasic
+      }
+    }
+  }
+}
+
+query aiMetas($input: AiMetaSearchInput!) {
+  aiMetas(input: $input) {
+    ok
+    nodes {
+      ... on AiMeta {
+        uid
+        createdAt
+        updatedAt
+        name
+        desc
+      }
+    }
+  }
+}
+
+mutation putAiMeta($input: AiMetaInput!) {
+  putAiMeta(input: $input) {
+    ok
+    uid
+    msg
+  }
+}
+
+query aiExecution($uid: String!) {
+  aiExecution(uid: $uid) {
+    ok
+    node {
+      ... on AiExecution {
+        uid
+        status
+        metaUid
+        metaType
+        prompt
+        params
+        model
+        temperature
+        maxTokens
+        size
+        outputText
+        outputImage
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+
+query aiExecutions($input: AiExecutionSearchInput!) {
+  aiExecutions(input: $input) {
+    ok
+    msg
+    total
+    limit
+    offset
+    nodes {
+      ... on AiExecution {
+        uid
+        status
+        metaUid
+        metaType
+        prompt
+        params
+        model
+        temperature
+        maxTokens
+        size
+        outputText
+        outputImage
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
+
+mutation runAiExecution($input: AiExcutionInput!) {
+  runAiExecution(input: $input) {
+    ok
+    uid
+    msg
+  }
+}
+
+
+query palja($birthdate: String!, $timezone: String!) {
+  palja(birthdate: $birthdate, timezone: $timezone) {
+    ok
+    value
+  }
+}

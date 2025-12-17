@@ -1,0 +1,46 @@
+{
+  "name": "admweb",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "deploy_dev": "vite build && aws s3 sync --profile af_dev ./dist s3://destinysignal-admweb &&  aws cloudfront create-invalidation --profile af_dev --no-cli-pager --distribution-id E35V33YHGCBV3C --paths \"/*\"",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "gqlgen": "gql-gen --config codegen.yml",
+    "gqlgenw": "gql-gen --config codegen.yml --watch"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.10.9",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.6",
+    "@mui/material": "^7.3.6",
+    "graphql": "^16.9.0",
+    "jotai": "^2.16.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.10.1"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^6.0.1",
+    "@graphql-codegen/typescript": "^5.0.2",
+    "@graphql-codegen/typescript-operations": "^5.0.2",
+    "@graphql-codegen/typescript-react-apollo": "^4.3.3",
+   "@parcel/watcher": "^2.5.1", 
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.4"
+  }
+}

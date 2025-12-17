@@ -1,0 +1,22 @@
+# Python virtual environment
+python_tool/venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Go build artifacts
+api
+bin/
+
+# Environment files
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Go cache
+.gocache/
+.gomodcache/
