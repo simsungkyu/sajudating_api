@@ -39,24 +39,25 @@ func (s *AdminToolService) GetPaljaGql(ctx context.Context, birthdate string, ti
 
 	// 전체 사주 정보를 구조화된 형태로 반환
 	response := map[string]any{
-		"palja":        palja.GetPalja(),        // 지지만 (예: "6659")
-		"full_palja":   palja.GetFullPalja(),    // 천간+지지 (예: "66165949")
-		"palja_korean": palja.GetPaljaKorean(),  // 한글 (예: "경오 신사 무유")
+		"palja":          palja.GetPalja(),                          // 천간지지 한글 (예: "경오신사")
+		"full_palja":     palja.GetFullPalja(),                      // 천간+지지 (예: "66165949")
+		"palja_korean":   palja.GetPaljaKorean(),                    // 한글 (예: "경오 신사 무유")
+		"palja_tenstems": utils.CalculateTenStems(palja.GetPalja()), // 십성 (예: "비견 겁재 비견 겁재 본원 겁재 비견 겁재 ")
 		"pillars": map[string]any{
 			"year": map[string]any{
-				"tg": palja.Pillars.Year.Tg,
-				"dz": palja.Pillars.Year.Dz,
-				"korean": extdao.TG_ARRAY[palja.Pillars.Year.Tg] + extdao.DZ_ARRAY[palja.Pillars.Year.Dz],
+				"tg":     palja.Pillars.Year.Tg,
+				"dz":     palja.Pillars.Year.Dz,
+				"korean": utils.TG_ARRAY[palja.Pillars.Year.Tg] + utils.DZ_ARRAY[palja.Pillars.Year.Dz],
 			},
 			"month": map[string]any{
-				"tg": palja.Pillars.Month.Tg,
-				"dz": palja.Pillars.Month.Dz,
-				"korean": extdao.TG_ARRAY[palja.Pillars.Month.Tg] + extdao.DZ_ARRAY[palja.Pillars.Month.Dz],
+				"tg":     palja.Pillars.Month.Tg,
+				"dz":     palja.Pillars.Month.Dz,
+				"korean": utils.TG_ARRAY[palja.Pillars.Month.Tg] + utils.DZ_ARRAY[palja.Pillars.Month.Dz],
 			},
 			"day": map[string]any{
-				"tg": palja.Pillars.Day.Tg,
-				"dz": palja.Pillars.Day.Dz,
-				"korean": extdao.TG_ARRAY[palja.Pillars.Day.Tg] + extdao.DZ_ARRAY[palja.Pillars.Day.Dz],
+				"tg":     palja.Pillars.Day.Tg,
+				"dz":     palja.Pillars.Day.Dz,
+				"korean": utils.TG_ARRAY[palja.Pillars.Day.Tg] + utils.DZ_ARRAY[palja.Pillars.Day.Dz],
 			},
 		},
 		"input": palja.Input,
@@ -66,10 +67,10 @@ func (s *AdminToolService) GetPaljaGql(ctx context.Context, birthdate string, ti
 	// 시주 정보가 있으면 추가
 	if palja.Pillars.Hour != nil {
 		response["pillars"].(map[string]any)["hour"] = map[string]any{
-			"tg": palja.Pillars.Hour.Tg,
-			"dz": palja.Pillars.Hour.Dz,
-			"korean": extdao.TG_ARRAY[palja.Pillars.Hour.Tg] + extdao.DZ_ARRAY[palja.Pillars.Hour.Dz],
-			"actual_hour": palja.Pillars.Hour.ActualHour,
+			"tg":            palja.Pillars.Hour.Tg,
+			"dz":            palja.Pillars.Hour.Dz,
+			"korean":        utils.TG_ARRAY[palja.Pillars.Hour.Tg] + utils.DZ_ARRAY[palja.Pillars.Hour.Dz],
+			"actual_hour":   palja.Pillars.Hour.ActualHour,
 			"actual_minute": palja.Pillars.Hour.ActualMin,
 		}
 	}

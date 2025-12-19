@@ -98,9 +98,15 @@ The backend invokes `python_tool/sxtwl_service.py` for Chinese lunar calendar ca
 
 **GraphQL Integration**:
 - GraphQL documents in `admweb/src/graphql/*.graphql`
-- Run `npm run gqlgen` to generate typed hooks in `admweb/src/graphql/generated.ts` (DO NOT EDIT)
+- Generated typed hooks in `admweb/src/graphql/generated.ts` (DO NOT EDIT)
 - Apollo Client configured in `admweb/src/main.tsx`
 - Uses schema from `../api/admgql/admgql.graphql` (codegen.yml points to backend schema)
+
+**IMPORTANT - GraphQL Code Generation**:
+- **NEVER run `npm run gqlgen` during task execution**
+- The user ALWAYS runs these commands automatically when editing GraphQL files
+- Claude should NEVER execute these commands - they are managed by the user's development workflow
+- Just edit the GraphQL schema/query files and trust that the user will regenerate types
 
 **Component Structure**:
 - `src/pages/`: Page-level components (routing)
@@ -154,6 +160,8 @@ Frontend deploys to S3 + CloudFront: `npm run deploy_dev` (requires AWS profile 
 Go tests use table-driven pattern. See `api/service/SajuProfileService_post.test.go` and `api/ext_dao/OpenAi*ExtDao.test.go` for examples.
 
 No frontend test runner is currently configured.
+
+**Development Workflow**: Both backend (`make run`) and frontend (`npm run dev`) are always running in development server mode. DO NOT run `npm run build` for testing purposes - hot reload handles all changes automatically.
 
 ## Important Conventions
 

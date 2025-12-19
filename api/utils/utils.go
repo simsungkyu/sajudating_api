@@ -55,3 +55,11 @@ func GetSajuProfileImagePath(uid string) string {
 func GetPhyPartnerImagePath(uid string) string {
 	return fmt.Sprintf("phy_partner/%s", uid)
 }
+
+func GetAiExecutionInputImagePath(uid string) string {
+	return fmt.Sprintf("ai_execution_input/%s", uid)
+}
+
+func GetAiExecutionOutputImagePath(uid string) string {
+	return fmt.Sprintf("ai_execution_output/%s", uid)
+}

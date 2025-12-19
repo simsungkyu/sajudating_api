@@ -19,33 +19,47 @@ export type Scalars = {
 };
 
 export type AiExcutionInput = {
+  inputImageBase64?: InputMaybe<Scalars['String']['input']>;
+  inputkvs: Array<KvInput>;
   maxTokens: Scalars['Int']['input'];
   metaType: Scalars['String']['input'];
   metaUid: Scalars['String']['input'];
   model: Scalars['String']['input'];
-  params: Array<Scalars['String']['input']>;
+  outputkvs: Array<KvInput>;
   prompt: Scalars['String']['input'];
+  promptType: Scalars['String']['input'];
   size: Scalars['String']['input'];
   temperature: Scalars['Float']['input'];
+  valued_prompt: Scalars['String']['input'];
 };
 
 export type AiExecution = Node & {
   __typename?: 'AiExecution';
   createdAt: Scalars['BigInt']['output'];
-  id: Scalars['ID']['output'];
+  elapsedTime: Scalars['Int']['output'];
+  errorMessage: Scalars['String']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
+  inputImageBase64?: Maybe<Scalars['String']['output']>;
+  inputTokens: Scalars['Int']['output'];
+  inputkvs: Array<Kv>;
   maxTokens: Scalars['Int']['output'];
   metaType: Scalars['String']['output'];
   metaUid: Scalars['String']['output'];
   model: Scalars['String']['output'];
-  outputImage?: Maybe<Scalars['String']['output']>;
+  outputImageBase64?: Maybe<Scalars['String']['output']>;
   outputText?: Maybe<Scalars['String']['output']>;
-  params: Array<Scalars['String']['output']>;
+  outputTokens: Scalars['Int']['output'];
+  outputkvs: Array<Kv>;
   prompt: Scalars['String']['output'];
+  runBy?: Maybe<Scalars['String']['output']>;
+  runSajuProfileUid?: Maybe<Scalars['String']['output']>;
   size: Scalars['String']['output'];
   status: Scalars['String']['output'];
   temperature: Scalars['Float']['output'];
+  totalTokens: Scalars['Int']['output'];
   uid: Scalars['String']['output'];
   updatedAt: Scalars['BigInt']['output'];
+  valued_prompt: Scalars['String']['output'];
 };
 
 export type AiExecutionSearchInput = {
@@ -53,32 +67,70 @@ export type AiExecutionSearchInput = {
   metaType?: InputMaybe<Scalars['String']['input']>;
   metaUid?: InputMaybe<Scalars['String']['input']>;
   offset: Scalars['Int']['input'];
+  runBy?: InputMaybe<Scalars['String']['input']>;
+  runSajuProfileUid?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AiMeta = Node & {
   __typename?: 'AiMeta';
   createdAt: Scalars['BigInt']['output'];
   desc: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
+  inUse: Scalars['Boolean']['output'];
+  maxTokens: Scalars['Int']['output'];
   metaType: Scalars['String']['output'];
+  model: Scalars['String']['output'];
   name: Scalars['String']['output'];
   prompt: Scalars['String']['output'];
+  size: Scalars['String']['output'];
+  temperature: Scalars['Float']['output'];
   uid: Scalars['String']['output'];
   updatedAt: Scalars['BigInt']['output'];
 };
 
 export type AiMetaInput = {
   desc: Scalars['String']['input'];
+  maxTokens: Scalars['Int']['input'];
   metaType?: InputMaybe<Scalars['String']['input']>;
+  model: Scalars['String']['input'];
   name: Scalars['String']['input'];
   prompt: Scalars['String']['input'];
+  size: Scalars['String']['input'];
+  temperature: Scalars['Float']['input'];
   uid?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AiMetaKVsInput = {
+  kvs: Array<KvInput>;
+  type: Scalars['String']['input'];
+};
+
 export type AiMetaSearchInput = {
+  inUse?: InputMaybe<Scalars['Boolean']['input']>;
   limit: Scalars['Int']['input'];
   metaType?: InputMaybe<Scalars['String']['input']>;
   offset: Scalars['Int']['input'];
+};
+
+export type AiMetaType = Node & {
+  __typename?: 'AiMetaType';
+  hasInputImage: Scalars['Boolean']['output'];
+  hasOutputImage: Scalars['Boolean']['output'];
+  id: Scalars['ID']['output'];
+  inputFields: Array<Scalars['String']['output']>;
+  outputFields: Array<Scalars['String']['output']>;
+  type: Scalars['String']['output'];
+};
+
+export type Kv = {
+  __typename?: 'KV';
+  k: Scalars['String']['output'];
+  v: Scalars['String']['output'];
+};
+
+export type KvInput = {
+  k: Scalars['String']['input'];
+  v: Scalars['String']['input'];
 };
 
 export type Mutation = {
@@ -91,6 +143,7 @@ export type Mutation = {
   putAiMeta?: Maybe<SimpleResult>;
   runAiExecution: SimpleResult;
   setAiMetaDefault?: Maybe<SimpleResult>;
+  setAiMetaInUse?: Maybe<SimpleResult>;
 };
 
 
@@ -133,8 +186,13 @@ export type MutationSetAiMetaDefaultArgs = {
   uid: Scalars['String']['input'];
 };
 
+
+export type MutationSetAiMetaInUseArgs = {
+  uid: Scalars['String']['input'];
+};
+
 export type Node = {
-  id: Scalars['ID']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
 };
 
 export type PhyIdealPartner = Node & {
@@ -145,7 +203,7 @@ export type PhyIdealPartner = Node & {
   featureFaceShape: Scalars['String']['output'];
   featureMouth: Scalars['String']['output'];
   featureNose: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
   image: Scalars['String']['output'];
   personalityMatch: Scalars['String']['output'];
   sex: Scalars['String']['output'];
@@ -178,6 +236,8 @@ export type Query = {
   aiExecution: SimpleResult;
   aiExecutions: SimpleResult;
   aiMeta: SimpleResult;
+  aiMetaKVs: SimpleResult;
+  aiMetaTypes: SimpleResult;
   aiMetas: SimpleResult;
   palja: SimpleResult;
   phyIdealPartner: SimpleResult;
@@ -200,6 +260,11 @@ export type QueryAiExecutionsArgs = {
 
 export type QueryAiMetaArgs = {
   uid: Scalars['String']['input'];
+};
+
+
+export type QueryAiMetaKVsArgs = {
+  input: AiMetaKVsInput;
 };
 
 
@@ -245,7 +310,7 @@ export type SajuProfile = Node & {
   birthdate: Scalars['String']['output'];
   createdAt: Scalars['BigInt']['output'];
   email: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
   image: Scalars['String']['output'];
   imageMimeType: Scalars['String']['output'];
   myFeatureEyes: Scalars['String']['output'];
@@ -290,6 +355,9 @@ export type SajuProfileSearchInput = {
 
 export type SimpleResult = {
   __typename?: 'SimpleResult';
+  base64Value?: Maybe<Scalars['String']['output']>;
+  err?: Maybe<Scalars['String']['output']>;
+  kvs?: Maybe<Array<Kv>>;
   limit?: Maybe<Scalars['Int']['output']>;
   msg?: Maybe<Scalars['String']['output']>;
   node?: Maybe<Node>;
@@ -313,6 +381,7 @@ export type SajuProfilesQueryVariables = Exact<{
 export type SajuProfilesQuery = { __typename?: 'Query', sajuProfiles: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, nodes?: Array<
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
     > | null } };
@@ -325,6 +394,7 @@ export type SajuProfileQueryVariables = Exact<{
 export type SajuProfileQuery = { __typename?: 'Query', sajuProfile: { __typename?: 'SimpleResult', ok: boolean, node?:
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
      | null } };
@@ -339,6 +409,7 @@ export type SajuProfileSimilarPartnersQueryVariables = Exact<{
 export type SajuProfileSimilarPartnersQuery = { __typename?: 'Query', sajuProfileSimilarPartners: { __typename?: 'SimpleResult', ok: boolean, nodes?: Array<
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number }
       | { __typename?: 'SajuProfile' }
     > | null } };
@@ -351,6 +422,7 @@ export type PhyIdealPartnersQueryVariables = Exact<{
 export type PhyIdealPartnersQuery = { __typename?: 'Query', phyIdealPartners: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, nodes?: Array<
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number }
       | { __typename?: 'SajuProfile' }
     > | null } };
@@ -363,9 +435,12 @@ export type PhyIdealPartnerQueryVariables = Exact<{
 export type PhyIdealPartnerQuery = { __typename?: 'Query', phyIdealPartner: { __typename?: 'SimpleResult', ok: boolean, node?:
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number }
       | { __typename?: 'SajuProfile' }
      | null } };
+
+export type AiMetaBasicFragment = { __typename?: 'AiMeta', uid: string, createdAt: any, updatedAt: any, name: string, desc: string, metaType: string, prompt: string, model: string, temperature: number, maxTokens: number, size: string, inUse: boolean };
 
 export type AiMetasQueryVariables = Exact<{
   input: AiMetaSearchInput;
@@ -374,7 +449,8 @@ export type AiMetasQueryVariables = Exact<{
 
 export type AiMetasQuery = { __typename?: 'Query', aiMetas: { __typename?: 'SimpleResult', ok: boolean, nodes?: Array<
       | { __typename?: 'AiExecution' }
-      | { __typename?: 'AiMeta', uid: string, createdAt: any, updatedAt: any, name: string, desc: string }
+      | { __typename?: 'AiMeta', uid: string, createdAt: any, updatedAt: any, name: string, desc: string, metaType: string, prompt: string, model: string, temperature: number, maxTokens: number, size: string, inUse: boolean }
+      | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
     > | null } };
@@ -386,14 +462,31 @@ export type PutAiMetaMutationVariables = Exact<{
 
 export type PutAiMetaMutation = { __typename?: 'Mutation', putAiMeta?: { __typename?: 'SimpleResult', ok: boolean, uid?: string | null, msg?: string | null } | null };
 
+export type SetAiMetaInUseMutationVariables = Exact<{
+  uid: Scalars['String']['input'];
+}>;
+
+
+export type SetAiMetaInUseMutation = { __typename?: 'Mutation', setAiMetaInUse?: { __typename?: 'SimpleResult', ok: boolean, err?: string | null, msg?: string | null } | null };
+
+export type DelAiMetaMutationVariables = Exact<{
+  uid: Scalars['String']['input'];
+}>;
+
+
+export type DelAiMetaMutation = { __typename?: 'Mutation', delAiMeta?: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null } | null };
+
+export type AiExecutionBasicFragment = { __typename?: 'AiExecution', uid: string, status: string, metaUid: string, metaType: string, prompt: string, valued_prompt: string, model: string, temperature: number, maxTokens: number, size: string, inputImageBase64?: string | null, outputText?: string | null, errorMessage: string, outputImageBase64?: string | null, createdAt: any, updatedAt: any, elapsedTime: number, inputTokens: number, outputTokens: number, totalTokens: number, runBy?: string | null, runSajuProfileUid?: string | null, inputkvs: Array<{ __typename?: 'KV', k: string, v: string }>, outputkvs: Array<{ __typename?: 'KV', k: string, v: string }> };
+
 export type AiExecutionQueryVariables = Exact<{
   uid: Scalars['String']['input'];
 }>;
 
 
 export type AiExecutionQuery = { __typename?: 'Query', aiExecution: { __typename?: 'SimpleResult', ok: boolean, node?:
-      | { __typename?: 'AiExecution', uid: string, status: string, metaUid: string, metaType: string, prompt: string, params: Array<string>, model: string, temperature: number, maxTokens: number, size: string, outputText?: string | null, outputImage?: string | null, createdAt: any, updatedAt: any }
+      | { __typename?: 'AiExecution', uid: string, status: string, metaUid: string, metaType: string, prompt: string, valued_prompt: string, model: string, temperature: number, maxTokens: number, size: string, inputImageBase64?: string | null, outputText?: string | null, errorMessage: string, outputImageBase64?: string | null, createdAt: any, updatedAt: any, elapsedTime: number, inputTokens: number, outputTokens: number, totalTokens: number, runBy?: string | null, runSajuProfileUid?: string | null, inputkvs: Array<{ __typename?: 'KV', k: string, v: string }>, outputkvs: Array<{ __typename?: 'KV', k: string, v: string }> }
       | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
      | null } };
@@ -404,8 +497,9 @@ export type AiExecutionsQueryVariables = Exact<{
 
 
 export type AiExecutionsQuery = { __typename?: 'Query', aiExecutions: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, total?: number | null, limit?: number | null, offset?: number | null, nodes?: Array<
-      | { __typename?: 'AiExecution', uid: string, status: string, metaUid: string, metaType: string, prompt: string, params: Array<string>, model: string, temperature: number, maxTokens: number, size: string, outputText?: string | null, outputImage?: string | null, createdAt: any, updatedAt: any }
+      | { __typename?: 'AiExecution', uid: string, status: string, metaUid: string, metaType: string, prompt: string, valued_prompt: string, model: string, temperature: number, maxTokens: number, size: string, inputImageBase64?: string | null, outputText?: string | null, errorMessage: string, outputImageBase64?: string | null, createdAt: any, updatedAt: any, elapsedTime: number, inputTokens: number, outputTokens: number, totalTokens: number, runBy?: string | null, runSajuProfileUid?: string | null, inputkvs: Array<{ __typename?: 'KV', k: string, v: string }>, outputkvs: Array<{ __typename?: 'KV', k: string, v: string }> }
       | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
     > | null } };
@@ -415,7 +509,25 @@ export type RunAiExecutionMutationVariables = Exact<{
 }>;
 
 
-export type RunAiExecutionMutation = { __typename?: 'Mutation', runAiExecution: { __typename?: 'SimpleResult', ok: boolean, uid?: string | null, msg?: string | null } };
+export type RunAiExecutionMutation = { __typename?: 'Mutation', runAiExecution: { __typename?: 'SimpleResult', ok: boolean, uid?: string | null, err?: string | null, msg?: string | null } };
+
+export type GetAiMetaTypesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAiMetaTypesQuery = { __typename?: 'Query', aiMetaTypes: { __typename?: 'SimpleResult', ok: boolean, nodes?: Array<
+      | { __typename?: 'AiExecution' }
+      | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType', type: string, inputFields: Array<string>, outputFields: Array<string>, hasInputImage: boolean, hasOutputImage: boolean }
+      | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuProfile' }
+    > | null } };
+
+export type GetAiMetaKVsQueryVariables = Exact<{
+  input: AiMetaKVsInput;
+}>;
+
+
+export type GetAiMetaKVsQuery = { __typename?: 'Query', aiMetaKVs: { __typename?: 'SimpleResult', ok: boolean, err?: string | null, msg?: string | null, value?: string | null, kvs?: Array<{ __typename?: 'KV', k: string, v: string }> | null } };
 
 export type PaljaQueryVariables = Exact<{
   birthdate: Scalars['String']['input'];
@@ -472,6 +584,56 @@ export const PhyIdealPartnerBasicFragmentDoc = gql`
   sex
   age
   similarityScore
+}
+    `;
+export const AiMetaBasicFragmentDoc = gql`
+    fragment aiMetaBasic on AiMeta {
+  uid
+  createdAt
+  updatedAt
+  name
+  desc
+  metaType
+  prompt
+  model
+  temperature
+  maxTokens
+  size
+  inUse
+}
+    `;
+export const AiExecutionBasicFragmentDoc = gql`
+    fragment aiExecutionBasic on AiExecution {
+  uid
+  status
+  metaUid
+  metaType
+  prompt
+  valued_prompt
+  inputkvs {
+    k
+    v
+  }
+  outputkvs {
+    k
+    v
+  }
+  model
+  temperature
+  maxTokens
+  size
+  inputImageBase64
+  outputText
+  errorMessage
+  outputImageBase64
+  createdAt
+  updatedAt
+  elapsedTime
+  inputTokens
+  outputTokens
+  totalTokens
+  runBy
+  runSajuProfileUid
 }
     `;
 export const SajuProfilesDocument = gql`
@@ -724,16 +886,12 @@ export const AiMetasDocument = gql`
     ok
     nodes {
       ... on AiMeta {
-        uid
-        createdAt
-        updatedAt
-        name
-        desc
+        ...aiMetaBasic
       }
     }
   }
 }
-    `;
+    ${AiMetaBasicFragmentDoc}`;
 
 /**
  * __useAiMetasQuery__
@@ -805,31 +963,87 @@ export function usePutAiMetaMutation(baseOptions?: Apollo.MutationHookOptions<Pu
 export type PutAiMetaMutationHookResult = ReturnType<typeof usePutAiMetaMutation>;
 export type PutAiMetaMutationResult = Apollo.MutationResult<PutAiMetaMutation>;
 export type PutAiMetaMutationOptions = Apollo.BaseMutationOptions<PutAiMetaMutation, PutAiMetaMutationVariables>;
+export const SetAiMetaInUseDocument = gql`
+    mutation setAiMetaInUse($uid: String!) {
+  setAiMetaInUse(uid: $uid) {
+    ok
+    err
+    msg
+  }
+}
+    `;
+export type SetAiMetaInUseMutationFn = Apollo.MutationFunction<SetAiMetaInUseMutation, SetAiMetaInUseMutationVariables>;
+
+/**
+ * __useSetAiMetaInUseMutation__
+ *
+ * To run a mutation, you first call `useSetAiMetaInUseMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetAiMetaInUseMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setAiMetaInUseMutation, { data, loading, error }] = useSetAiMetaInUseMutation({
+ *   variables: {
+ *      uid: // value for 'uid'
+ *   },
+ * });
+ */
+export function useSetAiMetaInUseMutation(baseOptions?: Apollo.MutationHookOptions<SetAiMetaInUseMutation, SetAiMetaInUseMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetAiMetaInUseMutation, SetAiMetaInUseMutationVariables>(SetAiMetaInUseDocument, options);
+      }
+export type SetAiMetaInUseMutationHookResult = ReturnType<typeof useSetAiMetaInUseMutation>;
+export type SetAiMetaInUseMutationResult = Apollo.MutationResult<SetAiMetaInUseMutation>;
+export type SetAiMetaInUseMutationOptions = Apollo.BaseMutationOptions<SetAiMetaInUseMutation, SetAiMetaInUseMutationVariables>;
+export const DelAiMetaDocument = gql`
+    mutation delAiMeta($uid: String!) {
+  delAiMeta(uid: $uid) {
+    ok
+    msg
+  }
+}
+    `;
+export type DelAiMetaMutationFn = Apollo.MutationFunction<DelAiMetaMutation, DelAiMetaMutationVariables>;
+
+/**
+ * __useDelAiMetaMutation__
+ *
+ * To run a mutation, you first call `useDelAiMetaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDelAiMetaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [delAiMetaMutation, { data, loading, error }] = useDelAiMetaMutation({
+ *   variables: {
+ *      uid: // value for 'uid'
+ *   },
+ * });
+ */
+export function useDelAiMetaMutation(baseOptions?: Apollo.MutationHookOptions<DelAiMetaMutation, DelAiMetaMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DelAiMetaMutation, DelAiMetaMutationVariables>(DelAiMetaDocument, options);
+      }
+export type DelAiMetaMutationHookResult = ReturnType<typeof useDelAiMetaMutation>;
+export type DelAiMetaMutationResult = Apollo.MutationResult<DelAiMetaMutation>;
+export type DelAiMetaMutationOptions = Apollo.BaseMutationOptions<DelAiMetaMutation, DelAiMetaMutationVariables>;
 export const AiExecutionDocument = gql`
     query aiExecution($uid: String!) {
   aiExecution(uid: $uid) {
     ok
     node {
       ... on AiExecution {
-        uid
-        status
-        metaUid
-        metaType
-        prompt
-        params
-        model
-        temperature
-        maxTokens
-        size
-        outputText
-        outputImage
-        createdAt
-        updatedAt
+        ...aiExecutionBasic
       }
     }
   }
 }
-    `;
+    ${AiExecutionBasicFragmentDoc}`;
 
 /**
  * __useAiExecutionQuery__
@@ -876,25 +1090,12 @@ export const AiExecutionsDocument = gql`
     offset
     nodes {
       ... on AiExecution {
-        uid
-        status
-        metaUid
-        metaType
-        prompt
-        params
-        model
-        temperature
-        maxTokens
-        size
-        outputText
-        outputImage
-        createdAt
-        updatedAt
+        ...aiExecutionBasic
       }
     }
   }
 }
-    `;
+    ${AiExecutionBasicFragmentDoc}`;
 
 /**
  * __useAiExecutionsQuery__
@@ -936,6 +1137,7 @@ export const RunAiExecutionDocument = gql`
   runAiExecution(input: $input) {
     ok
     uid
+    err
     msg
   }
 }
@@ -966,6 +1168,107 @@ export function useRunAiExecutionMutation(baseOptions?: Apollo.MutationHookOptio
 export type RunAiExecutionMutationHookResult = ReturnType<typeof useRunAiExecutionMutation>;
 export type RunAiExecutionMutationResult = Apollo.MutationResult<RunAiExecutionMutation>;
 export type RunAiExecutionMutationOptions = Apollo.BaseMutationOptions<RunAiExecutionMutation, RunAiExecutionMutationVariables>;
+export const GetAiMetaTypesDocument = gql`
+    query getAiMetaTypes {
+  aiMetaTypes {
+    ok
+    nodes {
+      ... on AiMetaType {
+        type
+        inputFields
+        outputFields
+        hasInputImage
+        hasOutputImage
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAiMetaTypesQuery__
+ *
+ * To run a query within a React component, call `useGetAiMetaTypesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAiMetaTypesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAiMetaTypesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAiMetaTypesQuery(baseOptions?: Apollo.QueryHookOptions<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>(GetAiMetaTypesDocument, options);
+      }
+export function useGetAiMetaTypesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>(GetAiMetaTypesDocument, options);
+        }
+// @ts-ignore
+export function useGetAiMetaTypesSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>): Apollo.UseSuspenseQueryResult<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>;
+export function useGetAiMetaTypesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>): Apollo.UseSuspenseQueryResult<GetAiMetaTypesQuery | undefined, GetAiMetaTypesQueryVariables>;
+export function useGetAiMetaTypesSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>(GetAiMetaTypesDocument, options);
+        }
+export type GetAiMetaTypesQueryHookResult = ReturnType<typeof useGetAiMetaTypesQuery>;
+export type GetAiMetaTypesLazyQueryHookResult = ReturnType<typeof useGetAiMetaTypesLazyQuery>;
+export type GetAiMetaTypesSuspenseQueryHookResult = ReturnType<typeof useGetAiMetaTypesSuspenseQuery>;
+export type GetAiMetaTypesQueryResult = Apollo.QueryResult<GetAiMetaTypesQuery, GetAiMetaTypesQueryVariables>;
+export const GetAiMetaKVsDocument = gql`
+    query getAiMetaKVs($input: AiMetaKVsInput!) {
+  aiMetaKVs(input: $input) {
+    ok
+    err
+    msg
+    value
+    kvs {
+      k
+      v
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetAiMetaKVsQuery__
+ *
+ * To run a query within a React component, call `useGetAiMetaKVsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAiMetaKVsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAiMetaKVsQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useGetAiMetaKVsQuery(baseOptions: Apollo.QueryHookOptions<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables> & ({ variables: GetAiMetaKVsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables>(GetAiMetaKVsDocument, options);
+      }
+export function useGetAiMetaKVsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables>(GetAiMetaKVsDocument, options);
+        }
+// @ts-ignore
+export function useGetAiMetaKVsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables>): Apollo.UseSuspenseQueryResult<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables>;
+export function useGetAiMetaKVsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables>): Apollo.UseSuspenseQueryResult<GetAiMetaKVsQuery | undefined, GetAiMetaKVsQueryVariables>;
+export function useGetAiMetaKVsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables>(GetAiMetaKVsDocument, options);
+        }
+export type GetAiMetaKVsQueryHookResult = ReturnType<typeof useGetAiMetaKVsQuery>;
+export type GetAiMetaKVsLazyQueryHookResult = ReturnType<typeof useGetAiMetaKVsLazyQuery>;
+export type GetAiMetaKVsSuspenseQueryHookResult = ReturnType<typeof useGetAiMetaKVsSuspenseQuery>;
+export type GetAiMetaKVsQueryResult = Apollo.QueryResult<GetAiMetaKVsQuery, GetAiMetaKVsQueryVariables>;
 export const PaljaDocument = gql`
     query palja($birthdate: String!, $timezone: String!) {
   palja(birthdate: $birthdate, timezone: $timezone) {

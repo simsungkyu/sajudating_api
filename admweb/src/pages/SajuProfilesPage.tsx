@@ -2,7 +2,6 @@
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
 import {
   Alert,
   Box,
@@ -28,7 +27,7 @@ import {
 } from '@mui/material';
 import { useAtomValue } from 'jotai';
 import { useEffect, useMemo, useState } from 'react';
-import { apiBase, type SajuProfileSummary } from '../api';
+import { type SajuProfileSummary } from '../api';
 import { authAtom } from '../state/auth';
 import SajuProfileDetailModal from '../components/SajuProfileDetailModal';
 import SajuProfileEditModal from '../components/SajuProfileEditModal';
@@ -118,26 +117,7 @@ const SajuProfilesPaginationControls = ({
 
 const SajuProfilesPage = () => {
   const auth = useAtomValue(authAtom);
-
   const token = auth?.token;
-  const apolloClient = useMemo(() => {
-    return new ApolloClient({
-      link: new HttpLink({
-        uri: `${apiBase}/admgql`,
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      }),
-      cache: new InMemoryCache(),
-    });
-  }, [token]);
-
-  return (
-    <ApolloProvider client={apolloClient}>
-      <SajuProfilesPageInner token={token} />
-    </ApolloProvider>
-  );
-};
-
-const SajuProfilesPageInner = ({ token }: { token?: string }) => {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);

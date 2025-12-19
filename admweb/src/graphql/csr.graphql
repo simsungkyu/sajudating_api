@@ -70,7 +70,7 @@ query sajuProfile($uid: String!) {
   }
 }
 
-query sajuProfileSimilarPartners($uid: String!, $limit: Int!, $offset: Int! ) {
+query sajuProfileSimilarPartners($uid: String!, $limit: Int!, $offset: Int!) {
   sajuProfileSimilarPartners(uid: $uid, limit: $limit, offset: $offset) {
     ok
     nodes {
@@ -104,16 +104,27 @@ query phyIdealPartner($uid: String!) {
   }
 }
 
+fragment aiMetaBasic on AiMeta {
+  uid
+  createdAt
+  updatedAt
+  name
+  desc
+  metaType
+  prompt
+  model
+  temperature
+  maxTokens
+  size
+  inUse
+}
+
 query aiMetas($input: AiMetaSearchInput!) {
   aiMetas(input: $input) {
     ok
     nodes {
       ... on AiMeta {
-        uid
-        createdAt
-        updatedAt
-        name
-        desc
+        ...aiMetaBasic
       }
     }
   }
@@ -127,25 +138,60 @@ mutation putAiMeta($input: AiMetaInput!) {
   }
 }
 
+mutation setAiMetaInUse($uid: String!) {
+  setAiMetaInUse(uid: $uid) {
+    ok
+    err msg
+  }
+}
+
+mutation delAiMeta($uid: String!) {
+  delAiMeta(uid: $uid) {
+    ok
+    msg
+  }
+}
+
+fragment aiExecutionBasic on AiExecution {
+  uid
+  status
+  metaUid
+  metaType
+  prompt
+  valued_prompt
+  inputkvs {
+    k
+    v
+  }
+  outputkvs {
+    k
+    v
+  }
+  model
+  temperature
+  maxTokens
+  size
+  inputImageBase64
+  outputText
+  errorMessage
+  outputImageBase64
+  createdAt
+  updatedAt
+  elapsedTime
+  inputTokens
+  outputTokens
+  totalTokens
+  runBy
+  runSajuProfileUid
+}
+
 query aiExecution($uid: String!) {
   aiExecution(uid: $uid) {
     ok
     node {
       ... on AiExecution {
-        uid
-        status
-        metaUid
-        metaType
-        prompt
-        params
-        model
-        temperature
-        maxTokens
-        size
-        outputText
-        outputImage
-        createdAt
-        updatedAt
+        ...aiExecutionBasic
+        
       }
     }
   }
@@ -160,20 +206,7 @@ query aiExecutions($input: AiExecutionSearchInput!) {
     offset
     nodes {
       ... on AiExecution {
-        uid
-        status
-        metaUid
-        metaType
-        prompt
-        params
-        model
-        temperature
-        maxTokens
-        size
-        outputText
-        outputImage
-        createdAt
-        updatedAt
+        ...aiExecutionBasic
       }
     }
   }
@@ -183,10 +216,39 @@ mutation runAiExecution($input: AiExcutionInput!) {
   runAiExecution(input: $input) {
     ok
     uid
+    err
     msg
+    # dont query value and base64Value in graphql
   }
 }
 
+query getAiMetaTypes {
+  aiMetaTypes {
+    ok
+    nodes {
+      ... on AiMetaType {
+        type
+        inputFields
+        outputFields
+        hasInputImage
+        hasOutputImage
+      }
+    }
+  }
+}
+
+query getAiMetaKVs($input: AiMetaKVsInput!) {
+  aiMetaKVs(input: $input) {
+    ok
+    err
+    msg
+    value
+    kvs {
+      k
+      v
+    }
+  }
+}
 
 query palja($birthdate: String!, $timezone: String!) {
   palja(birthdate: $birthdate, timezone: $timezone) {

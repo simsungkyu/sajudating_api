@@ -64,6 +64,19 @@ func (r *AIMetaRepository) FindByUID(uid string) (*entity.AIMeta, error) {
 	return &meta, nil
 }
 
+func (r *AIMetaRepository) FindInUseByMetaType(metaType string) (*entity.AIMeta, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var meta entity.AIMeta
+	err := r.collection.FindOne(ctx, bson.M{"meta_type": metaType, "in_use": true}).Decode(&meta)
+	if err != nil {
+		return nil, err
+	}
+
+	return &meta, nil
+}
+
 func (r *AIMetaRepository) FindByMetaType(metaType string) ([]entity.AIMeta, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -94,6 +107,25 @@ func (r *AIMetaRepository) Update(meta *entity.AIMeta) error {
 	return err
 }
 
+func (r *AIMetaRepository) UpdateNotInUseByMetaType(metaType string, notInUid string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"meta_type": metaType, "uid": bson.M{"$ne": notInUid}}
+	update := bson.M{"$set": bson.M{"in_use": false}}
+	_, err := r.collection.UpdateMany(ctx, filter, update)
+	return err
+}
+func (r *AIMetaRepository) UpdateInUse(uid string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"uid": uid}
+	update := bson.M{"$set": bson.M{"in_use": true}}
+	_, err := r.collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
 func (r *AIMetaRepository) Delete(uid string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -102,7 +134,7 @@ func (r *AIMetaRepository) Delete(uid string) error {
 	return err
 }
 
-func (r *AIMetaRepository) FindWithPagination(limit, offset int, metaType *string) ([]entity.AIMeta, int64, error) {
+func (r *AIMetaRepository) FindWithPagination(limit, offset int, metaType *string, inUse *bool) ([]entity.AIMeta, int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -110,6 +142,9 @@ func (r *AIMetaRepository) FindWithPagination(limit, offset int, metaType *strin
 	filter := bson.M{}
 	if metaType != nil && *metaType != "" {
 		filter["meta_type"] = *metaType
+	}
+	if inUse != nil && *inUse {
+		filter["in_use"] = *inUse
 	}
 
 	// Get total count

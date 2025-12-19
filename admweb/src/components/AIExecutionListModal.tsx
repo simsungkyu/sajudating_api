@@ -13,61 +13,54 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   Typography,
+  Stack,
+  ToggleButtonGroup,
+  ToggleButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Pagination,
 } from '@mui/material';
-import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
-import { useEffect, useMemo, useState } from 'react';
-import { apiBase } from '../api';
+import { useEffect, useState } from 'react';
 import { useAiExecutionsQuery } from '../graphql/generated';
+import AIExecutionViewModal from './AIExecutionViewModal';
+import DialogWrap from './mui/DialogWrap';
 
 export interface AIExecutionListModalProps {
   open: boolean;
-  token?: string;
   metaUid?: string;
   metaType?: string;
+  runSajuProfileUid?: string;
   onClose: () => void;
 }
 
 const AIExecutionListModal: React.FC<AIExecutionListModalProps> = ({
   open,
-  token,
   metaUid,
   metaType,
-  onClose,
-}) => {
-  const apolloClient = useMemo(() => {
-    return new ApolloClient({
-      link: new HttpLink({
-        uri: `${apiBase}/admgql`,
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      }),
-      cache: new InMemoryCache(),
-    });
-  }, [token]);
-
-  return (
-    <ApolloProvider client={apolloClient}>
-      <AIExecutionListModalInner open={open} token={token} metaUid={metaUid} metaType={metaType} onClose={onClose} />
-    </ApolloProvider>
-  );
-};
-
-const AIExecutionListModalInner: React.FC<AIExecutionListModalProps> = ({
-  open,
-  token,
-  metaUid,
-  metaType,
+  runSajuProfileUid,
   onClose,
 }) => {
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
+  const [runBy, setRunBy] = useState<'all' | 'system' | 'admin'>('all');
+  const [viewOpen, setViewOpen] = useState(false);
+  const [selectedUid, setSelectedUid] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
     setOffset(0);
   }, [open, metaUid, metaType]);
+
+  useEffect(() => {
+    if (!open) {
+      setViewOpen(false);
+      setSelectedUid(null);
+    }
+  }, [open]);
 
   const { data, loading, error } = useAiExecutionsQuery({
     variables: {
@@ -76,9 +69,11 @@ const AIExecutionListModalInner: React.FC<AIExecutionListModalProps> = ({
         offset,
         metaUid: metaUid ?? null,
         metaType: metaType ?? null,
+        runBy: runBy === 'all' ? null : runBy,
+        runSajuProfileUid: runSajuProfileUid ?? null,
       },
     },
-    skip: !open || !token,
+    skip: !open,
     fetchPolicy: 'network-only',
   });
 
@@ -131,20 +126,80 @@ const AIExecutionListModalInner: React.FC<AIExecutionListModalProps> = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth="lg"
-      PaperProps={{ sx: { borderRadius: 3 } }}
-    >
-      <DialogTitle sx={{ fontWeight: 800 }}>AI 실행 목록</DialogTitle>
-      <DialogContent dividers>
-        {!token ? (
-          <Box sx={{ py: 4, textAlign: 'center' }}>
-            <Typography color="text.secondary">토큰이 없어 실행 목록을 불러올 수 없습니다.</Typography>
-          </Box>
-        ) : loading ? (
+    <>
+      <DialogWrap
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="lg"
+        PaperProps={{ sx: { borderRadius: 3 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 800 }}>AI 실행 목록</DialogTitle>
+        <DialogContent dividers>
+        {/* 상단 필터 및 페이지네이션 영역 */}
+        <Stack direction="row" spacing={2} justifyContent="space-between" alignItems="center" sx={{ mb: 2, pb: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+          {/* 좌측: 필터 컨트롤 */}
+          <Stack direction="row" spacing={2} alignItems="center">
+            {/* RunBy 필터 */}
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography variant="body2" color="text.secondary" sx={{ minWidth: 60 }}>
+                실행자:
+              </Typography>
+              <ToggleButtonGroup
+                value={runBy}
+                exclusive
+                onChange={(_, newValue) => {
+                  if (newValue !== null) {
+                    setRunBy(newValue);
+                    setOffset(0);
+                  }
+                }}
+                size="small"
+              >
+                <ToggleButton value="all">전체</ToggleButton>
+                <ToggleButton value="system">System</ToggleButton>
+                <ToggleButton value="admin">Admin</ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+
+            {/* 페이지당 노출 갯수 */}
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+              <InputLabel>페이지당</InputLabel>
+              <Select
+                value={limit}
+                label="페이지당"
+                onChange={(e) => {
+                  setLimit(Number(e.target.value));
+                  setOffset(0);
+                }}
+              >
+                <MenuItem value={10}>10개</MenuItem>
+                <MenuItem value={20}>20개</MenuItem>
+                <MenuItem value={50}>50개</MenuItem>
+                <MenuItem value={100}>100개</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
+
+          {/* 우측: 페이지네이션 */}
+          {!loading && !error && result?.ok && executions.length > 0 && (
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Typography variant="body2" color="text.secondary">
+                총 {result?.total ?? 0}개
+              </Typography>
+              <Pagination
+                count={Math.ceil((result?.total ?? 0) / limit)}
+                page={Math.floor(offset / limit) + 1}
+                onChange={(_, page) => setOffset((page - 1) * limit)}
+                color="primary"
+                showFirstButton
+                showLastButton
+              />
+            </Stack>
+          )}
+        </Stack>
+
+        {loading ? (
           <Box sx={{ py: 4, textAlign: 'center' }}>
             <Typography>로딩 중...</Typography>
           </Box>
@@ -167,19 +222,40 @@ const AIExecutionListModalInner: React.FC<AIExecutionListModalProps> = ({
                 <TableRow>
                   <TableCell sx={{ fontWeight: 700 }}>실행 시간</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>상태</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>실행자</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>메타 타입</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Tokens (I/O/T)</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>입력(프롬프트)</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>결과</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {executions.map((execution) => (
-                  <TableRow key={execution.uid} hover>
+                  <TableRow
+                    key={execution.uid}
+                    hover
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      setSelectedUid(execution.uid);
+                      setViewOpen(true);
+                    }}
+                  >
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
                       {formatDate(execution.createdAt)}
                     </TableCell>
                     <TableCell>{getStatusChip(execution.status)}</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                      <Chip
+                        label={execution.runBy || '-'}
+                        size="small"
+                        color={execution.runBy === 'admin' ? 'secondary' : execution.runBy === 'system' ? 'default' : undefined}
+                        variant="outlined"
+                      />
+                    </TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>{execution.metaType}</TableCell>
+                    <TableCell sx={{ whiteSpace: 'nowrap', fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                      {execution.inputTokens || 0}/{execution.outputTokens || 0}/{execution.totalTokens || 0}
+                    </TableCell>
                     <TableCell>
                       <Typography
                         variant="body2"
@@ -211,28 +287,35 @@ const AIExecutionListModalInner: React.FC<AIExecutionListModalProps> = ({
                 ))}
               </TableBody>
             </Table>
-            <TablePagination
-              component="div"
-              count={result?.total ?? 0}
-              page={Math.floor(offset / limit)}
-              rowsPerPage={limit}
-              onPageChange={(_, page) => setOffset(page * limit)}
-              onRowsPerPageChange={(e) => {
-                const nextLimit = Number.parseInt(e.target.value, 10);
-                setLimit(Number.isFinite(nextLimit) ? nextLimit : 20);
-                setOffset(0);
-              }}
-              rowsPerPageOptions={[10, 20, 50, 100]}
-            />
           </TableContainer>
         )}
-      </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose} variant="contained">
-          닫기
-        </Button>
-      </DialogActions>
-    </Dialog>
+
+        {/* 페이지네이션 (하단) */}
+        {!loading && !error && result?.ok && executions.length > 0 && (
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              count={Math.ceil((result?.total ?? 0) / limit)}
+              page={Math.floor(offset / limit) + 1}
+              onChange={(_, page) => setOffset((page - 1) * limit)}
+              color="primary"
+              showFirstButton
+              showLastButton
+            />
+          </Box>
+        )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button onClick={onClose} variant="contained">
+            닫기
+          </Button>
+        </DialogActions>
+      </DialogWrap>
+      <AIExecutionViewModal
+        open={viewOpen}
+        executionUid={selectedUid}
+        onClose={() => setViewOpen(false)}
+      />
+    </>
   );
 };
 

@@ -9,6 +9,7 @@ import (
 	"context"
 	"sajudating_api/api/admgql/admgql_generated"
 	"sajudating_api/api/admgql/model"
+	"sajudating_api/api/utils"
 )
 
 // CreateSajuProfile is the resolver for the createSajuProfile field.
@@ -36,6 +37,11 @@ func (r *mutationResolver) PutAiMeta(ctx context.Context, input model.AiMetaInpu
 	return getAdminAiMetaService().PutAiMeta(ctx, input)
 }
 
+// SetAiMetaInUse is the resolver for the setAiMetaInUse field.
+func (r *mutationResolver) SetAiMetaInUse(ctx context.Context, uid string) (*model.SimpleResult, error) {
+	return getAdminAiMetaService().SetAiMetaInUse(ctx, uid)
+}
+
 // DelAiMeta is the resolver for the delAiMeta field.
 func (r *mutationResolver) DelAiMeta(ctx context.Context, uid string) (*model.SimpleResult, error) {
 	return getAdminAiMetaService().DelAiMeta(ctx, uid)
@@ -48,7 +54,7 @@ func (r *mutationResolver) SetAiMetaDefault(ctx context.Context, uid string) (*m
 
 // RunAiExecution is the resolver for the runAiExecution field.
 func (r *mutationResolver) RunAiExecution(ctx context.Context, input model.AiExcutionInput) (*model.SimpleResult, error) {
-	return getAdminAiExecutionService().RunAiExecution(ctx, input)
+	return getAdminAiExecutionService().RunAiExecution(ctx, input, utils.StrPtr("admin"), nil)
 }
 
 // Image is the resolver for the image field.
@@ -89,6 +95,16 @@ func (r *queryResolver) AiMetas(ctx context.Context, input model.AiMetaSearchInp
 // AiMeta is the resolver for the aiMeta field.
 func (r *queryResolver) AiMeta(ctx context.Context, uid string) (*model.SimpleResult, error) {
 	return getAdminAiMetaService().GetAiMeta(ctx, uid)
+}
+
+// AiMetaTypes is the resolver for the aiMetaTypes field.
+func (r *queryResolver) AiMetaTypes(ctx context.Context) (*model.SimpleResult, error) {
+	return getAdminAiMetaService().GetAiMetaTypes(ctx)
+}
+
+// AiMetaKVs is the resolver for the aiMetaKVs field.
+func (r *queryResolver) AiMetaKVs(ctx context.Context, input model.AiMetaKVsInput) (*model.SimpleResult, error) {
+	return getAdminAiMetaService().GetAiMetaKVs(ctx, input)
 }
 
 // AiExecutions is the resolver for the aiExecutions field.

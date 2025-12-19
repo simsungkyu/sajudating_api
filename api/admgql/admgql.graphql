@@ -1,16 +1,27 @@
 scalar BigInt
 
 interface Node {
-  id: ID!
+  id: ID
+}
+type KV {
+  k: String!
+  v: String!
+}
+input KVInput {
+  k: String!
+  v: String!
 }
 
 type SimpleResult {
   ok: Boolean!
   uid: String
+  err: String
   msg: String
   value: String
+  base64Value: String
   node: Node
   nodes: [Node!]
+  kvs: [KV!]
   total: Int
   limit: Int
   offset: Int
@@ -28,6 +39,8 @@ type Query {
   phyIdealPartner(uid: String!): SimpleResult!
   aiMetas(input: AiMetaSearchInput!): SimpleResult!
   aiMeta(uid: String!): SimpleResult!
+  aiMetaTypes: SimpleResult!
+  aiMetaKVs(input:AiMetaKVsInput!): SimpleResult! #kvs는 출력되는값
   aiExecutions(input: AiExecutionSearchInput!): SimpleResult!
   aiExecution(uid: String!): SimpleResult!
   palja(birthdate: String!, timezone: String!): SimpleResult!
@@ -41,13 +54,14 @@ type Mutation {
   deletePhyIdealPartner(uid: String!): SimpleResult
 
   putAiMeta(input: AiMetaInput!): SimpleResult # AI Meta 생성 및 수정
+  setAiMetaInUse(uid: String!): SimpleResult # AI Meta 사용 여부 설정
   delAiMeta(uid: String!): SimpleResult # AI Meta 삭제
   setAiMetaDefault(uid: String!): SimpleResult # AI Meta 기본 설정
   runAiExecution(input: AiExcutionInput!): SimpleResult!
 }
 
 type SajuProfile implements Node {
-  id: ID!
+  id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
@@ -102,7 +116,7 @@ input SajuProfileCreateInput {
 
 # phy ideal partner
 type PhyIdealPartner implements Node {
-  id: ID!
+  id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
@@ -142,7 +156,7 @@ input PhyIdealPartnerSearchInput {
 
 # ai meta
 type AiMeta implements Node {
-  id: ID!
+  id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
@@ -151,6 +165,12 @@ type AiMeta implements Node {
   name: String!
   desc: String!
   prompt: String!
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
+
+  inUse: Boolean! # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
 }
 
 input AiMetaInput {
@@ -159,44 +179,66 @@ input AiMetaInput {
   desc: String!
   prompt: String!
   metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈 
 }
 
 input AiMetaSearchInput {
   limit: Int!
   offset: Int!
   metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
+  inUse: Boolean # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
 }
 
 # AI Excution
 type AiExecution implements Node {
-  id: ID!
+  id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
   metaUid: String!
   metaType: String!
   status: String!
+  errorMessage: String!
   # real Request
   prompt: String!
-  params: [String!]!
+  valued_prompt: String!
+  inputkvs: [KV!]!
+  outputkvs: [KV!]!
   model: String!
   temperature: Float!
   maxTokens: Int!
   size: String!
+  inputImageBase64: String
   # result
+  elapsedTime: Int!
   outputText: String
-  outputImage: String # if exists return base64 encoded image
+  outputImageBase64: String # if exists return base64 encoded image
+  # usage
+  inputTokens: Int!
+  outputTokens: Int!
+  totalTokens: Int!
+  # 
+  runBy: String # admin, system
+  runSajuProfileUid: String # saju profile uid
 }
 
 input AiExcutionInput {
   metaUid: String!
   metaType: String!
-  prompt: String!
-  params: [String!]!
+  promptType: String! # text, vision, image
+  prompt: String! # 프롬프트
+  valued_prompt: String! # params가 적용된 프롬프트
+  inputkvs: [KVInput!]! # 입력값들
+  outputkvs: [KVInput!]! # 출력값들
   model: String!
   temperature: Float!
   maxTokens: Int!
   size: String!
+
+  inputImageBase64: String
 }
 
 input AiExecutionSearchInput {
@@ -204,4 +246,21 @@ input AiExecutionSearchInput {
   offset: Int!
   metaType: String
   metaUid: String
+  runBy: String # admin, system
+  runSajuProfileUid: String # saju profile uid
+}
+
+# 
+input AiMetaKVsInput {
+  type: String! # Meta type 
+  kvs: [KVInput!]! # 메타에 따른 입력값들 - 사전정의됨
+}
+
+type AiMetaType implements Node {
+  id: ID!
+  type: String!
+  inputFields: [String!]!
+  outputFields: [String!]!
+  hasInputImage: Boolean!
+  hasOutputImage: Boolean!
 }

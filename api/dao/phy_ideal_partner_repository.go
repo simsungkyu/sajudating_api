@@ -158,26 +158,24 @@ func (r *PhyIdealPartnerRepository) Delete(uid string) error {
 // FindMostSimilarByEmbedding performs vector search using MongoDB Atlas Vector Search
 // to find the most similar partner based on embedding vector.
 // If indexName is empty, it uses the default index name "embedding_vector_index"
-func (r *PhyIdealPartnerRepository) FindMostSimilarByEmbedding(queryVector []float64, indexName string, sex string, minSimilarityScore float64) (*entity.PhyIdealPartner, float64, error) {
+func (r *PhyIdealPartnerRepository) FindMostSimilarByEmbedding(queryVector []float64, sex string, minSimilarityScore float64) (*entity.PhyIdealPartner, float64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
-	// Use default index name if not provided
-	if indexName == "" {
-		indexName = "embedding_vector_index"
-	}
 
 	// MongoDB Atlas Vector Search aggregation pipeline
 	pipeline := mongo.Pipeline{
 		bson.D{{
 			Key: "$vectorSearch",
 			Value: bson.D{
-				{Key: "index", Value: indexName},
+				{Key: "index", Value: VectorSearchIndexName},
 				{Key: "path", Value: "embedding"},
 				{Key: "queryVector", Value: queryVector},
 				{Key: "numCandidates", Value: 100},
 				{Key: "limit", Value: 1},
-				{Key: "filter", Value: bson.D{{Key: "sex", Value: sex}}},
+				{Key: "filter", Value: bson.D{
+					{Key: "has_image", Value: true},
+					{Key: "sex", Value: sex},
+				}},
 			},
 		}},
 		bson.D{{
@@ -191,7 +189,9 @@ func (r *PhyIdealPartnerRepository) FindMostSimilarByEmbedding(queryVector []flo
 		bson.D{{
 			Key: "$match",
 			Value: bson.D{
-				{"similarity_score", bson.D{{"$gte", minSimilarityScore}}},
+				{Key: "similarity_score", Value: bson.D{
+					{Key: "$gte", Value: minSimilarityScore},
+				}},
 			},
 		}},
 	}
@@ -211,31 +211,32 @@ func (r *PhyIdealPartnerRepository) FindMostSimilarByEmbedding(queryVector []flo
 		return nil, 0, mongo.ErrNoDocuments
 	}
 
+	log.Println("partners: ", partners[0].SimilarityScore)
+
 	return &partners[0], partners[0].SimilarityScore, nil
 }
 
 func (r *PhyIdealPartnerRepository) FindSimilarByEmbeddingWithPagination(
-	queryVector []float64, indexName string, limit int, offset int,
+	queryVector []float64, limit int, offset int,
 	sex string,
 ) ([]entity.PhyIdealPartner, int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if indexName == "" {
-		indexName = "embedding_vector_index"
-	}
-
 	pipeline := mongo.Pipeline{
 		bson.D{{
 			Key: "$vectorSearch",
 			Value: bson.D{
-				{Key: "index", Value: indexName},
+				{Key: "index", Value: VectorSearchIndexName},
 				{Key: "path", Value: "embedding"},
 				{Key: "queryVector", Value: queryVector},
 				{Key: "numCandidates", Value: 100},
 				{Key: "limit", Value: limit},
 				// {Key: "offset", Value: offset},
-				{Key: "filter", Value: bson.D{{Key: "sex", Value: sex}}},
+				{Key: "filter", Value: bson.D{
+					{Key: "has_image", Value: true},
+					{Key: "sex", Value: sex},
+				}},
 			},
 		}},
 		bson.D{{

@@ -44,32 +44,61 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	AiExecution struct {
+		CreatedAt         func(childComplexity int) int
+		ElapsedTime       func(childComplexity int) int
+		ErrorMessage      func(childComplexity int) int
+		ID                func(childComplexity int) int
+		InputImageBase64  func(childComplexity int) int
+		InputTokens       func(childComplexity int) int
+		Inputkvs          func(childComplexity int) int
+		MaxTokens         func(childComplexity int) int
+		MetaType          func(childComplexity int) int
+		MetaUID           func(childComplexity int) int
+		Model             func(childComplexity int) int
+		OutputImageBase64 func(childComplexity int) int
+		OutputText        func(childComplexity int) int
+		OutputTokens      func(childComplexity int) int
+		Outputkvs         func(childComplexity int) int
+		Prompt            func(childComplexity int) int
+		RunBy             func(childComplexity int) int
+		RunSajuProfileUID func(childComplexity int) int
+		Size              func(childComplexity int) int
+		Status            func(childComplexity int) int
+		Temperature       func(childComplexity int) int
+		TotalTokens       func(childComplexity int) int
+		UID               func(childComplexity int) int
+		UpdatedAt         func(childComplexity int) int
+		ValuedPrompt      func(childComplexity int) int
+	}
+
+	AiMeta struct {
 		CreatedAt   func(childComplexity int) int
+		Desc        func(childComplexity int) int
 		ID          func(childComplexity int) int
+		InUse       func(childComplexity int) int
 		MaxTokens   func(childComplexity int) int
 		MetaType    func(childComplexity int) int
-		MetaUID     func(childComplexity int) int
 		Model       func(childComplexity int) int
-		OutputImage func(childComplexity int) int
-		OutputText  func(childComplexity int) int
-		Params      func(childComplexity int) int
+		Name        func(childComplexity int) int
 		Prompt      func(childComplexity int) int
 		Size        func(childComplexity int) int
-		Status      func(childComplexity int) int
 		Temperature func(childComplexity int) int
 		UID         func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
 	}
 
-	AiMeta struct {
-		CreatedAt func(childComplexity int) int
-		Desc      func(childComplexity int) int
-		ID        func(childComplexity int) int
-		MetaType  func(childComplexity int) int
-		Name      func(childComplexity int) int
-		Prompt    func(childComplexity int) int
-		UID       func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
+	AiMetaType struct {
+		HasInputImage  func(childComplexity int) int
+		HasOutputImage func(childComplexity int) int
+		ID             func(childComplexity int) int
+		InputFields    func(childComplexity int) int
+		OutputFields   func(childComplexity int) int
+		Type           func(childComplexity int) int
+	}
+
+	KV struct {
+		K func(childComplexity int) int
+		V func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -81,6 +110,7 @@ type ComplexityRoot struct {
 		PutAiMeta             func(childComplexity int, input model.AiMetaInput) int
 		RunAiExecution        func(childComplexity int, input model.AiExcutionInput) int
 		SetAiMetaDefault      func(childComplexity int, uid string) int
+		SetAiMetaInUse        func(childComplexity int, uid string) int
 	}
 
 	PhyIdealPartner struct {
@@ -104,6 +134,8 @@ type ComplexityRoot struct {
 		AiExecution                func(childComplexity int, uid string) int
 		AiExecutions               func(childComplexity int, input model.AiExecutionSearchInput) int
 		AiMeta                     func(childComplexity int, uid string) int
+		AiMetaKVs                  func(childComplexity int, input model.AiMetaKVsInput) int
+		AiMetaTypes                func(childComplexity int) int
 		AiMetas                    func(childComplexity int, input model.AiMetaSearchInput) int
 		Palja                      func(childComplexity int, birthdate string, timezone string) int
 		PhyIdealPartner            func(childComplexity int, uid string) int
@@ -148,15 +180,18 @@ type ComplexityRoot struct {
 	}
 
 	SimpleResult struct {
-		Limit  func(childComplexity int) int
-		Msg    func(childComplexity int) int
-		Node   func(childComplexity int) int
-		Nodes  func(childComplexity int) int
-		Offset func(childComplexity int) int
-		Ok     func(childComplexity int) int
-		Total  func(childComplexity int) int
-		UID    func(childComplexity int) int
-		Value  func(childComplexity int) int
+		Base64Value func(childComplexity int) int
+		Err         func(childComplexity int) int
+		Kvs         func(childComplexity int) int
+		Limit       func(childComplexity int) int
+		Msg         func(childComplexity int) int
+		Node        func(childComplexity int) int
+		Nodes       func(childComplexity int) int
+		Offset      func(childComplexity int) int
+		Ok          func(childComplexity int) int
+		Total       func(childComplexity int) int
+		UID         func(childComplexity int) int
+		Value       func(childComplexity int) int
 	}
 }
 
@@ -186,12 +221,47 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AiExecution.CreatedAt(childComplexity), true
 
+	case "AiExecution.elapsedTime":
+		if e.complexity.AiExecution.ElapsedTime == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.ElapsedTime(childComplexity), true
+
+	case "AiExecution.errorMessage":
+		if e.complexity.AiExecution.ErrorMessage == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.ErrorMessage(childComplexity), true
+
 	case "AiExecution.id":
 		if e.complexity.AiExecution.ID == nil {
 			break
 		}
 
 		return e.complexity.AiExecution.ID(childComplexity), true
+
+	case "AiExecution.inputImageBase64":
+		if e.complexity.AiExecution.InputImageBase64 == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.InputImageBase64(childComplexity), true
+
+	case "AiExecution.inputTokens":
+		if e.complexity.AiExecution.InputTokens == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.InputTokens(childComplexity), true
+
+	case "AiExecution.inputkvs":
+		if e.complexity.AiExecution.Inputkvs == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.Inputkvs(childComplexity), true
 
 	case "AiExecution.maxTokens":
 		if e.complexity.AiExecution.MaxTokens == nil {
@@ -221,12 +291,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AiExecution.Model(childComplexity), true
 
-	case "AiExecution.outputImage":
-		if e.complexity.AiExecution.OutputImage == nil {
+	case "AiExecution.outputImageBase64":
+		if e.complexity.AiExecution.OutputImageBase64 == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.OutputImage(childComplexity), true
+		return e.complexity.AiExecution.OutputImageBase64(childComplexity), true
 
 	case "AiExecution.outputText":
 		if e.complexity.AiExecution.OutputText == nil {
@@ -235,12 +305,19 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AiExecution.OutputText(childComplexity), true
 
-	case "AiExecution.params":
-		if e.complexity.AiExecution.Params == nil {
+	case "AiExecution.outputTokens":
+		if e.complexity.AiExecution.OutputTokens == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.Params(childComplexity), true
+		return e.complexity.AiExecution.OutputTokens(childComplexity), true
+
+	case "AiExecution.outputkvs":
+		if e.complexity.AiExecution.Outputkvs == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.Outputkvs(childComplexity), true
 
 	case "AiExecution.prompt":
 		if e.complexity.AiExecution.Prompt == nil {
@@ -248,6 +325,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.AiExecution.Prompt(childComplexity), true
+
+	case "AiExecution.runBy":
+		if e.complexity.AiExecution.RunBy == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.RunBy(childComplexity), true
+
+	case "AiExecution.runSajuProfileUid":
+		if e.complexity.AiExecution.RunSajuProfileUID == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.RunSajuProfileUID(childComplexity), true
 
 	case "AiExecution.size":
 		if e.complexity.AiExecution.Size == nil {
@@ -270,6 +361,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AiExecution.Temperature(childComplexity), true
 
+	case "AiExecution.totalTokens":
+		if e.complexity.AiExecution.TotalTokens == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.TotalTokens(childComplexity), true
+
 	case "AiExecution.uid":
 		if e.complexity.AiExecution.UID == nil {
 			break
@@ -283,6 +381,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.AiExecution.UpdatedAt(childComplexity), true
+
+	case "AiExecution.valued_prompt":
+		if e.complexity.AiExecution.ValuedPrompt == nil {
+			break
+		}
+
+		return e.complexity.AiExecution.ValuedPrompt(childComplexity), true
 
 	case "AiMeta.createdAt":
 		if e.complexity.AiMeta.CreatedAt == nil {
@@ -305,12 +410,33 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AiMeta.ID(childComplexity), true
 
+	case "AiMeta.inUse":
+		if e.complexity.AiMeta.InUse == nil {
+			break
+		}
+
+		return e.complexity.AiMeta.InUse(childComplexity), true
+
+	case "AiMeta.maxTokens":
+		if e.complexity.AiMeta.MaxTokens == nil {
+			break
+		}
+
+		return e.complexity.AiMeta.MaxTokens(childComplexity), true
+
 	case "AiMeta.metaType":
 		if e.complexity.AiMeta.MetaType == nil {
 			break
 		}
 
 		return e.complexity.AiMeta.MetaType(childComplexity), true
+
+	case "AiMeta.model":
+		if e.complexity.AiMeta.Model == nil {
+			break
+		}
+
+		return e.complexity.AiMeta.Model(childComplexity), true
 
 	case "AiMeta.name":
 		if e.complexity.AiMeta.Name == nil {
@@ -326,6 +452,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.AiMeta.Prompt(childComplexity), true
 
+	case "AiMeta.size":
+		if e.complexity.AiMeta.Size == nil {
+			break
+		}
+
+		return e.complexity.AiMeta.Size(childComplexity), true
+
+	case "AiMeta.temperature":
+		if e.complexity.AiMeta.Temperature == nil {
+			break
+		}
+
+		return e.complexity.AiMeta.Temperature(childComplexity), true
+
 	case "AiMeta.uid":
 		if e.complexity.AiMeta.UID == nil {
 			break
@@ -339,6 +479,62 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.AiMeta.UpdatedAt(childComplexity), true
+
+	case "AiMetaType.hasInputImage":
+		if e.complexity.AiMetaType.HasInputImage == nil {
+			break
+		}
+
+		return e.complexity.AiMetaType.HasInputImage(childComplexity), true
+
+	case "AiMetaType.hasOutputImage":
+		if e.complexity.AiMetaType.HasOutputImage == nil {
+			break
+		}
+
+		return e.complexity.AiMetaType.HasOutputImage(childComplexity), true
+
+	case "AiMetaType.id":
+		if e.complexity.AiMetaType.ID == nil {
+			break
+		}
+
+		return e.complexity.AiMetaType.ID(childComplexity), true
+
+	case "AiMetaType.inputFields":
+		if e.complexity.AiMetaType.InputFields == nil {
+			break
+		}
+
+		return e.complexity.AiMetaType.InputFields(childComplexity), true
+
+	case "AiMetaType.outputFields":
+		if e.complexity.AiMetaType.OutputFields == nil {
+			break
+		}
+
+		return e.complexity.AiMetaType.OutputFields(childComplexity), true
+
+	case "AiMetaType.type":
+		if e.complexity.AiMetaType.Type == nil {
+			break
+		}
+
+		return e.complexity.AiMetaType.Type(childComplexity), true
+
+	case "KV.k":
+		if e.complexity.KV.K == nil {
+			break
+		}
+
+		return e.complexity.KV.K(childComplexity), true
+
+	case "KV.v":
+		if e.complexity.KV.V == nil {
+			break
+		}
+
+		return e.complexity.KV.V(childComplexity), true
 
 	case "Mutation.createPhyIdealPartner":
 		if e.complexity.Mutation.CreatePhyIdealPartner == nil {
@@ -435,6 +631,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.SetAiMetaDefault(childComplexity, args["uid"].(string)), true
+
+	case "Mutation.setAiMetaInUse":
+		if e.complexity.Mutation.SetAiMetaInUse == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setAiMetaInUse_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetAiMetaInUse(childComplexity, args["uid"].(string)), true
 
 	case "PhyIdealPartner.age":
 		if e.complexity.PhyIdealPartner.Age == nil {
@@ -569,6 +777,25 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.AiMeta(childComplexity, args["uid"].(string)), true
+
+	case "Query.aiMetaKVs":
+		if e.complexity.Query.AiMetaKVs == nil {
+			break
+		}
+
+		args, err := ec.field_Query_aiMetaKVs_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AiMetaKVs(childComplexity, args["input"].(model.AiMetaKVsInput)), true
+
+	case "Query.aiMetaTypes":
+		if e.complexity.Query.AiMetaTypes == nil {
+			break
+		}
+
+		return e.complexity.Query.AiMetaTypes(childComplexity), true
 
 	case "Query.aiMetas":
 		if e.complexity.Query.AiMetas == nil {
@@ -871,6 +1098,27 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SajuProfile.UpdatedAt(childComplexity), true
 
+	case "SimpleResult.base64Value":
+		if e.complexity.SimpleResult.Base64Value == nil {
+			break
+		}
+
+		return e.complexity.SimpleResult.Base64Value(childComplexity), true
+
+	case "SimpleResult.err":
+		if e.complexity.SimpleResult.Err == nil {
+			break
+		}
+
+		return e.complexity.SimpleResult.Err(childComplexity), true
+
+	case "SimpleResult.kvs":
+		if e.complexity.SimpleResult.Kvs == nil {
+			break
+		}
+
+		return e.complexity.SimpleResult.Kvs(childComplexity), true
+
 	case "SimpleResult.limit":
 		if e.complexity.SimpleResult.Limit == nil {
 			break
@@ -945,7 +1193,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputAiExcutionInput,
 		ec.unmarshalInputAiExecutionSearchInput,
 		ec.unmarshalInputAiMetaInput,
+		ec.unmarshalInputAiMetaKVsInput,
 		ec.unmarshalInputAiMetaSearchInput,
+		ec.unmarshalInputKVInput,
 		ec.unmarshalInputPhyIdealPartnerCreateInput,
 		ec.unmarshalInputPhyIdealPartnerSearchInput,
 		ec.unmarshalInputSajuProfileCreateInput,
@@ -1050,16 +1300,27 @@ var sources = []*ast.Source{
 	{Name: "../admgql.graphql", Input: `scalar BigInt
 
 interface Node {
-  id: ID!
+  id: ID
+}
+type KV {
+  k: String!
+  v: String!
+}
+input KVInput {
+  k: String!
+  v: String!
 }
 
 type SimpleResult {
   ok: Boolean!
   uid: String
+  err: String
   msg: String
   value: String
+  base64Value: String
   node: Node
   nodes: [Node!]
+  kvs: [KV!]
   total: Int
   limit: Int
   offset: Int
@@ -1077,6 +1338,8 @@ type Query {
   phyIdealPartner(uid: String!): SimpleResult!
   aiMetas(input: AiMetaSearchInput!): SimpleResult!
   aiMeta(uid: String!): SimpleResult!
+  aiMetaTypes: SimpleResult!
+  aiMetaKVs(input:AiMetaKVsInput!): SimpleResult! #kvs는 출력되는값
   aiExecutions(input: AiExecutionSearchInput!): SimpleResult!
   aiExecution(uid: String!): SimpleResult!
   palja(birthdate: String!, timezone: String!): SimpleResult!
@@ -1090,13 +1353,14 @@ type Mutation {
   deletePhyIdealPartner(uid: String!): SimpleResult
 
   putAiMeta(input: AiMetaInput!): SimpleResult # AI Meta 생성 및 수정
+  setAiMetaInUse(uid: String!): SimpleResult # AI Meta 사용 여부 설정
   delAiMeta(uid: String!): SimpleResult # AI Meta 삭제
   setAiMetaDefault(uid: String!): SimpleResult # AI Meta 기본 설정
   runAiExecution(input: AiExcutionInput!): SimpleResult!
 }
 
 type SajuProfile implements Node {
-  id: ID!
+  id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
@@ -1151,7 +1415,7 @@ input SajuProfileCreateInput {
 
 # phy ideal partner
 type PhyIdealPartner implements Node {
-  id: ID!
+  id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
@@ -1191,7 +1455,7 @@ input PhyIdealPartnerSearchInput {
 
 # ai meta
 type AiMeta implements Node {
-  id: ID!
+  id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
@@ -1200,6 +1464,12 @@ type AiMeta implements Node {
   name: String!
   desc: String!
   prompt: String!
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
+
+  inUse: Boolean! # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
 }
 
 input AiMetaInput {
@@ -1208,44 +1478,66 @@ input AiMetaInput {
   desc: String!
   prompt: String!
   metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈 
 }
 
 input AiMetaSearchInput {
   limit: Int!
   offset: Int!
   metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
+  inUse: Boolean # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
 }
 
 # AI Excution
 type AiExecution implements Node {
-  id: ID!
+  id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
   metaUid: String!
   metaType: String!
   status: String!
+  errorMessage: String!
   # real Request
   prompt: String!
-  params: [String!]!
+  valued_prompt: String!
+  inputkvs: [KV!]!
+  outputkvs: [KV!]!
   model: String!
   temperature: Float!
   maxTokens: Int!
   size: String!
+  inputImageBase64: String
   # result
+  elapsedTime: Int!
   outputText: String
-  outputImage: String # if exists return base64 encoded image
+  outputImageBase64: String # if exists return base64 encoded image
+  # usage
+  inputTokens: Int!
+  outputTokens: Int!
+  totalTokens: Int!
+  # 
+  runBy: String # admin, system
+  runSajuProfileUid: String # saju profile uid
 }
 
 input AiExcutionInput {
   metaUid: String!
   metaType: String!
-  prompt: String!
-  params: [String!]!
+  promptType: String! # text, vision, image
+  prompt: String! # 프롬프트
+  valued_prompt: String! # params가 적용된 프롬프트
+  inputkvs: [KVInput!]! # 입력값들
+  outputkvs: [KVInput!]! # 출력값들
   model: String!
   temperature: Float!
   maxTokens: Int!
   size: String!
+
+  inputImageBase64: String
 }
 
 input AiExecutionSearchInput {
@@ -1253,7 +1545,23 @@ input AiExecutionSearchInput {
   offset: Int!
   metaType: String
   metaUid: String
+  runBy: String # admin, system
+  runSajuProfileUid: String # saju profile uid
 }
-`, BuiltIn: false},
+
+# 
+input AiMetaKVsInput {
+  type: String! # Meta type 
+  kvs: [KVInput!]! # 메타에 따른 입력값들 - 사전정의됨
+}
+
+type AiMetaType implements Node {
+  id: ID!
+  type: String!
+  inputFields: [String!]!
+  outputFields: [String!]!
+  hasInputImage: Boolean!
+  hasOutputImage: Boolean!
+}`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)

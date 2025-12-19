@@ -5,6 +5,7 @@
 - `api/`: Go backend (GraphQL via `gqlgen`) plus `python_tool/` helper scripts used by the container image.
   - Key folders: `api/config/` (env/config), `api/middleware/`, `api/dao/`, `api/service/`, `api/dto/`, `api/admgql/` (schema + resolvers).
 - `admweb/`: Admin web UI (React + TypeScript + Vite). Main code in `admweb/src/` with GraphQL documents in `admweb/src/graphql/`.
+- `api/client.ts`: Apollo Client configuration. use Apollo Provider in `main.tsx`.
 - `docs/`: Project documentation and notes.
 
 ## Build, Test, and Development Commands

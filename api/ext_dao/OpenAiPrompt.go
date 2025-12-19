@@ -7,6 +7,7 @@ const (
 	PromptTypeFaceFeatures PromptType = "FaceFeature"
 	PromptTypePhy          PromptType = "Phy"
 	PromptTypeImage        PromptType = "IdealPartnerImage"
+	PromptTypeImageFemale  PromptType = "IdealPartnerImageFemale"
 )
 
 func GetPrompt(prompt PromptType) string {
@@ -16,9 +17,11 @@ func GetPrompt(prompt PromptType) string {
 	case PromptTypePhy:
 		return DEFAULT_PROMPT_PHY
 	case PromptTypeImage:
-		return DEFAULT_PROMPT_IMAGE
+		return DEFAULT_PROMPT_IMAGE_BASE + DEFAULT_PROMPT_IMAGE_MALE + DEFAULT_PROMPT_IMAGE_BACKGROUND
 	case PromptTypeSaju:
 		return DEFAULT_PROMPT_SAJU
+	case PromptTypeImageFemale:
+		return DEFAULT_PROMPT_IMAGE_BASE + DEFAULT_PROMPT_IMAGE_FEMALE + DEFAULT_PROMPT_IMAGE_BACKGROUND
 	default:
 		return ""
 	}
@@ -281,74 +284,75 @@ const DEFAULT_PROMPT_PHY = `
     }}
 `
 
-// 6 parameters
-// partner_sex, partner_age, eyes, nose, mouth, face_shape
-const DEFAULT_PROMPT_IMAGE = `
+// 9 parameters
+// PartnerSex, Pronouns, MySex, MyAge, Eyes, Nose, Mouth, FaceShape, PartnerAge
+const DEFAULT_PROMPT_IMAGE_BASE = `
+      You are a portrait photographer specializing in ideal partner portraits.
 
-Generate a realistic portrait of a young adult %s around %d years old.
-but with a youthful and strongly boyish/girlish appearance that makes them look younger than their age. 
-A person gives a warm, trustworthy, emotionally stable, and approachable impression. 
-Their overall facial balance feels gentle and harmonious rather than sharp.
+      TASK:
+      Generate a realistic photorealistic portrait of an IDEAL PARTNER.
 
- My facial features (observed):
- - Eyes: %s
- - Nose: %s
- - Lips: %s
- - Face shape: %s
+      IMPORTANT RULE (DO NOT IGNORE):
+      - The generated person must be %s.
+      - Use %s consistently.
+      - Do NOT mix gender traits.
+      - The generated person must NOT match the user's own gender.
 
- 
- Hairstyle (matched to facial impression):
- - Choose a hairstyle that enhances her gentle and trustworthy physiognomy
- - Recommended styles:
-   - medium to long hair with soft waves
-   - natural side or center part (not sharp or extreme)
-   - softly layered cut that frames the face
- - Avoid overly sharp, heavy, or aggressive styling
- - Hair texture should look natural, healthy, and effortless
+      ────────────────────────────────
+      USER INPUT (AUTHORITATIVE SOURCE)
+      ────────────────────────────────
+      - User sex: %s
+      - User age: %s
 
- Outfit & styling (physiognomy-friendly coordination):
- - Outfit should visually reinforce her warm, calm, and reliable impression
- - Preferred clothing styles:
-   - light knit top, fine-gauge sweater, or soft cardigan
-   - sleeveless or short-sleeve top with clean, elegant lines
-   - simple blouse with minimal structure
- - Fit should be relaxed and natural (not tight, not oversized)
- - Colors:
-   - warm neutrals, soft beige, ivory, light brown, muted pastel tones
- - Avoid bold patterns or harsh contrasts
- - Accessories (optional):
-   - small earrings, delicate necklace
-   - minimal and refined, never flashy
+      Ideal partner facial features:
+      - Eyes: %s
+      - Nose: %s
+      - Lips: %s
+      - Face shape: %s
 
- Background / Location (matched to facial impression and styling):
- - Choose a location that naturally complements her calm and trustworthy appearance
- - The setting should feel refined, modern, and emotionally comfortable
- - Suitable locations include:
-   - modern café with warm wood and soft natural light
-   - minimal interior space with neutral tones and subtle texture
-   - clean studio background with a soft gradient (warm gray, beige)
- - Background must enhance facial harmony without drawing attention away
+      The above user input OVERRIDES any ambiguous wording elsewhere.
+      Do NOT reinterpret or infer gender beyond this rule.
 
- Overall vibe:
- - Warm
- - Trustworthy
- - Emotionally stable
- - Youthful but mature
- - Calm, refined, and approachable
+      IDEAL PARTNER CONCEPT (APPLIES TO BOTH GENDERS):
+      - Apparent age: %s
+      - Looks younger than chronological age
+      - Youthful, slightly boyish/girlish softness
+      - Warm, trustworthy, emotionally stable, approachable
+      - Gentle and harmonious facial balance (not sharp or aggressive)
+      - Calm, refined, modern East Asian aesthetic
+`
 
- Image requirements:
- - Output image size: exactly 300 × 300 pixels
- - Square aspect ratio (1:1)
- - Head-and-shoulders framing
- - Subject centered with balanced margins
- - Face occupies approximately 65–70% of the frame
+const DEFAULT_PROMPT_IMAGE_MALE = `
+  MALE APPEARANCE DETAILS:
+    - Soft masculine facial features
+    - Clean jawline but not sharp
+    - Natural eyebrows, warm eyes
+    - Hairstyle: short-to-medium or medium length, softly textured, pomade hair, fancy hair styled, natural part
+    - Outfit: knit top, shirt, or light jacket
+    - Accessories: none or very minimal or glasses 
+    - Overall vibe: gentle, reliable, emotionally mature
+`
+const DEFAULT_PROMPT_IMAGE_FEMALE = `
+  FEMALE APPEARANCE DETAILS:
+    - Soft feminine or youth or mature or fancy facial features
+    - Balanced proportions, warm expression
+    - Hairstyle: medium to long hair, short hair, pony tail hair, soft waves, natural part
+    - Outfit: blouse, knit top, soft cardigan
+    - Accessories: small earrings or delicate necklace
+    - Overall vibe: warm, calm, emotionally stable
+`
 
- Style:
- - Photorealistic portrait
- - Natural skin texture (no over-smoothing)
- - Minimal, natural grooming
- - Soft, diffused lighting (daylight-like)
- - Shallow depth of field
- - Modern East Asian aesthetics
- - High-quality, realistic appearance within a 300×300 image
+const DEFAULT_PROMPT_IMAGE_BACKGROUND = `
+  BACKGROUND & PHOTOGRAPHY:
+    - Modern cafe or minimal studio
+    - Warm natural light
+    - Soft diffused daylight
+    - Shallow depth of field
+    - Head-and-shoulders framing
+
+    IMAGE REQUIREMENTS:
+    - Photorealistic portrait
+    - Natural skin texture (no over-smoothing)
+    - Minimal grooming
+    - High realism
 `

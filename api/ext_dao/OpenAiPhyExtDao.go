@@ -45,6 +45,14 @@ func (f *FaceFeatures) ToString() string {
 	return fmt.Sprintf("Eyebrows: %s, Eyes: %s, Nose: %s, Mouth: %s, FaceShape: %s, Notes: %s", f.Eyebrows.ToString(), f.Eyes.ToString(), f.Nose.ToString(), f.Mouth.ToString(), f.FaceShape, f.Notes)
 }
 
+func (f *FaceFeatures) ToJSON() string {
+	jsonBytes, err := json.Marshal(f)
+	if err != nil {
+		return ""
+	}
+	return string(jsonBytes)
+}
+
 type FaceFeaturesEyebrowsType struct {
 	Thickness       string `json:"thickness"`         // "thick" | "thin"
 	Shape           string `json:"shape"`             // "straight" | "arched" | "angled"
@@ -186,7 +194,7 @@ func (dao *OpenAiPhyExtDao) ExtractFaceFeatures(ctx context.Context, imageBase64
 	}
 
 	// Call Vision API
-	responseText, err := dao.openaiDao.VisionAnalysis(ctx, VisionAnalysisRequest{
+	responseText, _, err := dao.openaiDao.VisionAnalysis(ctx, VisionAnalysisRequest{
 		Model:       "gpt-4o-mini",
 		Prompt:      prompt,
 		ImageData:   imageData,
@@ -236,7 +244,7 @@ func (dao *OpenAiPhyExtDao) InterpretPhysiognomy(ctx context.Context, faceFeatur
 		MaxTokens:   3000,
 	}
 
-	responseText, err := dao.openaiDao.ChatCompletion(ctx, chatReq)
+	responseText, _, err := dao.openaiDao.ChatCompletion(ctx, chatReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get OpenAI response: %w", err)
 	}
@@ -269,7 +277,17 @@ func buildImagePrompt(userData *PhyAnalysisResponse, partnerSex string) string {
 	partnerAge := userData.IdealPartnerPhysiognomy.PartnerAge
 	prefs := userData.IdealPartnerPhysiognomy.FacialFeaturePreferences
 
-	return fmt.Sprintf(GetPrompt(PromptTypeImage), partnerSex, partnerAge, prefs.Eyes.ToString(), prefs.Nose.ToString(), prefs.Mouth.ToString(), prefs.FaceShape)
+	promptType := PromptTypeImage
+	pronouns := "he / his"
+	if userData.Sex == "male" {
+		promptType = PromptTypeImageFemale
+		pronouns = "she / her"
+	}
+
+	return fmt.Sprintf(GetPrompt(promptType),
+		partnerSex, pronouns, userData.Sex, userData.Age,
+		prefs.Eyes.ToString(), prefs.Nose.ToString(), prefs.Mouth.ToString(), prefs.FaceShape,
+		fmt.Sprintf("%d", partnerAge))
 }
 
 // GenerateIdealPartnerImage generates an image of the ideal partner based on physiognomy analysis
@@ -287,7 +305,7 @@ func (dao *OpenAiPhyExtDao) GenerateIdealPartnerImage(ctx context.Context, userD
 		N:      1,
 	}
 
-	imageBytes, err := dao.openaiDao.GenerateImage(ctx, imageReq)
+	imageBytes, _, err := dao.openaiDao.GenerateImage(ctx, imageReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate ideal partner image: %w", err)
 	}

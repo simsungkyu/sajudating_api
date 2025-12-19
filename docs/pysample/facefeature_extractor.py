@@ -1,4 +1,3 @@
-
 import base64
 from openai import OpenAI
 import json
@@ -251,96 +250,119 @@ def interpret_physiognomy(face_features: dict) -> dict:
     return parse_llm_json(response.output_text)
 
     
-def build_image_prompt(user_data: dict) -> str:
-    # 성별 반전
-    user_sex = user_data["sex"].lower()
-    # partner_sex = "man" if user_sex == "female" else "woman"
-
-    # 나이: 2~3살 어리게
-    age = user_data.get("age", 25)
-    # partner_age = f"{age - 3}" #f"{age - 3}–{age - 2}"
-
-    prefs = user_data["ideal_partner_physiognomy"]["facial_feature_preferences"]
-    partner_age = user_data["ideal_partner_physiognomy"]['partner_age']
-    partner_sex = user_data["ideal_partner_physiognomy"]['partner_sex']
 
 
-    prompt = f"""
 
-   Generate a realistic portrait of a young adult {partner_sex} around {partner_age} years old.
-   but with a youthful and strongly boyish/girlish appearance that makes them look younger than their age. 
-   A person gives a warm, trustworthy, emotionally stable, and approachable impression. 
-   Their overall facial balance feels gentle and harmonious rather than sharp.
-
-    Input: My information
-    - sex: {user_data['sex']}
-    - age: {user_data['age']}
-
-    My facial features (observed):
-    - Eyes: {prefs['eyes']}
-    - Nose: {prefs['nose']}
-    - Lips: {prefs['mouth']}
-    - Face shape: {prefs['face_shape']}
-
+def build_image_prompt(user_data):
     
-    Hairstyle (matched to facial impression):
-    - Choose a hairstyle that enhances her gentle and trustworthy physiognomy
-    - Recommended styles:
-      - medium to long hair with soft waves
-      - natural side or center part (not sharp or extreme)
-      - softly layered cut that frames the face
-    - Avoid overly sharp, heavy, or aggressive styling
-    - Hair texture should look natural, healthy, and effortless
+    # ─────────────────────────────────
+    # Gender-specific appearance blocks
+    # ─────────────────────────────────
 
-    Outfit & styling (physiognomy-friendly coordination):
-    - Outfit should visually reinforce her warm, calm, and reliable impression
-    - Preferred clothing styles:
-      - light knit top, fine-gauge sweater, or soft cardigan
-      - sleeveless or short-sleeve top with clean, elegant lines
-      - simple blouse with minimal structure
-    - Fit should be relaxed and natural (not tight, not oversized)
-    - Colors:
-      - warm neutrals, soft beige, ivory, light brown, muted pastel tones
-    - Avoid bold patterns or harsh contrasts
-    - Accessories (optional):
-      - small earrings, delicate necklace
-      - minimal and refined, never flashy
-
-    Background / Location (matched to facial impression and styling):
-    - Choose a location that naturally complements her calm and trustworthy appearance
-    - The setting should feel refined, modern, and emotionally comfortable
-    - Suitable locations include:
-      - modern café with warm wood and soft natural light
-      - minimal interior space with neutral tones and subtle texture
-      - clean studio background with a soft gradient (warm gray, beige)
-    - Background must enhance facial harmony without drawing attention away
-
-    Overall vibe:
-    - Warm
-    - Trustworthy
-    - Emotionally stable
-    - Youthful but mature
-    - Calm, refined, and approachable
-
-    Image requirements:
-    - Output image size: exactly 300 × 300 pixels
-    - Square aspect ratio (1:1)
-    - Head-and-shoulders framing
-    - Subject centered with balanced margins
-    - Face occupies approximately 65–70% of the frame
-
-    Style:
-    - Photorealistic portrait
-    - Natural skin texture (no over-smoothing)
-    - Minimal, natural grooming
-    - Soft, diffused lighting (daylight-like)
-    - Shallow depth of field
-    - Modern East Asian aesthetics
-    - High-quality, realistic appearance within a 300×300 image
-
+    MALE_APPEARANCE_BLOCK = """
+    MALE APPEARANCE DETAILS:
+    - Soft masculine facial features
+    - Clean jawline but not sharp
+    - Natural eyebrows, warm eyes
+    - Hairstyle: short-to-medium or medium length, softly textured, pomade hair, fancy hair styled, natural part
+    - Outfit: knit top, shirt, or light jacket
+    - Accessories: none or very minimal or glasses 
+    - Overall vibe: gentle, reliable, emotionally mature
     """
 
-    return prompt.strip()
+    FEMALE_APPEARANCE_BLOCK = """
+    FEMALE APPEARANCE DETAILS:
+    - Soft feminine or youth or mature or fancy facial features
+    - Balanced proportions, warm expression
+    - Hairstyle: medium to long hair, short hair, pony tail hair, soft waves, natural part
+    - Outfit: blouse, knit top, soft cardigan
+    - Accessories: small earrings or delicate necklace
+    - Overall vibe: warm, calm, emotionally stable
+    """
+
+    # ─────────────────────────────────
+    # Background & photography block
+    # ─────────────────────────────────
+
+    BACKGROUND_BLOCK = """
+    BACKGROUND & PHOTOGRAPHY:
+    - Modern cafe or minimal studio
+    - Warm natural light
+    - Soft diffused daylight
+    - Shallow depth of field
+    - Head-and-shoulders framing
+
+    IMAGE REQUIREMENTS:
+    - Photorealistic portrait
+    - Natural skin texture (no over-smoothing)
+    - Minimal grooming
+    - High realism
+    """
+
+    partner_age = user_data["ideal_partner_physiognomy"]['partner_age']
+    prefs = user_data["ideal_partner_physiognomy"]["facial_feature_preferences"]
+    user_sex = user_data["sex"].lower()
+
+    # ─────────────────────────────────
+    # 1. Determine ideal partner gender
+    # ─────────────────────────────────
+    if user_sex == "female":
+        partner_gender = "male"
+        pronouns = "he / his"
+        appearance_block = MALE_APPEARANCE_BLOCK
+    elif user_sex == "male":
+        partner_gender = "female"
+        pronouns = "she / her"
+        appearance_block = FEMALE_APPEARANCE_BLOCK
+    else:
+        raise ValueError("User sex must be either 'male' or 'female'")
+
+    # ─────────────────────────────────
+    # 2. Base prompt (gender-safe)
+    # ─────────────────────────────────
+    base_prompt = f"""
+      You are a portrait photographer specializing in ideal partner portraits.
+
+      TASK:
+      Generate a realistic photorealistic portrait of an IDEAL PARTNER.
+
+      IMPORTANT RULE (DO NOT IGNORE):
+      - The generated person must be {partner_gender.upper()}.
+      - Use "{pronouns}" consistently.
+      - Do NOT mix gender traits.
+      - The generated person must NOT match the user's own gender.
+
+      ────────────────────────────────
+      USER INPUT (AUTHORITATIVE SOURCE)
+      ────────────────────────────────
+      - User sex: {user_data['sex']}
+      - User age: {user_data['age']}
+
+      Ideal partner facial features:
+      - Eyes: {prefs['eyes']}
+      - Nose: {prefs['nose']}
+      - Lips: {prefs['mouth']}
+      - Face shape: {prefs['face_shape']}
+
+      The above user input OVERRIDES any ambiguous wording elsewhere.
+      Do NOT reinterpret or infer gender beyond this rule.
+
+      IDEAL PARTNER CONCEPT (APPLIES TO BOTH GENDERS):
+      - Apparent age: {partner_age}
+      - Looks younger than chronological age
+      - Youthful, slightly boyish/girlish softness
+      - Warm, trustworthy, emotionally stable, approachable
+      - Gentle and harmonious facial balance (not sharp or aggressive)
+      - Calm, refined, modern East Asian aesthetic
+      """
+
+    # ─────────────────────────────────
+    # 3. Final prompt composition
+    # ─────────────────────────────────
+    final_prompt = base_prompt + appearance_block + BACKGROUND_BLOCK
+
+    return final_prompt.strip()
+
 
 
 def save_base64_image(image_base64: str, output_path: str):
@@ -357,7 +379,7 @@ def generate_ideal_partner_image(user_data: dict, output_path="ideal_partner.png
         # model="gpt-image-1",
         model="gpt-image-1-mini",
         prompt=prompt,
-        size="300x300"
+        size="auto"
     )
 
     image_base64 = result.data[0].b64_json
@@ -373,8 +395,8 @@ def generate_ideal_partner_image(user_data: dict, output_path="ideal_partner.png
 # 3. Main Pipeline
 # =========================
 def run_pipeline(image_path: str):
-    gender = "male"
-    age = 42
+    gender = "female"
+    age = 25
 
     print("▶ Extracting facial features...")
     features = extract_face_features(image_path)
@@ -392,10 +414,10 @@ def run_pipeline(image_path: str):
     interpretation_file = save_json(interpretation, "physiognomy_interpretation")
     print(f"  ✔ Interpretation saved to {interpretation_file}")
 
-    # generate_ideal_partner_image(interpretation) # image generator agent authorification 필요
-    prompt = build_image_prompt(interpretation) # todo comment!
-    print("\n=== USED PROMPT ===\n")
-    print(prompt)
+    generate_ideal_partner_image(interpretation) # image generator agent authorification 필요
+    # prompt = build_image_prompt(interpretation) # todo comment!
+    # print("\n=== USED PROMPT ===\n")
+    # print(prompt)
 
 
     return {
@@ -421,8 +443,8 @@ if __name__ == "__main__":
     # IMAGE_PATH = "lim.jpg"  # 얼굴 이미지 경로
     # IMAGE_PATH = "moon.jpg"  # 얼굴 이미지 경로
     # IMAGE_PATH = "moon2.jpg"  # 얼굴 이미지 경로
-    # IMAGE_PATH = "noa.png"  # 얼굴 이미지 경로
-    IMAGE_PATH = "shim.jpg"  # 얼굴 이미지 경로
+    IMAGE_PATH = "noa.png"  # 얼굴 이미지 경로
+    # IMAGE_PATH = "shim.jpg"  # 얼굴 이미지 경로
     result = run_pipeline(IMAGE_PATH)
 
     print("\n=== ONE-LINE SUMMARY ===")

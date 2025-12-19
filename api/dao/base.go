@@ -128,6 +128,8 @@ func createUniqueUidIndex(ctx context.Context, collectionName string) error {
 	return nil
 }
 
+const VectorSearchIndexName = "embedding_vector_index"
+
 // createVectorSearchIndex creates an Atlas Vector Search index for embedding field
 func createVectorSearchIndex(ctx context.Context) error {
 	collection := database.Collection("phy_ideal_partners")
@@ -148,6 +150,10 @@ func createVectorSearchIndex(ctx context.Context) error {
 			bson.D{
 				{Key: "type", Value: "filter"},
 				{Key: "path", Value: "sex"},
+			},
+			bson.D{
+				{Key: "type", Value: "filter"},
+				{Key: "path", Value: "has_image"},
 			},
 		}},
 	}

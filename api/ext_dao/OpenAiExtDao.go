@@ -43,8 +43,14 @@ type ChatMessage struct {
 	Content string
 }
 
+type Usage struct {
+	Input  int
+	Output int
+	Total  int
+}
+
 // ChatCompletion sends a chat completion request to OpenAI
-func (dao *OpenAIExtDao) ChatCompletion(ctx context.Context, req ChatCompletionRequest) (string, error) {
+func (dao *OpenAIExtDao) ChatCompletion(ctx context.Context, req ChatCompletionRequest) (string, *Usage, error) {
 	if req.Model == "" {
 		req.Model = openai.GPT4o
 	}
@@ -69,14 +75,18 @@ func (dao *OpenAIExtDao) ChatCompletion(ctx context.Context, req ChatCompletionR
 
 	resp, err := dao.client.CreateChatCompletion(ctx, chatReq)
 	if err != nil {
-		return "", fmt.Errorf("failed to create chat completion: %w", err)
+		return "", nil, fmt.Errorf("failed to create chat completion: %w", err)
 	}
 
 	if len(resp.Choices) == 0 {
-		return "", fmt.Errorf("no response choices returned")
+		return "", nil, fmt.Errorf("no response choices returned")
 	}
-
-	return resp.Choices[0].Message.Content, nil
+	usage := Usage{
+		Input:  resp.Usage.PromptTokens,
+		Output: resp.Usage.CompletionTokens,
+		Total:  resp.Usage.TotalTokens,
+	}
+	return resp.Choices[0].Message.Content, &usage, nil
 }
 
 // VisionAnalysisRequest represents a vision analysis request
@@ -90,7 +100,7 @@ type VisionAnalysisRequest struct {
 }
 
 // VisionAnalysis sends an image analysis request to OpenAI Vision API
-func (dao *OpenAIExtDao) VisionAnalysis(ctx context.Context, req VisionAnalysisRequest) (string, error) {
+func (dao *OpenAIExtDao) VisionAnalysis(ctx context.Context, req VisionAnalysisRequest) (string, *Usage, error) {
 	if req.Model == "" {
 		req.Model = openai.GPT4o
 	}
@@ -103,7 +113,7 @@ func (dao *OpenAIExtDao) VisionAnalysis(ctx context.Context, req VisionAnalysisR
 		base64Image := base64.StdEncoding.EncodeToString(req.ImageData)
 		imageURL = fmt.Sprintf("data:image/jpeg;base64,%s", base64Image)
 	} else {
-		return "", fmt.Errorf("either ImageData or ImageURL must be provided")
+		return "", nil, fmt.Errorf("either ImageData or ImageURL must be provided")
 	}
 
 	messages := []openai.ChatCompletionMessage{
@@ -136,14 +146,20 @@ func (dao *OpenAIExtDao) VisionAnalysis(ctx context.Context, req VisionAnalysisR
 
 	resp, err := dao.client.CreateChatCompletion(ctx, chatReq)
 	if err != nil {
-		return "", fmt.Errorf("failed to analyze image: %w", err)
+		return "", nil, fmt.Errorf("failed to analyze image: %w", err)
 	}
 
 	if len(resp.Choices) == 0 {
-		return "", fmt.Errorf("no response choices returned")
+		return "", nil, fmt.Errorf("no response choices returned")
 	}
 
-	return resp.Choices[0].Message.Content, nil
+	usage := Usage{
+		Input:  resp.Usage.PromptTokens,
+		Output: resp.Usage.CompletionTokens,
+		Total:  resp.Usage.TotalTokens,
+	}
+
+	return resp.Choices[0].Message.Content, &usage, nil
 }
 
 // StreamChatCompletion sends a streaming chat completion request
@@ -240,7 +256,7 @@ type ImageGenerationRequest struct {
 }
 
 // GenerateImage generates an image using OpenAI DALL-E API
-func (dao *OpenAIExtDao) GenerateImage(ctx context.Context, req ImageGenerationRequest) ([]byte, error) {
+func (dao *OpenAIExtDao) GenerateImage(ctx context.Context, req ImageGenerationRequest) ([]byte, *Usage, error) {
 	if req.Model == "" {
 		req.Model = "dall-e-3"
 	}
@@ -268,68 +284,89 @@ func (dao *OpenAIExtDao) GenerateImage(ctx context.Context, req ImageGenerationR
 
 	resp, err := dao.client.CreateImage(ctx, imageReq)
 	if err != nil {
-		return nil, fmt.Errorf("failed to generate image: %w", err)
+		return nil, nil, fmt.Errorf("failed to generate image: %w", err)
 	}
 
 	if len(resp.Data) == 0 {
-		return nil, fmt.Errorf("no image data returned")
+		return nil, nil, fmt.Errorf("no image data returned")
 	}
 
 	// Handle base64 JSON response
 	if resp.Data[0].B64JSON != "" {
 		imageBytes, err := base64.StdEncoding.DecodeString(resp.Data[0].B64JSON)
 		if err != nil {
-			return nil, fmt.Errorf("failed to decode base64 image: %w", err)
+			return nil, nil, fmt.Errorf("failed to decode base64 image: %w", err)
 		}
-		return imageBytes, nil
+		usage := Usage{
+			Input:  resp.Usage.InputTokens,
+			Output: resp.Usage.OutputTokens,
+			Total:  resp.Usage.TotalTokens,
+		}
+		return imageBytes, &usage, nil
 	}
 
 	// Handle URL response (download the image)
 	if resp.Data[0].URL != "" {
 		// For URL responses, we would need to download the image
 		// For now, return an error suggesting to use B64JSON format
-		return nil, fmt.Errorf("URL response not supported, use B64JSON format")
+		return nil, nil, fmt.Errorf("URL response not supported, use B64JSON format")
 	}
 
-	return nil, fmt.Errorf("no valid image data in response")
+	return nil, nil, fmt.Errorf("no valid image data in response")
 }
 
 // 쿼리를 위한 공통메소드
 func (dao *OpenAIExtDao) Query(ctx context.Context,
-	model, prompt string, temperature float32, maxTokens int, size string) (string, error) {
+	modelType string, // text, vision, image
+	model, valuedPrompt string, temperature float32, maxTokens int, size string, imageData []byte) (string, *Usage, error) {
 
 	if model == "" {
 		model = openai.GPT4oMini
 	}
 
-	if model == openai.CreateImageModelDallE3 {
-		result, err := dao.GenerateImage(ctx, ImageGenerationRequest{
-			Model:  model,
-			Prompt: prompt,
-			Size:   size,
-			N:      1,
-		})
-		if err != nil {
-			return "", fmt.Errorf("failed to generate image: %w", err)
-		}
-		// return base64 encoded image
-		return base64.StdEncoding.EncodeToString(result), nil
-	} else {
-		result, err := dao.ChatCompletion(ctx, ChatCompletionRequest{
+	if modelType == "text" {
+		result, resp, err := dao.ChatCompletion(ctx, ChatCompletionRequest{
 			Model: model,
 			Messages: []ChatMessage{
 				{
 					Role:    "user",
-					Content: prompt,
+					Content: valuedPrompt,
 				},
 			},
 			Temperature: temperature,
 			MaxTokens:   maxTokens,
 		})
 		if err != nil {
-			return "", fmt.Errorf("failed to chat completion: %w", err)
+			return "", nil, fmt.Errorf("failed to chat completion: %w", err)
 		}
-		return result, err
+		return result, resp, err
+	} else if modelType == "vision" {
+		result, resp, err := dao.VisionAnalysis(ctx, VisionAnalysisRequest{
+			Model:       model,
+			Prompt:      valuedPrompt,
+			ImageData:   imageData,
+			ImageURL:    "",
+			Temperature: temperature,
+			MaxTokens:   maxTokens,
+		})
+		if err != nil {
+			return "", nil, fmt.Errorf("failed to vision analysis: %w", err)
+		}
+		return result, resp, err
+	} else if modelType == "image" {
+		result, resp, err := dao.GenerateImage(ctx, ImageGenerationRequest{
+			Model:  model,
+			Prompt: valuedPrompt,
+			Size:   size,
+			N:      1,
+		})
+		if err != nil {
+			return "", nil, fmt.Errorf("failed to generate image: %w", err)
+		}
+		// return base64 encoded image
+		return base64.StdEncoding.EncodeToString(result), resp, nil
+	} else {
+		return "", nil, fmt.Errorf("invalid model type: %s", modelType)
 	}
 
 }

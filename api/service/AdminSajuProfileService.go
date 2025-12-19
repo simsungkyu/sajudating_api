@@ -177,7 +177,7 @@ func (s *AdminSajuProfileService) GetSajuProfileSimilarPartners(ctx context.Cont
 	partnerSex := sajuProfile.PartnerSex
 	embeddingVector := utils.ConvertFloat32ToFloat64(embedding)
 	partners, total, err := dao.NewPhyIdealPartnerRepository().FindSimilarByEmbeddingWithPagination(
-		embeddingVector, "", limit, offset, partnerSex)
+		embeddingVector, limit, offset, partnerSex)
 	if err != nil {
 		return &model.SimpleResult{
 			Ok:  false,

@@ -15,6 +15,7 @@ import type { SajuProfileSummary } from '../api';
 import { useEffect, useState } from 'react';
 import { usePhyIdealPartnerQuery, useSajuProfileQuery } from '../graphql/generated';
 import SajuProfileSimilarPartersModal from './SajuProfileSimilarPartersModal';
+import AIExecutionListModal from './AIExecutionListModal';
 
 const toMillis = (value: unknown): number | null => {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null;
@@ -91,8 +92,12 @@ const Field = ({
 
 const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileDetailModalProps) => {
   const [similarPartnersOpen, setSimilarPartnersOpen] = useState(false);
+  const [aiExecutionsOpen, setAiExecutionsOpen] = useState(false);
   useEffect(() => {
-    if (!open) setSimilarPartnersOpen(false);
+    if (!open) {
+      setSimilarPartnersOpen(false);
+      setAiExecutionsOpen(false);
+    }
   }, [open]);
 
   const shouldSkip = !open || !profile?.uid;
@@ -389,13 +394,22 @@ const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileD
         )}
         </DialogContent>
         <DialogActions sx={{ px: 3, py: 2, justifyContent: 'space-between' }}>
-          <Button
-            variant="outlined"
-            onClick={() => setSimilarPartnersOpen(true)}
-            disabled={!displayProfile?.uid}
-          >
-            이상형 조회목록
-          </Button>
+          <Stack direction="row" spacing={1}>
+            <Button
+              variant="outlined"
+              onClick={() => setSimilarPartnersOpen(true)}
+              disabled={!displayProfile?.uid}
+            >
+              이상형 조회목록
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setAiExecutionsOpen(true)}
+              disabled={!displayProfile?.uid}
+            >
+              AI Executions
+            </Button>
+          </Stack>
           <Stack direction="row" spacing={1}>
             <Button onClick={onClose} color="inherit">
               닫기
@@ -410,11 +424,18 @@ const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileD
       </Dialog>
 
       {displayProfile?.uid ? (
-        <SajuProfileSimilarPartersModal
-          open={similarPartnersOpen}
-          sajuProfileUid={displayProfile.uid}
-          onClose={() => setSimilarPartnersOpen(false)}
-        />
+        <>
+          <SajuProfileSimilarPartersModal
+            open={similarPartnersOpen}
+            sajuProfileUid={displayProfile.uid}
+            onClose={() => setSimilarPartnersOpen(false)}
+          />
+          <AIExecutionListModal
+            open={aiExecutionsOpen}
+            runSajuProfileUid={displayProfile.uid}
+            onClose={() => setAiExecutionsOpen(false)}
+          />
+        </>
       ) : null}
     </>
   );

@@ -121,7 +121,7 @@ func (r *AiExecutionRepository) Delete(uid string) error {
 	return err
 }
 
-func (r *AiExecutionRepository) FindWithPagination(limit, offset int, metaUID, metaType *string) ([]entity.AiExecution, int64, error) {
+func (r *AiExecutionRepository) FindWithPagination(limit, offset int, metaUID, metaType *string, runBy, runSajuProfileUid *string) ([]entity.AiExecution, int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -131,6 +131,12 @@ func (r *AiExecutionRepository) FindWithPagination(limit, offset int, metaUID, m
 	}
 	if metaType != nil && *metaType != "" {
 		filter["meta_type"] = *metaType
+	}
+	if runBy != nil && *runBy != "" {
+		filter["run_by"] = *runBy
+	}
+	if runSajuProfileUid != nil && *runSajuProfileUid != "" {
+		filter["run_saju_profile_uid"] = *runSajuProfileUid
 	}
 
 	total, err := r.collection.CountDocuments(ctx, filter)
@@ -156,4 +162,3 @@ func (r *AiExecutionRepository) FindWithPagination(limit, offset int, metaUID, m
 
 	return executions, total, nil
 }
-

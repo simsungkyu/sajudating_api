@@ -28,9 +28,11 @@ type SajuProfile struct {
 	Birthdate string     `json:"birthdate,omitempty"`
 	Status    SajuStatus `json:"status,omitempty"`
 
-	Palja        string `json:"palja,omitempty"`         // 팔자
-	Image        string `json:"image,omitempty"`         // base64 encoded image
-	PartnerImage string `json:"partner_image,omitempty"` // base64 encoded image
+	Palja          string `json:"palja,omitempty"`            // 팔자
+	PaljaHanja     string `json:"palja_hanja,omitempty"`      // 팔자 한자
+	PaljaMainShape string `json:"palja_main_shape,omitempty"` // 팔자 일주 형상
+	Image          string `json:"image,omitempty"`            // base64 encoded image
+	PartnerImage   string `json:"partner_image,omitempty"`    // base64 encoded image
 
 	Nickname string          `json:"nickname,omitempty"` // saju
 	Saju     SajuContent     `json:"saju,omitempty"`     // saju
@@ -48,3 +50,13 @@ type KwansangContent struct {
 	Content         string `json:"content,omitempty"`
 	Partner_summary string `json:"partner_summary,omitempty"`
 }
+
+type AiMetaType string
+
+const (
+	AiMetaTypeSaju                    AiMetaType = "Saju"
+	AiMetaTypeFaceFeature             AiMetaType = "FaceFeature"
+	AiMetaTypePhy                     AiMetaType = "Phy"
+	AiMetaTypeIdealPartnerImageMale   AiMetaType = "IdealPartnerImageMale"
+	AiMetaTypeIdealPartnerImageFemale AiMetaType = "IdealPartnerImageFemale"
+)

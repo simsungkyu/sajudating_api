@@ -46,13 +46,10 @@ const DashboardPage = () => {
         </CardContent>
       </Card>
 
-      {auth?.token && (
-        <SxtwlTestModal
-          open={sxtwlModalOpen}
-          onClose={() => setSxtwlModalOpen(false)}
-          token={auth.token}
-        />
-      )}
+      <SxtwlTestModal
+        open={sxtwlModalOpen}
+        onClose={() => setSxtwlModalOpen(false)}
+      />
     </Stack>
   );
 };

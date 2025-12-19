@@ -4,6 +4,8 @@ import { Provider as JotaiProvider } from 'jotai';
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import './index.css';
 import App from './App.tsx';
+import { ApolloProvider } from '@apollo/client';
+import { client } from './api/client.ts';
 
 const theme = createTheme({
   palette: {
@@ -31,8 +33,10 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <JotaiProvider>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
+        <ApolloProvider client={client}>
+          <CssBaseline />
+          <App />
+        </ApolloProvider>
       </ThemeProvider>
     </JotaiProvider>
   </StrictMode>,

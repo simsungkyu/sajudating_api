@@ -1,55 +1,113 @@
 // AI Meta 페이지 - AI 메타정보 관리 및 기본 설정된 메타 정보 노출
-// AI Requrest Type = Saju
-export type AIRequestType = "Saju" | "FaceFeature" | "Phy" | "IdealPartnerImage"
 
 import SmartToyRoundedIcon from '@mui/icons-material/SmartToyRounded';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import ListRoundedIcon from '@mui/icons-material/ListRounded';
+import StarRoundedIcon from '@mui/icons-material/StarRounded';
+import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import RadioButtonUncheckedRoundedIcon from '@mui/icons-material/RadioButtonUncheckedRounded';
 import {
   Button,
   Card,
   CardContent,
   Chip,
-  Divider,
   Stack,
   Typography,
   Box,
+  FormControlLabel,
+  Checkbox,
+  CircularProgress,
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
 } from '@mui/material';
-import { useAtomValue } from 'jotai';
 import { useState } from 'react';
-import { authAtom } from '../state/auth';
 import AIMetaModal from '../components/AIMetaModal';
-import AiMetaListModal, { type AiMeta } from '../components/AiMetaListModal';
+import AIMetaSetUseModal from '../components/AIMetaSetUseModal';
+
+import { useAiMetasQuery, useDelAiMetaMutation, type AiMeta } from '../graphql/generated';
 
 export interface AIMetaPageProps {}
 
 const AIMetaPage: React.FC<AIMetaPageProps> = () => {
-  const auth = useAtomValue(authAtom);
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [listModalOpen, setListModalOpen] = useState(false);
-  const [selectedMetaType, setSelectedMetaType] = useState<AIRequestType | null>(null);
   const [editMeta, setEditMeta] = useState<AiMeta | null>(null);
+  const [setUseMeta, setSetUseMeta] = useState<{ uid: string; metaType: string; name: string } | null>(null);
+  const [deleteMeta, setDeleteMeta] = useState<{ uid: string; name: string; inUse: boolean } | null>(null);
+  const [inUseFilter, setInUseFilter] = useState<boolean | undefined>(true);
 
-  const metaTypes: AIRequestType[] = ["Saju", "FaceFeature", "Phy", "IdealPartnerImage"];
+  const { data, loading, error, refetch } = useAiMetasQuery({
+    variables: {
+      input: {
+        limit: 1000,
+        offset: 0,
+        inUse: inUseFilter,
+      },
+    },
+  });
 
-  const handleOpenList = (metaType: AIRequestType) => {
-    setSelectedMetaType(metaType);
-    setListModalOpen(true);
-  };
-
-  const handleCloseList = () => {
-    setListModalOpen(false);
-    setSelectedMetaType(null);
-  };
+  const [delAiMeta, { loading: deleteLoading }] = useDelAiMetaMutation();
 
   const handleEdit = (meta: AiMeta) => {
     setEditMeta(meta);
-    setListModalOpen(false);
   };
 
   const handleCloseEdit = () => {
     setEditMeta(null);
   };
+
+  const handleInUseFilterChange = (checked: boolean) => {
+    setInUseFilter(checked ? true : undefined);
+  };
+
+  const handleSetUseClick = (uid: string, metaType: string, name: string) => {
+    setSetUseMeta({ uid, metaType, name });
+  };
+
+  const handleCloseSetUse = () => {
+    setSetUseMeta(null);
+  };
+
+  const handleDeleteClick = (uid: string, name: string, inUse: boolean) => {
+    setDeleteMeta({ uid, name, inUse });
+  };
+
+  const handleCloseDelete = () => {
+    setDeleteMeta(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteMeta) return;
+
+    try {
+      const { data: deleteData } = await delAiMeta({
+        variables: { uid: deleteMeta.uid },
+      });
+
+      if (deleteData?.delAiMeta.ok) {
+        handleCloseDelete();
+        refetch();
+      } else {
+        alert(deleteData?.delAiMeta.msg || '삭제에 실패했습니다.');
+      }
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');
+    }
+  };
+
+  // Filter only AiMeta nodes
+  const metas = data?.aiMetas.nodes?.filter((node) => node.__typename === 'AiMeta') || [];
 
   return (
     <Stack spacing={2}>
@@ -68,13 +126,22 @@ const AIMetaPage: React.FC<AIMetaPageProps> = () => {
                 AI 메타정보 관리
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={1}>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={inUseFilter === true}
+                    onChange={(e) => handleInUseFilterChange(e.target.checked)}
+                    size="small"
+                  />
+                }
+                label={<Typography variant="body2">사용중만 표시</Typography>}
+              />
               <Button
                 variant="contained"
                 size="small"
                 startIcon={<AddRoundedIcon />}
                 onClick={() => setCreateModalOpen(true)}
-                disabled={!auth?.token}
               >
                 AI 메타 생성
               </Button>
@@ -83,104 +150,228 @@ const AIMetaPage: React.FC<AIMetaPageProps> = () => {
         </CardContent>
       </Card>
 
-      {/* 하단: 메타타입별 목록 영역 */}
-      <Card elevation={1} sx={{ borderRadius: 2 }}>
-        <CardContent sx={{ py: 2 }}>
-          <Stack spacing={3}>
-            {metaTypes.map((metaType, index) => (
-              <Box key={metaType}>
-                <Stack 
-                  direction="row" 
-                  spacing={1.5} 
-                  alignItems="center" 
-                  justifyContent="space-between"
-                  sx={{ mb: 2 }}
-                >
-                  <Stack direction="row" spacing={1.5} alignItems="center">
-                    <Chip
-                      label={metaType}
-                      color="primary"
-                      variant="outlined"
-                      sx={{ fontWeight: 600 }}
-                    />
-                    <Typography variant="body2" color="text.secondary">
-                      기본 설정된 메타 정보
-                    </Typography>
-                  </Stack>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<ListRoundedIcon />}
-                    onClick={() => handleOpenList(metaType)}
-                    disabled={!auth?.token}
-                  >
-                    목록
-                  </Button>
-                </Stack>
-                
-                {/* Default AIMeta 정보 표시 영역 */}
-                <Box
-                  sx={{
-                    p: 2,
-                    border: '1px dashed',
-                    borderColor: 'divider',
-                    borderRadius: 1,
-                    bgcolor: 'action.hover',
-                    minHeight: 120,
-                  }}
-                >
-                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-                    {metaType} 타입의 기본 AIMeta 정보가 여기에 표시됩니다.
-                  </Typography>
-                </Box>
+      {/* 하단: 전체 목록 테이블 */}
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
 
-                {index < metaTypes.length - 1 && <Divider sx={{ mt: 3 }} />}
-              </Box>
-            ))}
-          </Stack>
-        </CardContent>
-      </Card>
+      {error && (
+        <Alert severity="error">
+          데이터를 불러오는 중 오류가 발생했습니다: {error.message}
+        </Alert>
+      )}
 
-      {auth?.token ? (
-        <>
-          <AIMetaModal
-            open={createModalOpen}
-            onClose={() => setCreateModalOpen(false)}
-            token={auth.token}
-            onSaved={() => {
-              setCreateModalOpen(false);
-              // TODO: 목록 새로고침
-            }}
-          />
-          {selectedMetaType && (
-            <AiMetaListModal
-              open={listModalOpen}
-              onClose={handleCloseList}
-              token={auth.token}
-              metaType={selectedMetaType}
-              onEdit={handleEdit}
-            />
-          )}
-          {editMeta && (
-            <AIMetaModal
-              open={Boolean(editMeta)}
-              onClose={handleCloseEdit}
-              token={auth.token}
-              meta={{
-                uid: editMeta.uid,
-                name: editMeta.name,
-                desc: editMeta.desc,
-                prompt: editMeta.prompt,
-                metaType: editMeta.metaType,
-              }}
-              onSaved={() => {
-                handleCloseEdit();
-                // TODO: 목록 새로고침
-              }}
-            />
-          )}
-        </>
-      ) : null}
+      {!loading && !error && (
+        <Card elevation={1} sx={{ borderRadius: 2 }}>
+          <CardContent sx={{ p: 0 }}>
+            <TableContainer component={Paper} elevation={0}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 600, width: 60 }} align="center">사용</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>메타 타입</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>이름</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>설명</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }} align="center">수정일</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }} align="center">작업</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {metas.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} align="center" sx={{ py: 8 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          메타 정보가 없습니다.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    metas.map((meta) => {
+                      if (meta.__typename !== 'AiMeta') return null;
+                      return (
+                        <TableRow
+                          key={meta.uid}
+                          hover
+                          onClick={() => handleEdit({
+                            uid: meta.uid,
+                            id: meta.uid,
+                            metaType: meta.metaType,
+                            inUse: meta.inUse,
+                            createdAt: meta.createdAt,
+                            updatedAt: meta.updatedAt,
+                            name: meta.name,
+                            desc: meta.desc,
+                            prompt: meta.prompt,
+                            model: meta.model,
+                            temperature: meta.temperature,
+                            maxTokens: meta.maxTokens,
+                            size: meta.size,
+                          })}
+                          sx={{
+                            '&:hover': {
+                              cursor: 'pointer',
+                            },
+                          }}
+                        >
+                          <TableCell
+                            align="center"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (!meta.inUse) {
+                                handleSetUseClick(meta.uid, meta.metaType, meta.name);
+                              }
+                            }}
+                            sx={{
+                              cursor: meta.inUse ? 'default' : 'pointer',
+                            }}
+                          >
+                            {meta.inUse ? (
+                              <CheckCircleRoundedIcon
+                                color="success"
+                                fontSize="small"
+                                titleAccess="사용중"
+                              />
+                            ) : (
+                              <RadioButtonUncheckedRoundedIcon
+                                color="disabled"
+                                fontSize="small"
+                                titleAccess="미사용 (클릭하여 기본설정)"
+                              />
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={meta.metaType}
+                              color="primary"
+                              variant="outlined"
+                              size="small"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" fontWeight={600}>
+                              {meta.name}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 300 }}>
+                              {meta.desc}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="body2" color="text.secondary">
+                              {new Date(meta.updatedAt).toLocaleDateString('ko-KR')}
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton
+                              size="small"
+                              color="error"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteClick(meta.uid, meta.name, meta.inUse);
+                              }}
+                              title="삭제"
+                            >
+                              <DeleteRoundedIcon fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      <AIMetaModal
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSaved={() => {
+          setCreateModalOpen(false);
+          refetch();
+        }}
+      />
+
+      {editMeta && (
+        <AIMetaModal
+          open={Boolean(editMeta)}
+          onClose={handleCloseEdit}
+          meta={{
+            uid: editMeta.uid,
+            name: editMeta.name,
+            desc: editMeta.desc,
+            prompt: editMeta.prompt,
+            metaType: editMeta.metaType,
+            model: editMeta.model,
+            temperature: editMeta.temperature,
+            maxTokens: editMeta.maxTokens,
+            size: editMeta.size,
+            inUse: editMeta.inUse,
+            createdAt: editMeta.createdAt,
+            updatedAt: editMeta.updatedAt,
+          }}
+          onSaved={() => {
+            handleCloseEdit();
+            refetch();
+          }}
+        />
+      )}
+
+      {setUseMeta && (
+        <AIMetaSetUseModal
+          open={Boolean(setUseMeta)}
+          onClose={handleCloseSetUse}
+          metaUid={setUseMeta.uid}
+          metaType={setUseMeta.metaType}
+          metaName={setUseMeta.name}
+          onSuccess={() => {
+            handleCloseSetUse();
+            refetch();
+          }}
+        />
+      )}
+
+      {deleteMeta && (
+        <Dialog open={Boolean(deleteMeta)} onClose={handleCloseDelete}>
+          <DialogTitle>AI 메타 삭제</DialogTitle>
+          <DialogContent>
+            {deleteMeta.inUse ? (
+              <Alert severity="error" sx={{ mt: 1 }}>
+                <strong>{deleteMeta.name}</strong>은(는) 현재 사용 중인 메타입니다.
+                <br />
+                사용 중인 메타는 삭제할 수 없습니다.
+              </Alert>
+            ) : (
+              <DialogContentText>
+                <strong>{deleteMeta.name}</strong>을(를) 삭제하시겠습니까?
+                <br />
+                삭제된 데이터는 복구할 수 없습니다.
+              </DialogContentText>
+            )}
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button onClick={handleCloseDelete} disabled={deleteLoading}>
+              {deleteMeta.inUse ? '닫기' : '취소'}
+            </Button>
+            {!deleteMeta.inUse && (
+              <Button
+                onClick={handleConfirmDelete}
+                variant="contained"
+                color="error"
+                disabled={deleteLoading}
+                startIcon={deleteLoading ? <CircularProgress size={16} /> : null}
+              >
+                삭제
+              </Button>
+            )}
+          </DialogActions>
+        </Dialog>
+      )}
     </Stack>
   );
 };

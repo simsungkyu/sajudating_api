@@ -10,11 +10,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
-)
 
-// 한글로 변환할 천간(天干) 및 지지(地支) 배열
-var TG_ARRAY = []string{"갑", "을", "병", "정", "무", "기", "경", "신", "임", "계"}
-var DZ_ARRAY = []string{"자", "축", "인", "묘", "진", "사", "오", "미", "신", "유", "술", "해"}
+	utils "sajudating_api/api/utils"
+)
 
 type SxtwlResult struct {
 	Input   map[string]any `json:"input"`
@@ -44,11 +42,11 @@ type SxtwlResult struct {
 
 // return 6 or 8 characters palja (천간지지, 연월일시 순) 한글 배열을 참고하여 한글로 변환, 6자에서 8자
 func (r *SxtwlResult) GetPalja() string {
-	y := TG_ARRAY[r.Pillars.Year.Tg] + DZ_ARRAY[r.Pillars.Year.Dz]
-	m := TG_ARRAY[r.Pillars.Month.Tg] + DZ_ARRAY[r.Pillars.Month.Dz]
-	d := TG_ARRAY[r.Pillars.Day.Tg] + DZ_ARRAY[r.Pillars.Day.Dz]
+	y := utils.TG_ARRAY[r.Pillars.Year.Tg] + utils.DZ_ARRAY[r.Pillars.Year.Dz]
+	m := utils.TG_ARRAY[r.Pillars.Month.Tg] + utils.DZ_ARRAY[r.Pillars.Month.Dz]
+	d := utils.TG_ARRAY[r.Pillars.Day.Tg] + utils.DZ_ARRAY[r.Pillars.Day.Dz]
 	if r.Pillars.Hour != nil {
-		h := TG_ARRAY[r.Pillars.Hour.Tg] + DZ_ARRAY[r.Pillars.Hour.Dz]
+		h := utils.TG_ARRAY[r.Pillars.Hour.Tg] + utils.DZ_ARRAY[r.Pillars.Hour.Dz]
 		return y + m + d + h
 	}
 	return y + m + d
@@ -72,12 +70,12 @@ func (r *SxtwlResult) GetFullPalja() string {
 
 // GetPaljaKorean returns palja in Korean characters
 func (r *SxtwlResult) GetPaljaKorean() string {
-	yearStr := TG_ARRAY[r.Pillars.Year.Tg] + DZ_ARRAY[r.Pillars.Year.Dz]
-	monthStr := TG_ARRAY[r.Pillars.Month.Tg] + DZ_ARRAY[r.Pillars.Month.Dz]
-	dayStr := TG_ARRAY[r.Pillars.Day.Tg] + DZ_ARRAY[r.Pillars.Day.Dz]
+	yearStr := utils.TG_ARRAY[r.Pillars.Year.Tg] + utils.DZ_ARRAY[r.Pillars.Year.Dz]
+	monthStr := utils.TG_ARRAY[r.Pillars.Month.Tg] + utils.DZ_ARRAY[r.Pillars.Month.Dz]
+	dayStr := utils.TG_ARRAY[r.Pillars.Day.Tg] + utils.DZ_ARRAY[r.Pillars.Day.Dz]
 
 	if r.Pillars.Hour != nil {
-		hourStr := TG_ARRAY[r.Pillars.Hour.Tg] + DZ_ARRAY[r.Pillars.Hour.Dz]
+		hourStr := utils.TG_ARRAY[r.Pillars.Hour.Tg] + utils.DZ_ARRAY[r.Pillars.Hour.Dz]
 		return yearStr + " " + monthStr + " " + dayStr + " " + hourStr
 	}
 	return yearStr + " " + monthStr + " " + dayStr

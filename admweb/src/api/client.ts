@@ -9,9 +9,26 @@ import type {
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
-const httpLink = createHttpLink({ uri: '/api/gql' });
+const httpLink = createHttpLink({ uri: '/api/admgql' });
 const authLink = setContext((_: any, { headers }) => {
+  // Get token from localStorage (where Jotai atomWithStorage stores it)
+  const authData = localStorage.getItem('admweb-auth');
+  let token = null;
+
+  if (authData) {
+    try {
+      const parsed = JSON.parse(authData);
+      token = parsed?.token;
+    } catch (e) {
+      // Ignore parsing errors
+    }
+  }
+
   const _headers = { ...headers };
+  if (token) {
+    _headers.Authorization = `Bearer ${token}`;
+  }
+
   return {
     headers: _headers,
   };

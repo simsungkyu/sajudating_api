@@ -24,6 +24,7 @@ type MutationResolver interface {
 	CreatePhyIdealPartner(ctx context.Context, input model.PhyIdealPartnerCreateInput) (*model.SimpleResult, error)
 	DeletePhyIdealPartner(ctx context.Context, uid string) (*model.SimpleResult, error)
 	PutAiMeta(ctx context.Context, input model.AiMetaInput) (*model.SimpleResult, error)
+	SetAiMetaInUse(ctx context.Context, uid string) (*model.SimpleResult, error)
 	DelAiMeta(ctx context.Context, uid string) (*model.SimpleResult, error)
 	SetAiMetaDefault(ctx context.Context, uid string) (*model.SimpleResult, error)
 	RunAiExecution(ctx context.Context, input model.AiExcutionInput) (*model.SimpleResult, error)
@@ -39,6 +40,8 @@ type QueryResolver interface {
 	PhyIdealPartner(ctx context.Context, uid string) (*model.SimpleResult, error)
 	AiMetas(ctx context.Context, input model.AiMetaSearchInput) (*model.SimpleResult, error)
 	AiMeta(ctx context.Context, uid string) (*model.SimpleResult, error)
+	AiMetaTypes(ctx context.Context) (*model.SimpleResult, error)
+	AiMetaKVs(ctx context.Context, input model.AiMetaKVsInput) (*model.SimpleResult, error)
 	AiExecutions(ctx context.Context, input model.AiExecutionSearchInput) (*model.SimpleResult, error)
 	AiExecution(ctx context.Context, uid string) (*model.SimpleResult, error)
 	Palja(ctx context.Context, birthdate string, timezone string) (*model.SimpleResult, error)
@@ -139,6 +142,17 @@ func (ec *executionContext) field_Mutation_setAiMetaDefault_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_setAiMetaInUse_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "uid", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["uid"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -165,6 +179,17 @@ func (ec *executionContext) field_Query_aiExecutions_args(ctx context.Context, r
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNAiExecutionSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐAiExecutionSearchInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_aiMetaKVs_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNAiMetaKVsInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐAiMetaKVsInput)
 	if err != nil {
 		return nil, err
 	}
@@ -293,9 +318,9 @@ func (ec *executionContext) _AiExecution_id(ctx context.Context, field graphql.C
 			return obj.ID, nil
 		},
 		nil,
-		ec.marshalNID2string,
+		ec.marshalOID2ᚖstring,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -486,6 +511,35 @@ func (ec *executionContext) fieldContext_AiExecution_status(_ context.Context, f
 	return fc, nil
 }
 
+func (ec *executionContext) _AiExecution_errorMessage(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_errorMessage,
+		func(ctx context.Context) (any, error) {
+			return obj.ErrorMessage, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_errorMessage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _AiExecution_prompt(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -515,23 +569,23 @@ func (ec *executionContext) fieldContext_AiExecution_prompt(_ context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _AiExecution_params(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+func (ec *executionContext) _AiExecution_valued_prompt(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_AiExecution_params,
+		ec.fieldContext_AiExecution_valued_prompt,
 		func(ctx context.Context) (any, error) {
-			return obj.Params, nil
+			return obj.ValuedPrompt, nil
 		},
 		nil,
-		ec.marshalNString2ᚕstringᚄ,
+		ec.marshalNString2string,
 		true,
 		true,
 	)
 }
 
-func (ec *executionContext) fieldContext_AiExecution_params(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_AiExecution_valued_prompt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AiExecution",
 		Field:      field,
@@ -539,6 +593,76 @@ func (ec *executionContext) fieldContext_AiExecution_params(_ context.Context, f
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExecution_inputkvs(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_inputkvs,
+		func(ctx context.Context) (any, error) {
+			return obj.Inputkvs, nil
+		},
+		nil,
+		ec.marshalNKV2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKvᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_inputkvs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "k":
+				return ec.fieldContext_KV_k(ctx, field)
+			case "v":
+				return ec.fieldContext_KV_v(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type KV", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExecution_outputkvs(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_outputkvs,
+		func(ctx context.Context) (any, error) {
+			return obj.Outputkvs, nil
+		},
+		nil,
+		ec.marshalNKV2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKvᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_outputkvs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "k":
+				return ec.fieldContext_KV_k(ctx, field)
+			case "v":
+				return ec.fieldContext_KV_v(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type KV", field.Name)
 		},
 	}
 	return fc, nil
@@ -660,6 +784,64 @@ func (ec *executionContext) fieldContext_AiExecution_size(_ context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _AiExecution_inputImageBase64(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_inputImageBase64,
+		func(ctx context.Context) (any, error) {
+			return obj.InputImageBase64, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_inputImageBase64(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExecution_elapsedTime(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_elapsedTime,
+		func(ctx context.Context) (any, error) {
+			return obj.ElapsedTime, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_elapsedTime(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _AiExecution_outputText(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -689,14 +871,14 @@ func (ec *executionContext) fieldContext_AiExecution_outputText(_ context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _AiExecution_outputImage(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+func (ec *executionContext) _AiExecution_outputImageBase64(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_AiExecution_outputImage,
+		ec.fieldContext_AiExecution_outputImageBase64,
 		func(ctx context.Context) (any, error) {
-			return obj.OutputImage, nil
+			return obj.OutputImageBase64, nil
 		},
 		nil,
 		ec.marshalOString2ᚖstring,
@@ -705,7 +887,152 @@ func (ec *executionContext) _AiExecution_outputImage(ctx context.Context, field 
 	)
 }
 
-func (ec *executionContext) fieldContext_AiExecution_outputImage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_AiExecution_outputImageBase64(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExecution_inputTokens(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_inputTokens,
+		func(ctx context.Context) (any, error) {
+			return obj.InputTokens, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_inputTokens(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExecution_outputTokens(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_outputTokens,
+		func(ctx context.Context) (any, error) {
+			return obj.OutputTokens, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_outputTokens(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExecution_totalTokens(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_totalTokens,
+		func(ctx context.Context) (any, error) {
+			return obj.TotalTokens, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_totalTokens(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExecution_runBy(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_runBy,
+		func(ctx context.Context) (any, error) {
+			return obj.RunBy, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_runBy(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiExecution",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiExecution_runSajuProfileUid(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiExecution_runSajuProfileUid,
+		func(ctx context.Context) (any, error) {
+			return obj.RunSajuProfileUID, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiExecution_runSajuProfileUid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AiExecution",
 		Field:      field,
@@ -728,9 +1055,9 @@ func (ec *executionContext) _AiMeta_id(ctx context.Context, field graphql.Collec
 			return obj.ID, nil
 		},
 		nil,
-		ec.marshalNID2string,
+		ec.marshalOID2ᚖstring,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -950,6 +1277,383 @@ func (ec *executionContext) fieldContext_AiMeta_prompt(_ context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _AiMeta_model(ctx context.Context, field graphql.CollectedField, obj *model.AiMeta) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMeta_model,
+		func(ctx context.Context) (any, error) {
+			return obj.Model, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMeta_model(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMeta_temperature(ctx context.Context, field graphql.CollectedField, obj *model.AiMeta) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMeta_temperature,
+		func(ctx context.Context) (any, error) {
+			return obj.Temperature, nil
+		},
+		nil,
+		ec.marshalNFloat2float64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMeta_temperature(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMeta_maxTokens(ctx context.Context, field graphql.CollectedField, obj *model.AiMeta) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMeta_maxTokens,
+		func(ctx context.Context) (any, error) {
+			return obj.MaxTokens, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMeta_maxTokens(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMeta_size(ctx context.Context, field graphql.CollectedField, obj *model.AiMeta) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMeta_size,
+		func(ctx context.Context) (any, error) {
+			return obj.Size, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMeta_size(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMeta_inUse(ctx context.Context, field graphql.CollectedField, obj *model.AiMeta) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMeta_inUse,
+		func(ctx context.Context) (any, error) {
+			return obj.InUse, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMeta_inUse(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMeta",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMetaType_id(ctx context.Context, field graphql.CollectedField, obj *model.AiMetaType) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMetaType_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalNID2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMetaType_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMetaType",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMetaType_type(ctx context.Context, field graphql.CollectedField, obj *model.AiMetaType) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMetaType_type,
+		func(ctx context.Context) (any, error) {
+			return obj.Type, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMetaType_type(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMetaType",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMetaType_inputFields(ctx context.Context, field graphql.CollectedField, obj *model.AiMetaType) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMetaType_inputFields,
+		func(ctx context.Context) (any, error) {
+			return obj.InputFields, nil
+		},
+		nil,
+		ec.marshalNString2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMetaType_inputFields(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMetaType",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMetaType_outputFields(ctx context.Context, field graphql.CollectedField, obj *model.AiMetaType) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMetaType_outputFields,
+		func(ctx context.Context) (any, error) {
+			return obj.OutputFields, nil
+		},
+		nil,
+		ec.marshalNString2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMetaType_outputFields(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMetaType",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMetaType_hasInputImage(ctx context.Context, field graphql.CollectedField, obj *model.AiMetaType) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMetaType_hasInputImage,
+		func(ctx context.Context) (any, error) {
+			return obj.HasInputImage, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMetaType_hasInputImage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMetaType",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AiMetaType_hasOutputImage(ctx context.Context, field graphql.CollectedField, obj *model.AiMetaType) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AiMetaType_hasOutputImage,
+		func(ctx context.Context) (any, error) {
+			return obj.HasOutputImage, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AiMetaType_hasOutputImage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AiMetaType",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _KV_k(ctx context.Context, field graphql.CollectedField, obj *model.Kv) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_KV_k,
+		func(ctx context.Context) (any, error) {
+			return obj.K, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_KV_k(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "KV",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _KV_v(ctx context.Context, field graphql.CollectedField, obj *model.Kv) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_KV_v,
+		func(ctx context.Context) (any, error) {
+			return obj.V, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_KV_v(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "KV",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createSajuProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -979,14 +1683,20 @@ func (ec *executionContext) fieldContext_Mutation_createSajuProfile(ctx context.
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1040,14 +1750,20 @@ func (ec *executionContext) fieldContext_Mutation_deleteSajuProfile(ctx context.
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1101,14 +1817,20 @@ func (ec *executionContext) fieldContext_Mutation_createPhyIdealPartner(ctx cont
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1162,14 +1884,20 @@ func (ec *executionContext) fieldContext_Mutation_deletePhyIdealPartner(ctx cont
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1223,14 +1951,20 @@ func (ec *executionContext) fieldContext_Mutation_putAiMeta(ctx context.Context,
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1249,6 +1983,73 @@ func (ec *executionContext) fieldContext_Mutation_putAiMeta(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_putAiMeta_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_setAiMetaInUse(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_setAiMetaInUse,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().SetAiMetaInUse(ctx, fc.Args["uid"].(string))
+		},
+		nil,
+		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_setAiMetaInUse(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_setAiMetaInUse_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -1284,14 +2085,20 @@ func (ec *executionContext) fieldContext_Mutation_delAiMeta(ctx context.Context,
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1345,14 +2152,20 @@ func (ec *executionContext) fieldContext_Mutation_setAiMetaDefault(ctx context.C
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1406,14 +2219,20 @@ func (ec *executionContext) fieldContext_Mutation_runAiExecution(ctx context.Con
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1448,9 +2267,9 @@ func (ec *executionContext) _PhyIdealPartner_id(ctx context.Context, field graph
 			return obj.ID, nil
 		},
 		nil,
-		ec.marshalNID2string,
+		ec.marshalOID2ᚖstring,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -1873,14 +2692,20 @@ func (ec *executionContext) fieldContext_Query_sajuProfiles(ctx context.Context,
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1934,14 +2759,20 @@ func (ec *executionContext) fieldContext_Query_sajuProfile(ctx context.Context, 
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -1995,14 +2826,20 @@ func (ec *executionContext) fieldContext_Query_sajuProfileSimilarPartners(ctx co
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -2056,14 +2893,20 @@ func (ec *executionContext) fieldContext_Query_phyIdealPartners(ctx context.Cont
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -2117,14 +2960,20 @@ func (ec *executionContext) fieldContext_Query_phyIdealPartner(ctx context.Conte
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -2178,14 +3027,20 @@ func (ec *executionContext) fieldContext_Query_aiMetas(ctx context.Context, fiel
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -2239,14 +3094,20 @@ func (ec *executionContext) fieldContext_Query_aiMeta(ctx context.Context, field
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -2265,6 +3126,128 @@ func (ec *executionContext) fieldContext_Query_aiMeta(ctx context.Context, field
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_aiMeta_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_aiMetaTypes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_aiMetaTypes,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Query().AiMetaTypes(ctx)
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_aiMetaTypes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_aiMetaKVs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_aiMetaKVs,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().AiMetaKVs(ctx, fc.Args["input"].(model.AiMetaKVsInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_aiMetaKVs(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_aiMetaKVs_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2300,14 +3283,20 @@ func (ec *executionContext) fieldContext_Query_aiExecutions(ctx context.Context,
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -2361,14 +3350,20 @@ func (ec *executionContext) fieldContext_Query_aiExecution(ctx context.Context, 
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -2422,14 +3417,20 @@ func (ec *executionContext) fieldContext_Query_palja(ctx context.Context, field 
 				return ec.fieldContext_SimpleResult_ok(ctx, field)
 			case "uid":
 				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
 			case "msg":
 				return ec.fieldContext_SimpleResult_msg(ctx, field)
 			case "value":
 				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
 			case "node":
 				return ec.fieldContext_SimpleResult_node(ctx, field)
 			case "nodes":
 				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
 			case "total":
 				return ec.fieldContext_SimpleResult_total(ctx, field)
 			case "limit":
@@ -2572,9 +3573,9 @@ func (ec *executionContext) _SajuProfile_id(ctx context.Context, field graphql.C
 			return obj.ID, nil
 		},
 		nil,
-		ec.marshalNID2string,
+		ec.marshalOID2ᚖstring,
 		true,
-		true,
+		false,
 	)
 }
 
@@ -3519,6 +4520,35 @@ func (ec *executionContext) fieldContext_SimpleResult_uid(_ context.Context, fie
 	return fc, nil
 }
 
+func (ec *executionContext) _SimpleResult_err(ctx context.Context, field graphql.CollectedField, obj *model.SimpleResult) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SimpleResult_err,
+		func(ctx context.Context) (any, error) {
+			return obj.Err, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SimpleResult_err(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SimpleResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SimpleResult_msg(ctx context.Context, field graphql.CollectedField, obj *model.SimpleResult) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -3565,6 +4595,35 @@ func (ec *executionContext) _SimpleResult_value(ctx context.Context, field graph
 }
 
 func (ec *executionContext) fieldContext_SimpleResult_value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SimpleResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SimpleResult_base64Value(ctx context.Context, field graphql.CollectedField, obj *model.SimpleResult) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SimpleResult_base64Value,
+		func(ctx context.Context) (any, error) {
+			return obj.Base64Value, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SimpleResult_base64Value(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "SimpleResult",
 		Field:      field,
@@ -3630,6 +4689,41 @@ func (ec *executionContext) fieldContext_SimpleResult_nodes(_ context.Context, f
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("FieldContext.Child cannot be called on type INTERFACE")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SimpleResult_kvs(ctx context.Context, field graphql.CollectedField, obj *model.SimpleResult) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SimpleResult_kvs,
+		func(ctx context.Context) (any, error) {
+			return obj.Kvs, nil
+		},
+		nil,
+		ec.marshalOKV2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKvᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SimpleResult_kvs(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SimpleResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "k":
+				return ec.fieldContext_KV_k(ctx, field)
+			case "v":
+				return ec.fieldContext_KV_v(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type KV", field.Name)
 		},
 	}
 	return fc, nil
@@ -3733,7 +4827,7 @@ func (ec *executionContext) unmarshalInputAiExcutionInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"metaUid", "metaType", "prompt", "params", "model", "temperature", "maxTokens", "size"}
+	fieldsInOrder := [...]string{"metaUid", "metaType", "promptType", "prompt", "valued_prompt", "inputkvs", "outputkvs", "model", "temperature", "maxTokens", "size", "inputImageBase64"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3754,6 +4848,13 @@ func (ec *executionContext) unmarshalInputAiExcutionInput(ctx context.Context, o
 				return it, err
 			}
 			it.MetaType = data
+		case "promptType":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("promptType"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PromptType = data
 		case "prompt":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("prompt"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -3761,13 +4862,27 @@ func (ec *executionContext) unmarshalInputAiExcutionInput(ctx context.Context, o
 				return it, err
 			}
 			it.Prompt = data
-		case "params":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("params"))
-			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+		case "valued_prompt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("valued_prompt"))
+			data, err := ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.Params = data
+			it.ValuedPrompt = data
+		case "inputkvs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputkvs"))
+			data, err := ec.unmarshalNKVInput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKVInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Inputkvs = data
+		case "outputkvs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("outputkvs"))
+			data, err := ec.unmarshalNKVInput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKVInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Outputkvs = data
 		case "model":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("model"))
 			data, err := ec.unmarshalNString2string(ctx, v)
@@ -3796,6 +4911,13 @@ func (ec *executionContext) unmarshalInputAiExcutionInput(ctx context.Context, o
 				return it, err
 			}
 			it.Size = data
+		case "inputImageBase64":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inputImageBase64"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.InputImageBase64 = data
 		}
 	}
 
@@ -3809,7 +4931,7 @@ func (ec *executionContext) unmarshalInputAiExecutionSearchInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"limit", "offset", "metaType", "metaUid"}
+	fieldsInOrder := [...]string{"limit", "offset", "metaType", "metaUid", "runBy", "runSajuProfileUid"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3844,6 +4966,20 @@ func (ec *executionContext) unmarshalInputAiExecutionSearchInput(ctx context.Con
 				return it, err
 			}
 			it.MetaUID = data
+		case "runBy":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("runBy"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RunBy = data
+		case "runSajuProfileUid":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("runSajuProfileUid"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RunSajuProfileUID = data
 		}
 	}
 
@@ -3857,7 +4993,7 @@ func (ec *executionContext) unmarshalInputAiMetaInput(ctx context.Context, obj a
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"uid", "name", "desc", "prompt", "metaType"}
+	fieldsInOrder := [...]string{"uid", "name", "desc", "prompt", "metaType", "model", "temperature", "maxTokens", "size"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3899,6 +5035,68 @@ func (ec *executionContext) unmarshalInputAiMetaInput(ctx context.Context, obj a
 				return it, err
 			}
 			it.MetaType = data
+		case "model":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("model"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Model = data
+		case "temperature":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("temperature"))
+			data, err := ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Temperature = data
+		case "maxTokens":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxTokens"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MaxTokens = data
+		case "size":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("size"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Size = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputAiMetaKVsInput(ctx context.Context, obj any) (model.AiMetaKVsInput, error) {
+	var it model.AiMetaKVsInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"type", "kvs"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "type":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Type = data
+		case "kvs":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kvs"))
+			data, err := ec.unmarshalNKVInput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKVInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Kvs = data
 		}
 	}
 
@@ -3912,7 +5110,7 @@ func (ec *executionContext) unmarshalInputAiMetaSearchInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"limit", "offset", "metaType"}
+	fieldsInOrder := [...]string{"limit", "offset", "metaType", "inUse"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3940,6 +5138,47 @@ func (ec *executionContext) unmarshalInputAiMetaSearchInput(ctx context.Context,
 				return it, err
 			}
 			it.MetaType = data
+		case "inUse":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("inUse"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.InUse = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputKVInput(ctx context.Context, obj any) (model.KVInput, error) {
+	var it model.KVInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"k", "v"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "k":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("k"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.K = data
+		case "v":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("v"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.V = data
 		}
 	}
 
@@ -4181,6 +5420,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._PhyIdealPartner(ctx, sel, obj)
+	case model.AiMetaType:
+		return ec._AiMetaType(ctx, sel, &obj)
+	case *model.AiMetaType:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._AiMetaType(ctx, sel, obj)
 	case model.AiMeta:
 		return ec._AiMeta(ctx, sel, &obj)
 	case *model.AiMeta:
@@ -4221,9 +5467,6 @@ func (ec *executionContext) _AiExecution(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = graphql.MarshalString("AiExecution")
 		case "id":
 			out.Values[i] = ec._AiExecution_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "uid":
 			out.Values[i] = ec._AiExecution_uid(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4254,13 +5497,28 @@ func (ec *executionContext) _AiExecution(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "errorMessage":
+			out.Values[i] = ec._AiExecution_errorMessage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "prompt":
 			out.Values[i] = ec._AiExecution_prompt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "params":
-			out.Values[i] = ec._AiExecution_params(ctx, field, obj)
+		case "valued_prompt":
+			out.Values[i] = ec._AiExecution_valued_prompt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "inputkvs":
+			out.Values[i] = ec._AiExecution_inputkvs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "outputkvs":
+			out.Values[i] = ec._AiExecution_outputkvs(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -4284,10 +5542,36 @@ func (ec *executionContext) _AiExecution(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "inputImageBase64":
+			out.Values[i] = ec._AiExecution_inputImageBase64(ctx, field, obj)
+		case "elapsedTime":
+			out.Values[i] = ec._AiExecution_elapsedTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "outputText":
 			out.Values[i] = ec._AiExecution_outputText(ctx, field, obj)
-		case "outputImage":
-			out.Values[i] = ec._AiExecution_outputImage(ctx, field, obj)
+		case "outputImageBase64":
+			out.Values[i] = ec._AiExecution_outputImageBase64(ctx, field, obj)
+		case "inputTokens":
+			out.Values[i] = ec._AiExecution_inputTokens(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "outputTokens":
+			out.Values[i] = ec._AiExecution_outputTokens(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "totalTokens":
+			out.Values[i] = ec._AiExecution_totalTokens(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "runBy":
+			out.Values[i] = ec._AiExecution_runBy(ctx, field, obj)
+		case "runSajuProfileUid":
+			out.Values[i] = ec._AiExecution_runSajuProfileUid(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4324,9 +5608,6 @@ func (ec *executionContext) _AiMeta(ctx context.Context, sel ast.SelectionSet, o
 			out.Values[i] = graphql.MarshalString("AiMeta")
 		case "id":
 			out.Values[i] = ec._AiMeta_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
 		case "uid":
 			out.Values[i] = ec._AiMeta_uid(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4359,6 +5640,139 @@ func (ec *executionContext) _AiMeta(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "prompt":
 			out.Values[i] = ec._AiMeta_prompt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "model":
+			out.Values[i] = ec._AiMeta_model(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "temperature":
+			out.Values[i] = ec._AiMeta_temperature(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "maxTokens":
+			out.Values[i] = ec._AiMeta_maxTokens(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "size":
+			out.Values[i] = ec._AiMeta_size(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "inUse":
+			out.Values[i] = ec._AiMeta_inUse(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var aiMetaTypeImplementors = []string{"AiMetaType", "Node"}
+
+func (ec *executionContext) _AiMetaType(ctx context.Context, sel ast.SelectionSet, obj *model.AiMetaType) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, aiMetaTypeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AiMetaType")
+		case "id":
+			out.Values[i] = ec._AiMetaType_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "type":
+			out.Values[i] = ec._AiMetaType_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "inputFields":
+			out.Values[i] = ec._AiMetaType_inputFields(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "outputFields":
+			out.Values[i] = ec._AiMetaType_outputFields(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "hasInputImage":
+			out.Values[i] = ec._AiMetaType_hasInputImage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "hasOutputImage":
+			out.Values[i] = ec._AiMetaType_hasOutputImage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var kVImplementors = []string{"KV"}
+
+func (ec *executionContext) _KV(ctx context.Context, sel ast.SelectionSet, obj *model.Kv) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, kVImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("KV")
+		case "k":
+			out.Values[i] = ec._KV_k(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "v":
+			out.Values[i] = ec._KV_v(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -4424,6 +5838,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_putAiMeta(ctx, field)
 			})
+		case "setAiMetaInUse":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_setAiMetaInUse(ctx, field)
+			})
 		case "delAiMeta":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_delAiMeta(ctx, field)
@@ -4475,9 +5893,6 @@ func (ec *executionContext) _PhyIdealPartner(ctx context.Context, sel ast.Select
 			out.Values[i] = graphql.MarshalString("PhyIdealPartner")
 		case "id":
 			out.Values[i] = ec._PhyIdealPartner_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
 		case "uid":
 			out.Values[i] = ec._PhyIdealPartner_uid(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -4770,6 +6185,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "aiMetaTypes":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_aiMetaTypes(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "aiMetaKVs":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_aiMetaKVs(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "aiExecutions":
 			field := field
 
@@ -4880,9 +6339,6 @@ func (ec *executionContext) _SajuProfile(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = graphql.MarshalString("SajuProfile")
 		case "id":
 			out.Values[i] = ec._SajuProfile_id(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&out.Invalids, 1)
-			}
 		case "uid":
 			out.Values[i] = ec._SajuProfile_uid(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -5105,14 +6561,20 @@ func (ec *executionContext) _SimpleResult(ctx context.Context, sel ast.Selection
 			}
 		case "uid":
 			out.Values[i] = ec._SimpleResult_uid(ctx, field, obj)
+		case "err":
+			out.Values[i] = ec._SimpleResult_err(ctx, field, obj)
 		case "msg":
 			out.Values[i] = ec._SimpleResult_msg(ctx, field, obj)
 		case "value":
 			out.Values[i] = ec._SimpleResult_value(ctx, field, obj)
+		case "base64Value":
+			out.Values[i] = ec._SimpleResult_base64Value(ctx, field, obj)
 		case "node":
 			out.Values[i] = ec._SimpleResult_node(ctx, field, obj)
 		case "nodes":
 			out.Values[i] = ec._SimpleResult_nodes(ctx, field, obj)
+		case "kvs":
+			out.Values[i] = ec._SimpleResult_kvs(ctx, field, obj)
 		case "total":
 			out.Values[i] = ec._SimpleResult_total(ctx, field, obj)
 		case "limit":
@@ -5161,6 +6623,11 @@ func (ec *executionContext) unmarshalNAiMetaInput2sajudating_apiᚋapiᚋadmgql�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNAiMetaKVsInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐAiMetaKVsInput(ctx context.Context, v any) (model.AiMetaKVsInput, error) {
+	res, err := ec.unmarshalInputAiMetaKVsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNAiMetaSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐAiMetaSearchInput(ctx context.Context, v any) (model.AiMetaSearchInput, error) {
 	res, err := ec.unmarshalInputAiMetaSearchInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5180,6 +6647,80 @@ func (ec *executionContext) marshalNBigInt2int64(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNKV2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKvᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Kv) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNKV2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKv(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNKV2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKv(ctx context.Context, sel ast.SelectionSet, v *model.Kv) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._KV(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNKVInput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKVInputᚄ(ctx context.Context, v any) ([]*model.KVInput, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.KVInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNKVInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKVInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNKVInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKVInput(ctx context.Context, v any) (*model.KVInput, error) {
+	res, err := ec.unmarshalInputKVInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNNode2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐNode(ctx context.Context, sel ast.SelectionSet, v model.Node) graphql.Marshaler {
@@ -5224,6 +6765,53 @@ func (ec *executionContext) marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgq
 		return graphql.Null
 	}
 	return ec._SimpleResult(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOKV2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKvᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Kv) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNKV2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKv(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalONode2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐNode(ctx context.Context, sel ast.SelectionSet, v model.Node) graphql.Marshaler {

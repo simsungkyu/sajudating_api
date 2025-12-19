@@ -1,6 +1,8 @@
 package converter
 
 import (
+	"encoding/json"
+	"log"
 	"sajudating_api/api/admgql/model"
 	"sajudating_api/api/dao/entity"
 )
@@ -12,7 +14,6 @@ func stringPtr(value string) *string {
 func SajuProfileToModel(profile *entity.SajuProfile) *model.SajuProfile {
 
 	return &model.SajuProfile{
-		ID:                      profile.Uid,
 		UID:                     profile.Uid,
 		CreatedAt:               profile.CreatedAt,
 		UpdatedAt:               profile.UpdatedAt,
@@ -47,40 +48,75 @@ func SajuProfileToModel(profile *entity.SajuProfile) *model.SajuProfile {
 
 func AiMetaToModel(meta *entity.AIMeta) *model.AiMeta {
 	return &model.AiMeta{
-		ID:        meta.Uid,
-		UID:       meta.Uid,
-		CreatedAt: meta.CreatedAt,
-		UpdatedAt: meta.UpdatedAt,
-		MetaType:  meta.MetaType,
-		Name:      meta.Name,
-		Desc:      meta.Desc,
-		Prompt:    meta.Prompt,
+		UID:         meta.Uid,
+		CreatedAt:   meta.CreatedAt,
+		UpdatedAt:   meta.UpdatedAt,
+		MetaType:    meta.MetaType,
+		Name:        meta.Name,
+		Desc:        meta.Desc,
+		Prompt:      meta.Prompt,
+		Model:       meta.Model,
+		Temperature: meta.Temperature,
+		MaxTokens:   meta.MaxTokens,
+		Size:        meta.Size,
+		InUse:       meta.InUse,
 	}
 }
 
 func AiExecutionToModel(aiExecution *entity.AiExecution) *model.AiExecution {
-	return &model.AiExecution{
-		ID:          aiExecution.Uid,
-		UID:         aiExecution.Uid,
-		CreatedAt:   aiExecution.CreatedAt,
-		UpdatedAt:   aiExecution.UpdatedAt,
-		MetaUID:     aiExecution.MetaUid,
-		MetaType:    aiExecution.MetaType,
-		Status:      aiExecution.Status,
-		Prompt:      aiExecution.Prompt,
-		Params:      aiExecution.Params,
-		Model:       aiExecution.Model,
-		Temperature: aiExecution.Temperature,
-		MaxTokens:   aiExecution.MaxTokens,
-		Size:        aiExecution.Size,
-		OutputText:  stringPtr(aiExecution.OutputText),
-		OutputImage: stringPtr(aiExecution.OutputImage),
+	ret := &model.AiExecution{
+		UID:          aiExecution.Uid,
+		CreatedAt:    aiExecution.CreatedAt,
+		UpdatedAt:    aiExecution.UpdatedAt,
+		MetaUID:      aiExecution.MetaUid,
+		MetaType:     aiExecution.MetaType,
+		Status:       aiExecution.Status,
+		Prompt:       aiExecution.Prompt,
+		ValuedPrompt: aiExecution.ValuedPrompt,
+		Model:        aiExecution.Model,
+		Temperature:  aiExecution.Temperature,
+		MaxTokens:    aiExecution.MaxTokens,
+		Size:         aiExecution.Size,
+		ElapsedTime:  aiExecution.ElapsedTime,
+		InputTokens:  aiExecution.InputTokens,
+		OutputTokens: aiExecution.OutputTokens,
+		TotalTokens:  aiExecution.TotalTokens,
+		ErrorMessage: aiExecution.ErrorMessage,
 	}
+
+	// 실행 정보 설정
+	if aiExecution.OutputText != "" {
+		ret.OutputText = stringPtr(aiExecution.OutputText)
+	}
+	// RunBy, RunSajuProfileUID 설정
+	if aiExecution.RunBy != "" {
+		ret.RunBy = stringPtr(aiExecution.RunBy)
+	}
+	if aiExecution.RunSajuProfileUid != "" {
+		ret.RunSajuProfileUID = stringPtr(aiExecution.RunSajuProfileUid)
+	}
+
+	if aiExecution.IntputKV_JSON != "" {
+		var inputkvs []*model.Kv
+		err := json.Unmarshal([]byte(aiExecution.IntputKV_JSON), &inputkvs)
+		if err != nil {
+			log.Printf("failed to unmarshal inputkvs: %v", err)
+		}
+		ret.Inputkvs = inputkvs
+	}
+	if aiExecution.OutputKV_JSON != "" {
+		var outputkvs []*model.Kv
+		err := json.Unmarshal([]byte(aiExecution.OutputKV_JSON), &outputkvs)
+		if err != nil {
+			log.Printf("failed to unmarshal outputkvs: %v", err)
+		}
+		ret.Outputkvs = outputkvs
+	}
+	return ret
 }
 
 func PhyIdealPartnerToModel(partner *entity.PhyIdealPartner) *model.PhyIdealPartner {
 	return &model.PhyIdealPartner{
-		ID:               partner.Uid,
 		UID:              partner.Uid,
 		CreatedAt:        partner.CreatedAt,
 		UpdatedAt:        partner.UpdatedAt,

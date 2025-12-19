@@ -74,7 +74,7 @@ func (dao *OpenAiSajuExtDao) AnalyzeSaju(ctx context.Context, req SajuAnalysisRe
 		MaxTokens:   3000,
 	}
 
-	responseText, err := dao.openaiDao.ChatCompletion(ctx, chatReq)
+	responseText, _, err := dao.openaiDao.ChatCompletion(ctx, chatReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get OpenAI response: %w", err)
 	}

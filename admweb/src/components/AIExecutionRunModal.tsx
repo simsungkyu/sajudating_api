@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTitle,
   FormControl,
-  IconButton,
   InputLabel,
   LinearProgress,
   MenuItem,
@@ -17,83 +16,57 @@ import {
   Stack,
   TextField,
   Typography,
+  ToggleButton,
+  ToggleButtonGroup,
+  Paper,
 } from '@mui/material';
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
-import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { apiBase } from '../api';
+import { useEffect, useState, useRef, useMemo, type FormEvent } from 'react';
 import {
   useAiExecutionLazyQuery,
   useRunAiExecutionMutation,
+  useGetAiMetaTypesQuery,
+  useGetAiMetaKVsLazyQuery,
   type RunAiExecutionMutationVariables,
 } from '../graphql/generated';
+import { TEXT_MODELS, IMAGE_MODELS, IMAGE_SIZES, VISION_MODELS } from '../types';
+import AIExecutionViewModal from './AIExecutionViewModal';
 
 export interface AIExecutionRunModalProps {
   open: boolean;
-  token?: string;
   metaUid?: string;
   metaType?: string;
   executionUid?: string;
   meta?: {
     prompt?: string;
+    model?: string;
+    temperature?: number;
+    maxTokens?: number;
+    size?: string;
   };
   onClose: () => void;
 }
 
 interface ExecutionResult {
   uid: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  status: string;
   metaType?: string;
   prompt?: string;
+  valuedPrompt?: string;
   params?: string[];
   model?: string;
   temperature?: number;
   maxTokens?: number;
   size?: string;
+  inputImageBase64?: string;
   outputText?: string;
-  outputImage?: string;
+  errorText?: string;
+  outputImageBase64?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 const AIExecutionRunModal: React.FC<AIExecutionRunModalProps> = ({
   open,
-  token,
-  metaUid,
-  metaType,
-  executionUid,
-  meta,
-  onClose,
-}) => {
-  const apolloClient = useMemo(() => {
-    return new ApolloClient({
-      link: new HttpLink({
-        uri: `${apiBase}/admgql`,
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      }),
-      cache: new InMemoryCache(),
-    });
-  }, [token]);
-
-  return (
-    <ApolloProvider client={apolloClient}>
-      <AIExecutionRunModalInner
-        open={open}
-        token={token}
-        metaUid={metaUid}
-        metaType={metaType}
-        executionUid={executionUid}
-        meta={meta}
-        onClose={onClose}
-      />
-    </ApolloProvider>
-  );
-};
-
-const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
-  open,
-  token,
   metaUid,
   metaType,
   executionUid,
@@ -101,7 +74,8 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
   onClose,
 }) => {
   const [prompt, setPrompt] = useState('');
-  const [params, setParams] = useState<string[]>(['']);
+  const [inputParams, setInputParams] = useState<Record<string, string>>({});
+  const [outputParams, setOutputParams] = useState<Record<string, string>>({});
   const [model, setModel] = useState('gpt-4o');
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens, setMaxTokens] = useState(2000);
@@ -110,16 +84,40 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pollingInterval, setPollingInterval] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<'edit' | 'both' | 'preview'>('both');
+  const [inputImage, setInputImage] = useState<string | null>(null);
+  const promptInputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [viewDetailOpen, setViewDetailOpen] = useState(false);
+  const [viewDetailUid, setViewDetailUid] = useState<string | null>(null);
 
   const [runAiExecutionMutation] = useRunAiExecutionMutation();
   const [fetchAiExecution] = useAiExecutionLazyQuery({ fetchPolicy: 'network-only' });
+  const { data: metaTypesData } = useGetAiMetaTypesQuery();
+  const [fetchAiMetaKVs] = useGetAiMetaKVsLazyQuery({ fetchPolicy: 'network-only' });
 
   const isViewMode = Boolean(executionUid);
-  const isProcessing = execution?.status === 'pending' || execution?.status === 'processing';
+  const hasOutput = Boolean(execution?.outputText) || Boolean(execution?.outputImageBase64);
+  const isProcessing = (execution?.status === 'running' || execution?.status === 'pending' || execution?.status === 'processing')
+    && !hasOutput;
+  const isCompleted = execution?.status === 'done' || execution?.status === 'completed' || hasOutput;
 
-  // Count %s occurrences in prompt
-  const paramCount = (prompt.match(/%s/g) || []).length;
-  const promptLabel = paramCount > 0 ? `프롬프트 (파라미터 ${paramCount}개)` : '프롬프트';
+  // Get input and output fields from metaType query
+  const metaTypeInfo = useMemo(() => {
+    return metaTypesData?.aiMetaTypes?.nodes
+      ?.find(node => node.__typename === 'AiMetaType' && node.type === metaType);
+  }, [metaTypesData, metaType]);
+
+  const inputFields = useMemo(() => {
+    return metaTypeInfo?.__typename === 'AiMetaType' ? metaTypeInfo.inputFields : [];
+  }, [metaTypeInfo]);
+
+  const outputFields = useMemo(() => {
+    return metaTypeInfo?.__typename === 'AiMetaType' ? metaTypeInfo.outputFields : [];
+  }, [metaTypeInfo]);
+
+  const hasInputImage = metaTypeInfo?.__typename === 'AiMetaType' ? metaTypeInfo.hasInputImage : false;
+  const hasOutputImage = metaTypeInfo?.__typename === 'AiMetaType' ? metaTypeInfo.hasOutputImage : false;
 
   // MetaType descriptions
   const metaTypeDescriptions: Record<string, string> = {
@@ -133,29 +131,24 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
   const metaTypeDescription = currentMetaType ? metaTypeDescriptions[currentMetaType] : null;
 
   // Check if current metaType is for image generation
-  const isImageGeneration = currentMetaType === 'IdealPartnerImage';
+  const isImageGeneration = hasOutputImage;
 
-  // Model options based on metaType
-  const textModels = [
-    { value: 'gpt-4o', label: 'GPT-4o' },
-    { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-    { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
-    { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
-  ];
-
-  const imageModels = [
-    { value: 'dall-e-3', label: 'DALL-E 3' },
-    { value: 'dall-e-2', label: 'DALL-E 2' },
-    { value: 'stable-diffusion-xl', label: 'Stable Diffusion XL' },
-  ];
-
-  const availableModels = isImageGeneration ? imageModels : textModels;
+  // Model options based on metaType (from types.ts)
+  const availableModels = hasInputImage
+    ? VISION_MODELS
+    : (isImageGeneration ? IMAGE_MODELS : TEXT_MODELS);
 
   useEffect(() => {
     if (!open) {
       setPrompt('');
-      setParams(['']);
-      const defaultModel = isImageGeneration ? 'dall-e-3' : 'gpt-4o';
+      setInputParams({});
+      setOutputParams({});
+      setInputImage(null);
+      const defaultModel = hasInputImage
+        ? (VISION_MODELS[0]?.value || 'gpt-4o-mini')
+        : (isImageGeneration
+          ? (IMAGE_MODELS[0]?.value || 'gpt-image-1-mini')
+          : (TEXT_MODELS[0]?.value || 'gpt-4.1-mini'));
       setModel(defaultModel);
       setTemperature(0.7);
       setMaxTokens(2000);
@@ -163,6 +156,8 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
       setExecution(null);
       setSubmitting(false);
       setError(null);
+      setViewDetailOpen(false);
+      setViewDetailUid(null);
       if (pollingInterval) {
         clearInterval(pollingInterval);
         setPollingInterval(null);
@@ -170,25 +165,86 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
       return;
     }
 
-    if (executionUid && token) {
+    if (executionUid) {
       fetchExecution(executionUid);
-    } else if (!executionUid && meta?.prompt) {
-      // Set default prompt from meta when opening for test execution
-      setPrompt(meta.prompt);
+    } else if (!executionUid && meta) {
+      // Set values from meta when opening for test execution
+      if (meta.prompt) {
+        setPrompt(meta.prompt);
+      }
+      if (meta.model) {
+        setModel(meta.model);
+      }
+      if (meta.temperature !== undefined) {
+        setTemperature(meta.temperature);
+      }
+      if (meta.maxTokens !== undefined) {
+        setMaxTokens(meta.maxTokens);
+      }
+      if (meta.size) {
+        setSize(meta.size);
+      }
     }
-  }, [open, executionUid, token, isImageGeneration, meta]);
+  }, [open, executionUid, hasInputImage, isImageGeneration, meta]);
+
+  // Separate effect for initializing input params based on metaType
+  useEffect(() => {
+    if (open && !executionUid && inputFields.length > 0) {
+      const initialParams: Record<string, string> = {};
+
+      // Default values mapping
+      const defaultValues: Record<string, string> = {
+        sex: 'male',
+        gender: 'male',
+        birthdate: '19900101',
+        birth: '19900101',
+        palja: '庚午 戊寅 甲子 丙寅',
+        featureEyes: '쌍꺼풀이 있는 큰 눈',
+        featureNose: '오똑한 콧날',
+        featureMouth: '도톰한 입술',
+        featureFaceShape: '계란형 얼굴',
+        featureEyebrows: '진한 일자 눈썹',
+        featureLips: '도톰하고 붉은 입술',
+        personalityMatch: '밝고 긍정적인 성격',
+        summary: '이상형에 대한 간단한 설명',
+        age: '30',
+        notes: '기타 특징',
+      };
+
+      inputFields.forEach(field => {
+        const fieldLower = field.toLowerCase();
+
+        // Find matching default value
+        let defaultValue = '';
+        for (const [key, value] of Object.entries(defaultValues)) {
+          if (fieldLower.includes(key)) {
+            defaultValue = value;
+            break;
+          }
+        }
+
+        initialParams[field] = defaultValue || '테스트';
+      });
+
+      setInputParams(initialParams);
+    }
+  }, [open, executionUid, metaType]);
 
   useEffect(() => {
     // Reset model when metaType changes
     if (open && !executionUid) {
-      const defaultModel = isImageGeneration ? 'dall-e-3' : 'gpt-4o';
+      const defaultModel = hasInputImage
+        ? (VISION_MODELS[0]?.value || 'gpt-4o-mini')
+        : (isImageGeneration
+          ? (IMAGE_MODELS[0]?.value || 'dall-e-3')
+          : (TEXT_MODELS[0]?.value || 'gpt-4.1-mini'));
       setModel(defaultModel);
     }
-  }, [isImageGeneration, open, executionUid]);
+  }, [hasInputImage, isImageGeneration, open, executionUid]);
 
   useEffect(() => {
     // Start polling if execution is in progress
-    if (isProcessing && execution?.uid && token && open) {
+    if (isProcessing && execution?.uid && open) {
       const interval = setInterval(() => {
         fetchExecution(execution.uid);
       }, 2000); // Poll every 2 seconds
@@ -197,34 +253,48 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
 
       return () => {
         clearInterval(interval);
+        setPollingInterval(null);
       };
     } else if (pollingInterval) {
       clearInterval(pollingInterval);
       setPollingInterval(null);
     }
-  }, [isProcessing, execution?.uid, token, open]);
+  }, [isProcessing, execution?.uid, open]);
+
+  // Open detail view when execution is completed
+  useEffect(() => {
+    if (isCompleted && execution?.uid && !viewDetailOpen && open) {
+      setViewDetailUid(execution.uid);
+      setViewDetailOpen(true);
+    }
+  }, [isCompleted, execution?.uid, viewDetailOpen, open]);
 
   const fetchExecution = async (uid: string) => {
-    if (!token) return;
-
     try {
       const result = await fetchAiExecution({ variables: { uid } });
 
       const node = result.data?.aiExecution?.node;
       if (result.data?.aiExecution?.ok && node?.__typename === 'AiExecution') {
         const executionData = node;
+        const inputParams = executionData.inputkvs?.map(kv => `input.${kv.k}: ${kv.v}`) ?? [];
+        const outputParams = executionData.outputkvs?.map(kv => `output.${kv.k}: ${kv.v}`) ?? [];
+        const params = [...inputParams, ...outputParams];
+
         setExecution({
           uid: executionData.uid,
-          status: executionData.status as 'pending' | 'processing' | 'completed' | 'failed',
+          status: executionData.status,
           metaType: executionData.metaType || undefined,
           prompt: executionData.prompt || undefined,
-          params: executionData.params || undefined,
+          valuedPrompt: executionData.valued_prompt || undefined,
+          params: params.length > 0 ? params : undefined,
           model: executionData.model || undefined,
           temperature: executionData.temperature || undefined,
           maxTokens: executionData.maxTokens || undefined,
           size: executionData.size || undefined,
+          inputImageBase64: executionData.inputImageBase64 || undefined,
           outputText: executionData.outputText || undefined,
-          outputImage: executionData.outputImage || undefined,
+          errorText: executionData.errorText || undefined,
+          outputImageBase64: executionData.outputImageBase64 || undefined,
           createdAt: String(executionData.createdAt),
           updatedAt: String(executionData.updatedAt),
         });
@@ -238,16 +308,153 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
     }
   };
 
+  const handleGenerateParams = async () => {
+    if (!metaType) {
+      setError('메타 타입이 설정되지 않았습니다.');
+      return;
+    }
+
+    // Validate all required input params are filled
+    const missingFields = inputFields.filter(field => !inputParams[field]?.trim());
+    if (missingFields.length > 0) {
+      setError(`다음 필드를 입력해주세요: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    try {
+      // Convert input params to KV array format
+      const kvs = Object.entries(inputParams).map(([k, v]) => ({ k, v }));
+
+      const result = await fetchAiMetaKVs({
+        variables: {
+          input: {
+            type: metaType,
+            kvs,
+          },
+        },
+      });
+
+      if (result.data?.aiMetaKVs?.ok && result.data?.aiMetaKVs?.kvs) {
+        // Store all KV pairs from the response (including input params and any additional fields)
+        const generatedOutputs: Record<string, string> = {};
+        result.data.aiMetaKVs.kvs.forEach(kv => {
+          generatedOutputs[kv.k] = kv.v;
+        });
+        setOutputParams(generatedOutputs);
+        setError(null);
+      } else {
+        throw new Error(result.data?.aiMetaKVs?.msg || '샘플 생성 실패');
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('샘플 생성 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
+  const handleInputParamChange = (field: string, value: string) => {
+    setInputParams(prev => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError('이미지 파일 크기는 10MB 이하여야 합니다.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string;
+      // Remove data:image/xxx;base64, prefix
+      const base64Data = base64.split(',')[1];
+      setInputImage(base64Data);
+      setError(null);
+    };
+    reader.onerror = () => {
+      setError('이미지 파일을 읽는 중 오류가 발생했습니다.');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    setInputImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Replace {{paramName}} in prompt with actual values
+  const getPreviewPrompt = () => {
+    let previewPrompt = prompt;
+
+    // Replace input parameters first
+    Object.entries(inputParams).forEach(([key, value]) => {
+      const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+      previewPrompt = previewPrompt.replace(regex, value || `{{${key}}}`);
+    });
+
+    // Replace output parameters with generated values
+    Object.entries(outputParams).forEach(([key, value]) => {
+      const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+      previewPrompt = previewPrompt.replace(regex, value || `{{${key}}}`);
+    });
+
+    return previewPrompt;
+  };
+
+  // Insert parameter into prompt at cursor position
+  const handleParamChipClick = (paramName: string) => {
+    const textarea = promptInputRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const before = text.substring(0, start);
+    const after = text.substring(end);
+    const paramText = `{{${paramName}}}`;
+    const newText = before + paramText + after;
+
+    setPrompt(newText);
+
+    // Move cursor after inserted parameter
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + paramText.length;
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!prompt.trim() || !metaUid || !metaType || !token) return;
+    if (!prompt.trim() || !metaUid || !metaType) return;
 
-    // Filter out empty params
-    const filteredParams = params.filter(p => p.trim());
+    // Validate all required input params are filled
+    const missingFields = inputFields.filter(field => !inputParams[field]?.trim());
+    if (missingFields.length > 0) {
+      setError(`다음 필드를 입력해주세요: ${missingFields.join(', ')}`);
+      return;
+    }
 
-    // Check if param count matches %s count in prompt
-    if (paramCount !== filteredParams.length) {
-      setError(`프롬프트에 ${paramCount}개의 파라미터(%s)가 필요하지만 ${filteredParams.length}개가 입력되었습니다.`);
+    // Validate input image if required
+    if (hasInputImage && !inputImage) {
+      setError('입력 이미지를 업로드해주세요.');
       return;
     }
 
@@ -264,16 +471,36 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
     setError(null);
 
     try {
+      const valuedPrompt = getPreviewPrompt().trim();
+      const promptType = hasOutputImage ? 'image' : (hasInputImage ? 'vision' : 'text');
+      const inputkvs = inputFields.map(field => ({
+        k: field,
+        v: inputParams[field] ?? '',
+      }));
+      const outputkvs = [
+        ...outputFields.map(field => ({
+          k: field,
+          v: outputParams[field] ?? '',
+        })),
+        ...Object.entries(outputParams)
+          .filter(([field]) => !inputFields.includes(field) && !outputFields.includes(field))
+          .map(([k, v]) => ({ k, v })),
+      ];
+
       const variables: RunAiExecutionMutationVariables = {
         input: {
           metaUid,
           metaType,
-          prompt: prompt.trim(),
-          params: filteredParams,
+          promptType,
+          prompt: valuedPrompt || prompt.trim(),
+          valued_prompt: valuedPrompt || prompt.trim(),
+          inputkvs,
+          outputkvs,
           model,
           temperature,
           maxTokens,
           size,
+          inputImageBase64: hasInputImage ? inputImage : undefined,
         },
       };
 
@@ -299,22 +526,6 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
     }
   };
 
-  const handleAddParam = () => {
-    setParams([...params, '']);
-  };
-
-  const handleRemoveParam = (index: number) => {
-    if (params.length > 1) {
-      setParams(params.filter((_, i) => i !== index));
-    }
-  };
-
-  const handleParamChange = (index: number, value: string) => {
-    const newParams = [...params];
-    newParams[index] = value;
-    setParams(newParams);
-  };
-
   const handleClose = () => {
     if (submitting || isProcessing) return;
     onClose();
@@ -322,8 +533,10 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
 
   const getStatusChip = (status: ExecutionResult['status']) => {
     switch (status) {
+      case 'done':
       case 'completed':
         return <Chip label="완료" color="success" size="small" />;
+      case 'running':
       case 'processing':
         return <Chip label="처리중" color="info" size="small" />;
       case 'pending':
@@ -331,7 +544,7 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
       case 'failed':
         return <Chip label="실패" color="error" size="small" />;
       default:
-        return <Chip label={status} size="small" />;
+        return <Chip label={status || '-'} size="small" />;
     }
   };
 
@@ -348,13 +561,14 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      fullWidth
-      maxWidth="md"
-      PaperProps={{ sx: { borderRadius: 3 } }}
-    >
+    <>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="md"
+        slotProps={{ paper: { sx: { borderRadius: 3 } } }}
+      >
       <DialogTitle sx={{ fontWeight: 800 }}>
         {isViewMode ? 'AI 실행 결과' : 'AI 테스트 실행'}
       </DialogTitle>
@@ -393,16 +607,21 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
                 </FormControl>
 
                 {isImageGeneration ? (
-                  <TextField
-                    label="이미지 크기"
-                    value={size}
-                    onChange={(e) => setSize(e.target.value)}
-                    placeholder="예: 1024x1024, 1024x1792, 1792x1024"
-                    required
-                    fullWidth
-                    disabled={submitting}
-                    helperText="너비x높이 형식으로 입력하세요 (예: 256x256, 512x512, 768x768, 1024x1024, 1024x1792, 1792x1024)"
-                  />
+                  <FormControl fullWidth required>
+                    <InputLabel>이미지 크기</InputLabel>
+                    <Select
+                      value={size}
+                      label="이미지 크기"
+                      onChange={(e) => setSize(e.target.value)}
+                      disabled={submitting}
+                    >
+                      {IMAGE_SIZES.map((sizeOption) => (
+                        <MenuItem key={sizeOption.value} value={sizeOption.value}>
+                          {sizeOption.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 ) : (
                   <>
                     <TextField
@@ -413,7 +632,7 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
                       required
                       fullWidth
                       disabled={submitting}
-                      inputProps={{ min: 0, max: 2, step: 0.1 }}
+                      slotProps={{ htmlInput: { min: 0, max: 2, step: 0.1 } }}
                     />
 
                     <TextField
@@ -424,71 +643,342 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
                       required
                       fullWidth
                       disabled={submitting}
+                      slotProps={{ htmlInput: { min: 1, max: 4096, step: 1 } }}
                     />
                   </>
                 )}
               </Stack>
 
-              <TextField
-                label={promptLabel}
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="AI에게 전달할 프롬프트를 입력하세요 (%s를 사용하여 파라미터 삽입)"
-                required
-                fullWidth
-                multiline
-                rows={4}
-                disabled={submitting}
-                helperText="AI 요청 시 사용될 프롬프트 (%s는 파라미터로 치환됩니다)"
-                slotProps={{
-                  input: {
-                    sx: {
-                      '& textarea': {
-                        resize: 'vertical',
-                      },
-                    },
-                  },
-                }}
-              />
+              <Stack direction="row" spacing={2}>
+                <Box flex={hasInputImage ? 1 : undefined} width={hasInputImage ? undefined : '100%'}>
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    입력 파라미터 {inputFields.length > 0 && `(${inputFields.length}개 필수)`}
+                  </Typography>
+                  {inputFields.length > 0 ? (
+                    <Stack spacing={1.5}>
+                      {inputFields.map((field) => (
+                        <TextField
+                          key={field}
+                          label={field}
+                          value={inputParams[field] || ''}
+                          onChange={(e) => handleInputParamChange(field, e.target.value)}
+                          placeholder={`${field} 값을 입력하세요`}
+                          fullWidth
+                          required
+                          disabled={submitting}
+                          size="small"
+                        />
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
+                      입력 파라미터가 없습니다.
+                    </Typography>
+                  )}
+                </Box>
+
+                {hasInputImage && (
+                  <Box flex={1}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      입력 이미지 {hasInputImage && '(필수)'}
+                    </Typography>
+                    <Box
+                      sx={{
+                        border: '2px dashed',
+                        borderColor: inputImage ? 'success.main' : 'divider',
+                        borderRadius: 2,
+                        p: 2,
+                        textAlign: 'center',
+                        bgcolor: 'background.paper',
+                        minHeight: 200,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      {inputImage ? (
+                        <Stack spacing={1} width="100%">
+                          <Box
+                            component="img"
+                            src={`data:image/png;base64,${inputImage}`}
+                            alt="Uploaded"
+                            sx={{
+                              maxWidth: '100%',
+                              maxHeight: 200,
+                              objectFit: 'contain',
+                              borderRadius: 1,
+                            }}
+                          />
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            color="error"
+                            onClick={handleRemoveImage}
+                            disabled={submitting}
+                          >
+                            이미지 제거
+                          </Button>
+                        </Stack>
+                      ) : (
+                        <Stack spacing={2}>
+                          <Typography variant="body2" color="text.secondary">
+                            클릭하여 이미지를 업로드하세요
+                          </Typography>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            style={{ display: 'none' }}
+                            disabled={submitting}
+                          />
+                          <Button
+                            variant="outlined"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={submitting}
+                          >
+                            이미지 선택
+                          </Button>
+                          <Typography variant="caption" color="text.secondary">
+                            최대 10MB, JPG/PNG/GIF 등
+                          </Typography>
+                        </Stack>
+                      )}
+                    </Box>
+                  </Box>
+                )}
+              </Stack>
+
+              {outputFields.length > 0 && (
+                <Box>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      출력 파라미터 (클릭하여 프롬프트에 삽입)
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={handleGenerateParams}
+                      disabled={submitting}
+                    >
+                      샘플 생성
+                    </Button>
+                  </Stack>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+                    {/* 1. Display input parameters from KV */}
+                    {inputFields.map((field) => {
+                      const value = outputParams[field];
+                      if (!value) return null;
+
+                      return (
+                        <Chip
+                          key={`input-${field}`}
+                          label={`${field}: ${value}`}
+                          onClick={() => handleParamChipClick(field)}
+                          variant="outlined"
+                          size="small"
+                          sx={{
+                            cursor: 'pointer',
+                            maxWidth: '100%',
+                            bgcolor: 'white',
+                            color: 'text.primary',
+                            borderColor: 'success.main',
+                            borderWidth: 2,
+                            '& .MuiChip-label': {
+                              display: 'block',
+                              whiteSpace: 'normal',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            },
+                            '&:hover': {
+                              bgcolor: 'white',
+                              borderColor: 'success.dark',
+                            },
+                          }}
+                        />
+                      );
+                    })}
+
+                    {/* 2. Display output parameters from KV */}
+                    {outputFields.map((field) => {
+                      const value = outputParams[field];
+
+                      return (
+                        <Chip
+                          key={`output-${field}`}
+                          label={value ? `${field}: ${value}` : field}
+                          onClick={() => handleParamChipClick(field)}
+                          variant="outlined"
+                          size="small"
+                          sx={{
+                            cursor: 'pointer',
+                            maxWidth: '100%',
+                            bgcolor: 'white',
+                            color: 'text.primary',
+                            borderColor: 'primary.main',
+                            borderWidth: 2,
+                            borderStyle: value ? 'solid' : 'dashed',
+                            '& .MuiChip-label': {
+                              display: 'block',
+                              whiteSpace: 'normal',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            },
+                            '&:hover': {
+                              bgcolor: 'white',
+                              borderColor: 'primary.dark',
+                            },
+                          }}
+                        />
+                      );
+                    })}
+
+                    {/* 3. Display additional KV fields not in inputFields or outputFields */}
+                    {Object.entries(outputParams)
+                      .filter(([field]) => !inputFields.includes(field) && !outputFields.includes(field))
+                      .map(([field, value]) => (
+                        <Chip
+                          key={`additional-${field}`}
+                          label={`${field}: ${value}`}
+                          onClick={() => handleParamChipClick(field)}
+                          variant="outlined"
+                          size="small"
+                          sx={{
+                            cursor: 'pointer',
+                            maxWidth: '100%',
+                            bgcolor: 'white',
+                            color: 'text.primary',
+                            borderColor: 'secondary.main',
+                            borderWidth: 2,
+                            '& .MuiChip-label': {
+                              display: 'block',
+                              whiteSpace: 'normal',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            },
+                            '&:hover': {
+                              bgcolor: 'white',
+                              borderColor: 'secondary.dark',
+                            },
+                          }}
+                        />
+                      ))}
+                  </Box>
+                </Box>
+              )}
 
               <Box>
                 <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
                   <Typography variant="subtitle2" color="text.secondary">
-                    파라미터 {paramCount > 0 ? `(필요: ${paramCount}개)` : '(선택사항)'}
+                    프롬프트
                   </Typography>
-                  <Button
+                  <ToggleButtonGroup
+                    value={viewMode}
+                    exclusive
+                    onChange={(_, newMode) => {
+                      if (newMode !== null) {
+                        setViewMode(newMode);
+                      }
+                    }}
                     size="small"
-                    startIcon={<AddRoundedIcon />}
-                    onClick={handleAddParam}
-                    disabled={submitting}
                   >
-                    추가
-                  </Button>
+                    <ToggleButton value="edit">편집</ToggleButton>
+                    <ToggleButton value="both">Both</ToggleButton>
+                    <ToggleButton value="preview">미리보기</ToggleButton>
+                  </ToggleButtonGroup>
                 </Stack>
-                <Stack spacing={1.5}>
-                  {params.map((param, index) => (
-                    <Stack key={index} direction="row" spacing={1} alignItems="center">
+
+                {viewMode === 'edit' && (
+                  <TextField
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="AI에게 전달할 프롬프트를 입력하세요 ({{파라미터명}} 형식으로 파라미터 삽입)"
+                    required
+                    fullWidth
+                    multiline
+                    rows={6}
+                    disabled={submitting}
+                    inputRef={promptInputRef}
+                    helperText="AI 요청 시 사용될 프롬프트 ({{파라미터명}}은 입력값으로 치환됩니다)"
+                    slotProps={{
+                      input: {
+                        sx: {
+                          '& textarea': {
+                            resize: 'vertical',
+                          },
+                        },
+                      },
+                    }}
+                  />
+                )}
+
+                {viewMode === 'preview' && (
+                  <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      minHeight: 150,
+                      bgcolor: 'action.hover',
+                      fontFamily: 'monospace',
+                      fontSize: '0.875rem',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                    }}
+                  >
+                    {getPreviewPrompt() || '프롬프트를 입력하세요'}
+                  </Paper>
+                )}
+
+                {viewMode === 'both' && (
+                  <Stack direction="row" spacing={2}>
+                    <Box flex={1}>
+                      <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                        편집
+                      </Typography>
                       <TextField
-                        value={param}
-                        onChange={(e) => handleParamChange(index, e.target.value)}
-                        placeholder={`파라미터 ${index + 1}`}
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        placeholder="프롬프트 입력"
+                        required
                         fullWidth
+                        multiline
+                        rows={6}
                         disabled={submitting}
-                        size="small"
+                        inputRef={promptInputRef}
+                        slotProps={{
+                          input: {
+                            sx: {
+                              '& textarea': {
+                                resize: 'vertical',
+                              },
+                            },
+                          },
+                        }}
                       />
-                      {params.length > 1 && (
-                        <IconButton
-                          size="small"
-                          onClick={() => handleRemoveParam(index)}
-                          disabled={submitting}
-                          color="error"
-                        >
-                          <DeleteRoundedIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                    </Stack>
-                  ))}
-                </Stack>
+                    </Box>
+                    <Box flex={1}>
+                      <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>
+                        미리보기
+                      </Typography>
+                      <Paper
+                        variant="outlined"
+                        sx={{
+                          p: 2,
+                          height: 'calc(6 * 1.5em + 32px)', // Match TextField height
+                          bgcolor: 'action.hover',
+                          fontFamily: 'monospace',
+                          fontSize: '0.875rem',
+                          whiteSpace: 'pre-wrap',
+                          wordBreak: 'break-word',
+                          overflow: 'auto',
+                        }}
+                      >
+                        {getPreviewPrompt() || '프롬프트를 입력하세요'}
+                      </Paper>
+                    </Box>
+                  </Stack>
+                )}
               </Box>
             </Stack>
           ) : null}
@@ -590,7 +1080,7 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
                   )}
                 </Stack>
 
-                {execution.status === 'completed' && execution.outputText && (
+                {(isCompleted || execution.outputText) && execution.outputText && (
                   <Box>
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                       실행 결과 (텍스트)
@@ -610,14 +1100,14 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
                   </Box>
                 )}
 
-                {execution.status === 'completed' && execution.outputImage && (
+                {(isCompleted || execution.outputImageBase64) && execution.outputImageBase64 && (
                   <Box>
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                       실행 결과 (이미지)
                     </Typography>
                     <Box
                       component="img"
-                      src={`data:image/png;base64,${execution.outputImage}`}
+                      src={`data:image/png;base64,${execution.outputImageBase64}`}
                       alt="Generated image"
                       sx={{
                         maxWidth: '100%',
@@ -668,6 +1158,15 @@ const AIExecutionRunModalInner: React.FC<AIExecutionRunModalProps> = ({
         ) : null}
       </DialogActions>
     </Dialog>
+    <AIExecutionViewModal
+      open={viewDetailOpen}
+      executionUid={viewDetailUid}
+      onClose={() => {
+        setViewDetailOpen(false);
+        setExecution(null);
+      }}
+    />
+    </>
   );
 };
 

@@ -3,6 +3,7 @@ import {
   Alert,
   Box,
   Button,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,16 +14,16 @@ import {
   Select,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material';
-import { useEffect, useState, type FormEvent } from 'react';
-import type { AIRequestType } from '../pages/AIMetaPage';
-import { apiBase } from '../api';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import AIExecutionListModal from './AIExecutionListModal';
 import AIExecutionRunModal from './AIExecutionRunModal';
+import { useGetAiMetaTypesQuery, usePutAiMetaMutation } from '../graphql/generated';
+import { TEXT_MODELS, IMAGE_MODELS, IMAGE_SIZES, VISION_MODELS } from '../types';
 
 export interface AIMetaModalProps {
   open: boolean;
-  token?: string;
   onClose: () => void;
   onSaved?: (uid: string) => void;
   meta?: {
@@ -31,12 +32,18 @@ export interface AIMetaModalProps {
     desc?: string;
     prompt?: string;
     metaType?: string;
+    inUse?: boolean;
+    model?: string;
+    temperature?: number;
+    maxTokens?: number;
+    size?: string;
+    createdAt?: number;
+    updatedAt?: number;
   } | null;
 }
 
 const AIMetaModal: React.FC<AIMetaModalProps> = ({
   open,
-  token,
   onClose,
   onSaved,
   meta,
@@ -45,13 +52,46 @@ const AIMetaModal: React.FC<AIMetaModalProps> = ({
   const [name, setName] = useState('');
   const [desc, setDesc] = useState('');
   const [prompt, setPrompt] = useState('');
-  const [metaType, setMetaType] = useState<AIRequestType | ''>('');
+  const [metaType, setMetaType] = useState<string>('');
+  const [model, setModel] = useState<string>('');
+  const [temperature, setTemperature] = useState<number>(0.7);
+  const [maxTokens, setMaxTokens] = useState<number>(1000);
+  const [size, setSize] = useState<string>('1024x1024');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [executionListOpen, setExecutionListOpen] = useState(false);
   const [executionRunOpen, setExecutionRunOpen] = useState(false);
+  const promptInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const canSubmit = Boolean(name.trim()) && Boolean(desc.trim()) && Boolean(prompt.trim()) && Boolean(metaType);
+  // Fetch AI meta types using Apollo hook
+  const { data: metaTypesData, loading: metaTypesLoading } = useGetAiMetaTypesQuery();
+  const metaTypesMap = metaTypesData?.aiMetaTypes?.nodes
+    ?.filter(node => node && '__typename' in node && node.__typename === 'AiMetaType')
+    .reduce((acc, node) => {
+      if (node && '__typename' in node && node.__typename === 'AiMetaType') {
+        acc[node.type] = {
+          inputFields: node.inputFields || [],
+          outputFields: node.outputFields || [],
+          hasInputImage: node.hasInputImage,
+          hasOutputImage: node.hasOutputImage,
+        };
+      }
+      return acc;
+    }, {} as Record<string, { inputFields: string[]; outputFields: string[]; hasInputImage: boolean; hasOutputImage: boolean }>) || {};
+
+  const metaTypes = Object.keys(metaTypesMap);
+
+  // Determine if current metaType is for image generation or vision input
+  const hasInputImage = metaType && metaTypesMap[metaType]?.hasInputImage;
+  const hasOutputImage = metaType && metaTypesMap[metaType]?.hasOutputImage;
+  const availableModels = hasInputImage
+    ? VISION_MODELS
+    : (hasOutputImage ? IMAGE_MODELS : TEXT_MODELS);
+
+  // Apollo mutation hook
+  const [putAiMetaMutation] = usePutAiMetaMutation();
+
+  const canSubmit = Boolean(name.trim()) && Boolean(desc.trim()) && Boolean(prompt.trim()) && Boolean(metaType) && Boolean(model);
 
   useEffect(() => {
     if (!open) {
@@ -59,6 +99,10 @@ const AIMetaModal: React.FC<AIMetaModalProps> = ({
       setDesc('');
       setPrompt('');
       setMetaType('');
+      setModel('');
+      setTemperature(0.7);
+      setMaxTokens(1000);
+      setSize('1024x1024');
       setSubmitting(false);
       setError(null);
       return;
@@ -68,63 +112,82 @@ const AIMetaModal: React.FC<AIMetaModalProps> = ({
       setName(meta.name ?? '');
       setDesc(meta.desc ?? '');
       setPrompt(meta.prompt ?? '');
-      setMetaType((meta.metaType as AIRequestType) ?? '');
+      setMetaType(meta.metaType ?? '');
+      setModel(meta.model ?? '');
+      setTemperature(meta.temperature ?? 0.7);
+      setMaxTokens(meta.maxTokens ?? 1000);
+      setSize(meta.size ?? '1024x1024');
     }
   }, [open, isEditMode, meta]);
+
+  // Reset model when metaType changes (only in create mode)
+  useEffect(() => {
+    if (metaType && !isEditMode) {
+      const hasInput = metaTypesMap[metaType]?.hasInputImage;
+      const hasOutput = metaTypesMap[metaType]?.hasOutputImage;
+      const newAvailableModels = hasInput
+        ? VISION_MODELS
+        : (hasOutput ? IMAGE_MODELS : TEXT_MODELS);
+      if (newAvailableModels.length > 0) {
+        setModel(newAvailableModels[0].value);
+      }
+    }
+  }, [metaType, isEditMode, metaTypesMap]);
 
   const handleClose = () => {
     if (submitting) return;
     onClose();
   };
 
+  const handleParamChipClick = (param: string) => {
+    const textarea = promptInputRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    const before = text.substring(0, start);
+    const after = text.substring(end);
+    const newText = before + `{{${param}}}` + after;
+
+    setPrompt(newText);
+
+    // 커서를 삽입된 텍스트 뒤로 이동
+    setTimeout(() => {
+      textarea.focus();
+      const newCursorPos = start + param.length + 4; // {{}}의 길이 4를 더함
+      textarea.setSelectionRange(newCursorPos, newCursorPos);
+    }, 0);
+  };
+
+  // Get current parameters based on selected metaType
+  const currentParams = metaType && metaTypesMap[metaType]
+    ? [...metaTypesMap[metaType].inputFields, ...metaTypesMap[metaType].outputFields]
+    : [];
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!canSubmit || !metaType || !token) return;
+    if (!canSubmit || !metaType || !model) return;
 
     setSubmitting(true);
     setError(null);
 
     try {
-      const mutation = `
-        mutation PutAiMeta($input: AiMetaInput!) {
-          putAiMeta(input: $input) {
-            ok
-            uid
-            msg
-          }
-        }
-      `;
-
-      const variables = {
-        input: {
-          uid: isEditMode ? meta?.uid : undefined,
-          name: name.trim(),
-          desc: desc.trim(),
-          prompt: prompt.trim(),
-          metaType: metaType,
+      const result = await putAiMetaMutation({
+        variables: {
+          input: {
+            uid: isEditMode ? meta?.uid : undefined,
+            name: name.trim(),
+            desc: desc.trim(),
+            prompt: prompt.trim(),
+            metaType: metaType,
+            model: model,
+            temperature: temperature,
+            maxTokens: maxTokens,
+            size: size,
+          },
         },
-      };
-
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      };
-
-      const res = await fetch(`${apiBase}/admgql`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({
-          query: mutation,
-          variables,
-        }),
       });
-
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || '요청 실패');
-      }
-
-      const result = await res.json();
 
       if (result.errors) {
         throw new Error(result.errors[0]?.message || 'GraphQL 오류 발생');
@@ -155,8 +218,8 @@ const AIMetaModal: React.FC<AIMetaModalProps> = ({
       open={open}
       onClose={handleClose}
       fullWidth
-      maxWidth="md"
-      PaperProps={{ sx: { borderRadius: 3 } }}
+      maxWidth="xl"
+      PaperProps={{ sx: { xs: { borderRadius: 0 }, sm: { borderRadius: 0 }, md: { borderRadius: 3 }, lg: { borderRadius: 3 }, xl: { borderRadius: 3 } } }}
     >
       <DialogTitle sx={{ fontWeight: 800 }}>
         {isEditMode ? 'AI 메타 수정' : 'AI 메타 생성'}
@@ -176,13 +239,14 @@ const AIMetaModal: React.FC<AIMetaModalProps> = ({
             <Select
               value={metaType}
               label="메타 타입"
-              onChange={(e) => setMetaType(e.target.value as AIRequestType)}
-              disabled={submitting || isEditMode}
+              onChange={(e) => setMetaType(e.target.value)}
+              disabled={submitting || isEditMode || metaTypesLoading}
             >
-              <MenuItem value="Saju">Saju</MenuItem>
-              <MenuItem value="FaceFeature">FaceFeature</MenuItem>
-              <MenuItem value="Phy">Phy</MenuItem>
-              <MenuItem value="IdealPartnerImage">IdealPartnerImage</MenuItem>
+              {metaTypes.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
 
@@ -208,6 +272,105 @@ const AIMetaModal: React.FC<AIMetaModalProps> = ({
             disabled={submitting}
           />
 
+          <FormControl required fullWidth>
+            <InputLabel>모델</InputLabel>
+            <Select
+              value={model}
+              label="모델"
+              onChange={(e) => setModel(e.target.value)}
+              disabled={submitting || !metaType}
+            >
+              {/* Show current model if it's not in the available list (edit mode) */}
+              {isEditMode && model && !availableModels.some(m => m.value === model) && (
+                <MenuItem value={model}>
+                  {model} (현재 설정된 모델)
+                </MenuItem>
+              )}
+              {availableModels.map((modelOption) => (
+                <MenuItem key={modelOption.value} value={modelOption.value}>
+                  {modelOption.label}
+                </MenuItem>
+              ))}
+            </Select>
+            {metaType && (
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                {hasInputImage
+                  ? '📷 이미지 입력이 필요한 타입으로 Vision 모델만 사용 가능합니다.'
+                  : hasOutputImage
+                  ? '🎨 이미지 생성 타입으로 Image 모델만 사용 가능합니다.'
+                  : '📝 텍스트 처리 타입으로 Text 모델만 사용 가능합니다.'}
+              </Typography>
+            )}
+          </FormControl>
+
+          {!hasOutputImage ? (
+            <Stack direction="row" spacing={2}>
+              <TextField
+                label="Temperature"
+                type="number"
+                value={temperature}
+                onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                slotProps={{ htmlInput: { min: 0, max: 2, step: 0.1 } }}
+                fullWidth
+                disabled={submitting}
+                helperText="0.0 ~ 2.0 (낮을수록 일관적, 높을수록 창의적)"
+              />
+              <TextField
+                label="Max Tokens"
+                type="number"
+                value={maxTokens}
+                onChange={(e) => setMaxTokens(parseInt(e.target.value))}
+                slotProps={{ htmlInput: { min: 1, max: 4096, step: 1 } }}
+                fullWidth
+                disabled={submitting}
+                helperText="응답의 최대 토큰 수"
+              />
+            </Stack>
+          ) : (
+            <FormControl fullWidth>
+              <InputLabel>이미지 크기</InputLabel>
+              <Select
+                value={size}
+                label="이미지 크기"
+                onChange={(e) => setSize(e.target.value)}
+                disabled={submitting}
+              >
+                {IMAGE_SIZES.map((sizeOption) => (
+                  <MenuItem key={sizeOption.value} value={sizeOption.value}>
+                    {sizeOption.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+
+          {currentParams.length > 0 && (
+            <Box>
+              <Typography variant="body2" sx={{ mb: 1, fontWeight: 600, color: 'text.secondary' }}>
+                사용 가능한 파라미터 (클릭하여 프롬프트에 추가)
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                {currentParams.map((param) => (
+                  <Chip
+                    key={param}
+                    label={param}
+                    onClick={() => handleParamChipClick(param)}
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                    sx={{
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: 'primary.light',
+                        color: 'primary.contrastText',
+                      },
+                    }}
+                  />
+                ))}
+              </Box>
+            </Box>
+          )}
+
           <TextField
             label="프롬프트"
             value={prompt}
@@ -216,9 +379,10 @@ const AIMetaModal: React.FC<AIMetaModalProps> = ({
             required
             fullWidth
             multiline
-            rows={8}
+            rows={15}
             disabled={submitting}
-            helperText="AI 요청 시 사용될 프롬프트 템플릿을 입력하세요"
+            helperText="AI 요청 시 사용될 프롬프트 템플릿을 입력하세요. 파라미터는 {{파라미터명}} 형식으로 사용됩니다."
+            inputRef={promptInputRef}
           />
         </Stack>
       </DialogContent>
@@ -246,8 +410,13 @@ const AIMetaModal: React.FC<AIMetaModalProps> = ({
           )}
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button onClick={() => {
+            // TODO Develop this feature 
+            // 생성시에는 본 버튼 미노출, 수정시에는 본 버튼 출력
+            // 본 버튼 클릭시에는 새로운 메타로 현재 폼의 내용을 저장한뒤, 새로운 메타 폼을 열어준다
+          }} variant='outlined'  color="secondary" disabled={submitting}>새로운 메타로 생성</Button>
           <Button onClick={handleClose} color="inherit" disabled={submitting}>
-            취소
+            닫기
           </Button>
           <Button
             variant="contained"
@@ -262,16 +431,20 @@ const AIMetaModal: React.FC<AIMetaModalProps> = ({
     </Dialog>
     <AIExecutionListModal
       open={executionListOpen}
-      token={token}
       metaUid={meta?.uid}
       onClose={() => setExecutionListOpen(false)}
     />
     <AIExecutionRunModal
       open={executionRunOpen}
-      token={token}
       metaUid={meta?.uid}
       metaType={meta?.metaType}
-      meta={meta ? { prompt: meta.prompt } : undefined}
+      meta={meta ? {
+        prompt: meta.prompt,
+        model: meta.model,
+        temperature: meta.temperature,
+        maxTokens: meta.maxTokens,
+        size: meta.size,
+      } : undefined}
       onClose={() => setExecutionRunOpen(false)}
     /></>
   );

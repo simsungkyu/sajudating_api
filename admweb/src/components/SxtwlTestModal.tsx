@@ -1,5 +1,4 @@
 // Dialog component for testing sxtwl API
-import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
 import {
   Alert,
   Button,
@@ -11,38 +10,15 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { apiBase } from '../api';
+import { useEffect, useState, type FormEvent } from 'react';
 import { usePaljaQuery } from '../graphql/generated';
 
 export interface SxtwlTestModalProps {
   open: boolean;
   onClose: () => void;
-  token?: string;
 }
 
-const SxtwlTestModal: React.FC<SxtwlTestModalProps> = ({ open, onClose, token }) => {
-  const apolloClient = useMemo(() => {
-    return new ApolloClient({
-      link: new HttpLink({
-        uri: `${apiBase}/admgql`,
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      }),
-      cache: new InMemoryCache(),
-    });
-  }, [token]);
-
-  return (
-    <ApolloProvider client={apolloClient}>
-      <SxtwlTestModalInner open={open} onClose={onClose} />
-    </ApolloProvider>
-  );
-};
-
-const SxtwlTestModalInner: React.FC<Pick<SxtwlTestModalProps, 'open' | 'onClose'>> = ({
-  open,
-  onClose,
-}) => {
+const SxtwlTestModal: React.FC<SxtwlTestModalProps> = ({ open, onClose }) => {
   const [birth, setBirth] = useState('199001011230');
   const [timezone, setTimezone] = useState('Asia/Seoul');
   const [queryVars, setQueryVars] = useState<{ birthdate: string; timezone: string } | null>(null);

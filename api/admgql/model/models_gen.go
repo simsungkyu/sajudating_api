@@ -4,81 +4,134 @@ package model
 
 type Node interface {
 	IsNode()
-	GetID() string
+	GetID() *string
 }
 
 type AiExcutionInput struct {
-	MetaUID     string   `json:"metaUid"`
-	MetaType    string   `json:"metaType"`
-	Prompt      string   `json:"prompt"`
-	Params      []string `json:"params"`
-	Model       string   `json:"model"`
-	Temperature float64  `json:"temperature"`
-	MaxTokens   int      `json:"maxTokens"`
-	Size        string   `json:"size"`
+	MetaUID          string     `json:"metaUid"`
+	MetaType         string     `json:"metaType"`
+	PromptType       string     `json:"promptType"`
+	Prompt           string     `json:"prompt"`
+	ValuedPrompt     string     `json:"valued_prompt"`
+	Inputkvs         []*KVInput `json:"inputkvs"`
+	Outputkvs        []*KVInput `json:"outputkvs"`
+	Model            string     `json:"model"`
+	Temperature      float64    `json:"temperature"`
+	MaxTokens        int        `json:"maxTokens"`
+	Size             string     `json:"size"`
+	InputImageBase64 *string    `json:"inputImageBase64,omitempty"`
 }
 
 type AiExecution struct {
-	ID          string   `json:"id"`
-	UID         string   `json:"uid"`
-	CreatedAt   int64    `json:"createdAt"`
-	UpdatedAt   int64    `json:"updatedAt"`
-	MetaUID     string   `json:"metaUid"`
-	MetaType    string   `json:"metaType"`
-	Status      string   `json:"status"`
-	Prompt      string   `json:"prompt"`
-	Params      []string `json:"params"`
-	Model       string   `json:"model"`
-	Temperature float64  `json:"temperature"`
-	MaxTokens   int      `json:"maxTokens"`
-	Size        string   `json:"size"`
-	OutputText  *string  `json:"outputText,omitempty"`
-	OutputImage *string  `json:"outputImage,omitempty"`
+	ID                *string `json:"id,omitempty"`
+	UID               string  `json:"uid"`
+	CreatedAt         int64   `json:"createdAt"`
+	UpdatedAt         int64   `json:"updatedAt"`
+	MetaUID           string  `json:"metaUid"`
+	MetaType          string  `json:"metaType"`
+	Status            string  `json:"status"`
+	ErrorMessage      string  `json:"errorMessage"`
+	Prompt            string  `json:"prompt"`
+	ValuedPrompt      string  `json:"valued_prompt"`
+	Inputkvs          []*Kv   `json:"inputkvs"`
+	Outputkvs         []*Kv   `json:"outputkvs"`
+	Model             string  `json:"model"`
+	Temperature       float64 `json:"temperature"`
+	MaxTokens         int     `json:"maxTokens"`
+	Size              string  `json:"size"`
+	InputImageBase64  *string `json:"inputImageBase64,omitempty"`
+	ElapsedTime       int     `json:"elapsedTime"`
+	OutputText        *string `json:"outputText,omitempty"`
+	OutputImageBase64 *string `json:"outputImageBase64,omitempty"`
+	InputTokens       int     `json:"inputTokens"`
+	OutputTokens      int     `json:"outputTokens"`
+	TotalTokens       int     `json:"totalTokens"`
+	RunBy             *string `json:"runBy,omitempty"`
+	RunSajuProfileUID *string `json:"runSajuProfileUid,omitempty"`
 }
 
-func (AiExecution) IsNode()            {}
-func (this AiExecution) GetID() string { return this.ID }
+func (AiExecution) IsNode()             {}
+func (this AiExecution) GetID() *string { return this.ID }
 
 type AiExecutionSearchInput struct {
-	Limit    int     `json:"limit"`
-	Offset   int     `json:"offset"`
-	MetaType *string `json:"metaType,omitempty"`
-	MetaUID  *string `json:"metaUid,omitempty"`
+	Limit             int     `json:"limit"`
+	Offset            int     `json:"offset"`
+	MetaType          *string `json:"metaType,omitempty"`
+	MetaUID           *string `json:"metaUid,omitempty"`
+	RunBy             *string `json:"runBy,omitempty"`
+	RunSajuProfileUID *string `json:"runSajuProfileUid,omitempty"`
 }
 
 type AiMeta struct {
-	ID        string `json:"id"`
-	UID       string `json:"uid"`
-	CreatedAt int64  `json:"createdAt"`
-	UpdatedAt int64  `json:"updatedAt"`
-	MetaType  string `json:"metaType"`
-	Name      string `json:"name"`
-	Desc      string `json:"desc"`
-	Prompt    string `json:"prompt"`
+	ID          *string `json:"id,omitempty"`
+	UID         string  `json:"uid"`
+	CreatedAt   int64   `json:"createdAt"`
+	UpdatedAt   int64   `json:"updatedAt"`
+	MetaType    string  `json:"metaType"`
+	Name        string  `json:"name"`
+	Desc        string  `json:"desc"`
+	Prompt      string  `json:"prompt"`
+	Model       string  `json:"model"`
+	Temperature float64 `json:"temperature"`
+	MaxTokens   int     `json:"maxTokens"`
+	Size        string  `json:"size"`
+	InUse       bool    `json:"inUse"`
 }
 
-func (AiMeta) IsNode()            {}
-func (this AiMeta) GetID() string { return this.ID }
+func (AiMeta) IsNode()             {}
+func (this AiMeta) GetID() *string { return this.ID }
 
 type AiMetaInput struct {
-	UID      *string `json:"uid,omitempty"`
-	Name     string  `json:"name"`
-	Desc     string  `json:"desc"`
-	Prompt   string  `json:"prompt"`
-	MetaType *string `json:"metaType,omitempty"`
+	UID         *string `json:"uid,omitempty"`
+	Name        string  `json:"name"`
+	Desc        string  `json:"desc"`
+	Prompt      string  `json:"prompt"`
+	MetaType    *string `json:"metaType,omitempty"`
+	Model       string  `json:"model"`
+	Temperature float64 `json:"temperature"`
+	MaxTokens   int     `json:"maxTokens"`
+	Size        string  `json:"size"`
+}
+
+type AiMetaKVsInput struct {
+	Type string     `json:"type"`
+	Kvs  []*KVInput `json:"kvs"`
 }
 
 type AiMetaSearchInput struct {
 	Limit    int     `json:"limit"`
 	Offset   int     `json:"offset"`
 	MetaType *string `json:"metaType,omitempty"`
+	InUse    *bool   `json:"inUse,omitempty"`
+}
+
+type AiMetaType struct {
+	ID             string   `json:"id"`
+	Type           string   `json:"type"`
+	InputFields    []string `json:"inputFields"`
+	OutputFields   []string `json:"outputFields"`
+	HasInputImage  bool     `json:"hasInputImage"`
+	HasOutputImage bool     `json:"hasOutputImage"`
+}
+
+func (AiMetaType) IsNode()             {}
+func (this AiMetaType) GetID() *string { return &this.ID }
+
+type Kv struct {
+	K string `json:"k"`
+	V string `json:"v"`
+}
+
+type KVInput struct {
+	K string `json:"k"`
+	V string `json:"v"`
 }
 
 type Mutation struct {
 }
 
 type PhyIdealPartner struct {
-	ID               string  `json:"id"`
+	ID               *string `json:"id,omitempty"`
 	UID              string  `json:"uid"`
 	CreatedAt        int64   `json:"createdAt"`
 	UpdatedAt        int64   `json:"updatedAt"`
@@ -94,8 +147,8 @@ type PhyIdealPartner struct {
 	SimilarityScore  float64 `json:"similarityScore"`
 }
 
-func (PhyIdealPartner) IsNode()            {}
-func (this PhyIdealPartner) GetID() string { return this.ID }
+func (PhyIdealPartner) IsNode()             {}
+func (this PhyIdealPartner) GetID() *string { return this.ID }
 
 type PhyIdealPartnerCreateInput struct {
 	Summary          string  `json:"summary"`
@@ -119,7 +172,7 @@ type Query struct {
 }
 
 type SajuProfile struct {
-	ID                      string  `json:"id"`
+	ID                      *string `json:"id,omitempty"`
 	UID                     string  `json:"uid"`
 	CreatedAt               int64   `json:"createdAt"`
 	UpdatedAt               int64   `json:"updatedAt"`
@@ -152,8 +205,8 @@ type SajuProfile struct {
 	PhyPartnerSimilarity    float64 `json:"phyPartnerSimilarity"`
 }
 
-func (SajuProfile) IsNode()            {}
-func (this SajuProfile) GetID() string { return this.ID }
+func (SajuProfile) IsNode()             {}
+func (this SajuProfile) GetID() *string { return this.ID }
 
 type SajuProfileCreateInput struct {
 	Image     string `json:"image"`
@@ -169,13 +222,16 @@ type SajuProfileSearchInput struct {
 }
 
 type SimpleResult struct {
-	Ok     bool    `json:"ok"`
-	UID    *string `json:"uid,omitempty"`
-	Msg    *string `json:"msg,omitempty"`
-	Value  *string `json:"value,omitempty"`
-	Node   Node    `json:"node,omitempty"`
-	Nodes  []Node  `json:"nodes,omitempty"`
-	Total  *int    `json:"total,omitempty"`
-	Limit  *int    `json:"limit,omitempty"`
-	Offset *int    `json:"offset,omitempty"`
+	Ok          bool    `json:"ok"`
+	UID         *string `json:"uid,omitempty"`
+	Err         *string `json:"err,omitempty"`
+	Msg         *string `json:"msg,omitempty"`
+	Value       *string `json:"value,omitempty"`
+	Base64Value *string `json:"base64Value,omitempty"`
+	Node        Node    `json:"node,omitempty"`
+	Nodes       []Node  `json:"nodes,omitempty"`
+	Kvs         []*Kv   `json:"kvs,omitempty"`
+	Total       *int    `json:"total,omitempty"`
+	Limit       *int    `json:"limit,omitempty"`
+	Offset      *int    `json:"offset,omitempty"`
 }
