@@ -34,13 +34,16 @@ func (r *PhyIdealPartnerRepository) Create(partner *entity.PhyIdealPartner) erro
 	return err
 }
 
-func (r *PhyIdealPartnerRepository) FindWithPagination(limit, offset int, sex *string) ([]entity.PhyIdealPartner, int64, error) {
+func (r *PhyIdealPartnerRepository) FindWithPagination(limit, offset int, sex *string, hasImage *bool) ([]entity.PhyIdealPartner, int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	filter := bson.M{}
 	if sex != nil && *sex != "" {
 		filter["sex"] = *sex
+	}
+	if hasImage != nil {
+		filter["has_image"] = *hasImage
 	}
 	total, err := r.collection.CountDocuments(ctx, filter)
 	if err != nil {

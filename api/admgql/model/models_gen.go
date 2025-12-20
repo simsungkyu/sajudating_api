@@ -145,6 +145,7 @@ type PhyIdealPartner struct {
 	Age              int     `json:"age"`
 	Image            string  `json:"image"`
 	SimilarityScore  float64 `json:"similarityScore"`
+	HasImage         bool    `json:"hasImage"`
 }
 
 func (PhyIdealPartner) IsNode()             {}
@@ -163,9 +164,10 @@ type PhyIdealPartnerCreateInput struct {
 }
 
 type PhyIdealPartnerSearchInput struct {
-	Limit  int     `json:"limit"`
-	Offset int     `json:"offset"`
-	Sex    *string `json:"sex,omitempty"`
+	Limit    int     `json:"limit"`
+	Offset   int     `json:"offset"`
+	Sex      *string `json:"sex,omitempty"`
+	HasImage *bool   `json:"hasImage,omitempty"`
 }
 
 type Query struct {

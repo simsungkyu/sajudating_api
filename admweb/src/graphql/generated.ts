@@ -203,6 +203,7 @@ export type PhyIdealPartner = Node & {
   featureFaceShape: Scalars['String']['output'];
   featureMouth: Scalars['String']['output'];
   featureNose: Scalars['String']['output'];
+  hasImage: Scalars['Boolean']['output'];
   id?: Maybe<Scalars['ID']['output']>;
   image: Scalars['String']['output'];
   personalityMatch: Scalars['String']['output'];
@@ -226,6 +227,7 @@ export type PhyIdealPartnerCreateInput = {
 };
 
 export type PhyIdealPartnerSearchInput = {
+  hasImage?: InputMaybe<Scalars['Boolean']['input']>;
   limit: Scalars['Int']['input'];
   offset: Scalars['Int']['input'];
   sex?: InputMaybe<Scalars['String']['input']>;
@@ -371,7 +373,7 @@ export type SimpleResult = {
 
 export type SajuProfileBasicFragment = { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number };
 
-export type PhyIdealPartnerBasicFragment = { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number };
+export type PhyIdealPartnerBasicFragment = { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number, hasImage: boolean };
 
 export type SajuProfilesQueryVariables = Exact<{
   input: SajuProfileSearchInput;
@@ -410,7 +412,7 @@ export type SajuProfileSimilarPartnersQuery = { __typename?: 'Query', sajuProfil
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
-      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number }
+      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number, hasImage: boolean }
       | { __typename?: 'SajuProfile' }
     > | null } };
 
@@ -423,7 +425,7 @@ export type PhyIdealPartnersQuery = { __typename?: 'Query', phyIdealPartners: { 
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
-      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number }
+      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number, hasImage: boolean }
       | { __typename?: 'SajuProfile' }
     > | null } };
 
@@ -436,7 +438,7 @@ export type PhyIdealPartnerQuery = { __typename?: 'Query', phyIdealPartner: { __
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
-      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number }
+      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number, hasImage: boolean }
       | { __typename?: 'SajuProfile' }
      | null } };
 
@@ -584,6 +586,7 @@ export const PhyIdealPartnerBasicFragmentDoc = gql`
   sex
   age
   similarityScore
+  hasImage
 }
     `;
 export const AiMetaBasicFragmentDoc = gql`

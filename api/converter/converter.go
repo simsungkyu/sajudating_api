@@ -129,5 +129,6 @@ func PhyIdealPartnerToModel(partner *entity.PhyIdealPartner) *model.PhyIdealPart
 		Sex:              partner.Sex,
 		Age:              partner.Age,
 		SimilarityScore:  partner.SimilarityScore,
+		HasImage:         partner.HasImage,
 	}
 }

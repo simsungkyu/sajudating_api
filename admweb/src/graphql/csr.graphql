@@ -45,6 +45,7 @@ fragment phyIdealPartnerBasic on PhyIdealPartner {
   age
   # image
   similarityScore
+  hasImage
 }
 
 query sajuProfiles($input: SajuProfileSearchInput!) {

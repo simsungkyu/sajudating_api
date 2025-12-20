@@ -120,6 +120,7 @@ type ComplexityRoot struct {
 		FeatureFaceShape func(childComplexity int) int
 		FeatureMouth     func(childComplexity int) int
 		FeatureNose      func(childComplexity int) int
+		HasImage         func(childComplexity int) int
 		ID               func(childComplexity int) int
 		Image            func(childComplexity int) int
 		PersonalityMatch func(childComplexity int) int
@@ -685,6 +686,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.PhyIdealPartner.FeatureNose(childComplexity), true
+
+	case "PhyIdealPartner.hasImage":
+		if e.complexity.PhyIdealPartner.HasImage == nil {
+			break
+		}
+
+		return e.complexity.PhyIdealPartner.HasImage(childComplexity), true
 
 	case "PhyIdealPartner.id":
 		if e.complexity.PhyIdealPartner.ID == nil {
@@ -1433,6 +1441,7 @@ type PhyIdealPartner implements Node {
 
   # 유사도
   similarityScore: Float!
+  hasImage: Boolean!
 }
 
 input PhyIdealPartnerCreateInput {
@@ -1451,6 +1460,7 @@ input PhyIdealPartnerSearchInput {
   limit: Int!
   offset: Int!
   sex: String
+  hasImage: Boolean
 }
 
 # ai meta

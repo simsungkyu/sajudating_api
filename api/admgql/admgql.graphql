@@ -134,6 +134,7 @@ type PhyIdealPartner implements Node {
 
   # 유사도
   similarityScore: Float!
+  hasImage: Boolean!
 }
 
 input PhyIdealPartnerCreateInput {
@@ -152,6 +153,7 @@ input PhyIdealPartnerSearchInput {
   limit: Int!
   offset: Int!
   sex: String
+  hasImage: Boolean
 }
 
 # ai meta

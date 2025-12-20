@@ -109,6 +109,7 @@ const PhyPartnersPage = () => {
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedPartner, setSelectedPartner] = useState<PhyPartnerSummary | null>(null);
   const [sex, setSex] = useState<'all' | 'male' | 'female'>('all');
+  const [hasImage, setHasImage] = useState<'all' | 'true' | 'false'>('true');
   const [pageSize, setPageSize] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
 
@@ -118,6 +119,7 @@ const PhyPartnersPage = () => {
         limit: pageSize,
         offset: page * pageSize,
         sex: sex === 'all' ? null : sex,
+        hasImage: hasImage === 'all' ? null : (hasImage === 'true' ? true : false),
       },
     },
     skip: !token,
@@ -206,6 +208,24 @@ const PhyPartnersPage = () => {
                   <MenuItem value="all">전체</MenuItem>
                   <MenuItem value="male">남자</MenuItem>
                   <MenuItem value="female">여자</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl size="small" sx={{ minWidth: 120 }}>
+                <InputLabel id="phy-partners-hasimage-label">사진</InputLabel>
+                <Select
+                  labelId="phy-partners-hasimage-label"
+                  label="사진"
+                  value={hasImage}
+                  onChange={(event) => {
+                    const nextValue = event.target.value as 'all' | 'true' | 'false';
+                    setHasImage(nextValue);
+                    setPage(0);
+                  }}
+                  disabled={loading}
+                >
+                  <MenuItem value="all">전체</MenuItem>
+                  <MenuItem value="true">있음</MenuItem>
+                  <MenuItem value="false">없음</MenuItem>
                 </Select>
               </FormControl>
               <FormControl size="small" sx={{ minWidth: 120 }}>

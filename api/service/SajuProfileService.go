@@ -132,6 +132,7 @@ func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Re
 		faceFeatures, phyAnalysisResponse, phyPartnerUid, err := s.RequestPhy(uid, base64Image, profile.Sex, profile.Birthdate)
 		if err != nil {
 			log.Printf("[CreateSajuProfile] Failed to request phy analysis: %v", err)
+			s.updateStatus(uid, utils.StrPtr("error"), nil, nil, nil)
 			return
 		}
 		sajuProfile, err := dao.NewSajuProfileRepository().FindByUID(uid)
@@ -533,6 +534,9 @@ func (s *SajuProfileService) GetSajuProfilePartnerResult(w http.ResponseWriter, 
 }
 
 // ! internal methods
+func (s *SajuProfileService) updateStatus(uid string, status, sajuStatus, phyStatus, partnerStatus *string) error {
+	return s.sajuProfileRepo.UpdateStatus(uid, status, sajuStatus, phyStatus, partnerStatus)
+}
 
 func (s *SajuProfileService) updateSajuSummary(uid string, summary string, content string, nickname string, partner_tips string) error {
 	return s.sajuProfileRepo.UpdateSajuSummary(uid, summary, content, nickname, partner_tips)

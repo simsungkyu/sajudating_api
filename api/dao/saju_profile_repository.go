@@ -147,6 +147,38 @@ func (r *SajuProfileRepository) Update(profile *entity.SajuProfile) error {
 	_, err := r.collection.UpdateOne(ctx, filter, update)
 	return err
 }
+
+func (r *SajuProfileRepository) UpdateStatus(uid string, status, sajuStatus, phyStatus, partnerStatus *string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"uid": uid}
+	couldUpdate := false
+	updObj := bson.M{}
+	if status != nil {
+		updObj["status"] = *status
+		couldUpdate = true
+	}
+	if sajuStatus != nil {
+		updObj["saju_status"] = *sajuStatus
+		couldUpdate = true
+	}
+	if phyStatus != nil {
+		updObj["phy_status"] = *phyStatus
+		couldUpdate = true
+	}
+	if partnerStatus != nil {
+		updObj["partner_status"] = *partnerStatus
+		couldUpdate = true
+	}
+	if !couldUpdate { // 업데이트 할게 없으면 리턴
+		return nil
+	}
+	updObj["updated_at"] = time.Now().UnixMilli()
+	update := bson.M{"$set": updObj}
+	_, err := r.collection.UpdateOne(ctx, filter, update)
+	return err
+}
 func (r *SajuProfileRepository) UpdateSajuSummary(uid, summary, content, nickname, partner_tips string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

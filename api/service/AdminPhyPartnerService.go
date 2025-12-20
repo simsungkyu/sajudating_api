@@ -173,7 +173,7 @@ func (s *AdminPhyPartnerService) DeletePhyPartner(w http.ResponseWriter, r *http
 }
 
 func (s *AdminPhyPartnerService) GetPhyPartners(ctx context.Context, input model.PhyIdealPartnerSearchInput) (*model.SimpleResult, error) {
-	partners, total, err := s.phyPartnerRepo.FindWithPagination(input.Limit, input.Offset, input.Sex)
+	partners, total, err := s.phyPartnerRepo.FindWithPagination(input.Limit, input.Offset, input.Sex, input.HasImage)
 	if err != nil {
 		return &model.SimpleResult{
 			Ok:  false,

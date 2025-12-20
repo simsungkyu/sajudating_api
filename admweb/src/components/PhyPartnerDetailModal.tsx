@@ -149,13 +149,14 @@ const PhyPartnerDetailModal = ({ open, partner, onClose, onEdit }: PhyPartnerDet
           <Typography color="text.secondary">표시할 파트너가 없습니다.</Typography>
         ) : (
           <Stack spacing={2}>
-            <Stack direction="row" spacing={2} alignItems="flex-start">
+            <Stack direction="row" spacing={3} alignItems="flex-start">
               <Stack
                 sx={{
                   position: 'relative',
-                  width: 96,
-                  height: 96,
-                  borderRadius: 12,
+                  width: 300,
+                  height: 300,
+                  flexShrink: 0,
+                  borderRadius: 3,
                   border: '1px solid rgba(0,0,0,0.12)',
                   bgcolor: 'background.default',
                   overflow: 'hidden',
@@ -163,7 +164,7 @@ const PhyPartnerDetailModal = ({ open, partner, onClose, onEdit }: PhyPartnerDet
                 alignItems="center"
                 justifyContent="center"
               >
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body1" color="text.secondary">
                   No Image
                 </Typography>
                 {imageSrc ? (
@@ -175,7 +176,7 @@ const PhyPartnerDetailModal = ({ open, partner, onClose, onEdit }: PhyPartnerDet
                       inset: 0,
                       width: '100%',
                       height: '100%',
-                      objectFit: 'cover',
+                      objectFit: 'contain',
                       display: 'block',
                     }}
                     loading="lazy"
@@ -186,13 +187,15 @@ const PhyPartnerDetailModal = ({ open, partner, onClose, onEdit }: PhyPartnerDet
                 ) : null}
               </Stack>
 
-              <Stack spacing={1} flex={1} minWidth={0}>
-                <Typography variant="body2" color="text.secondary">
-                  UID
-                </Typography>
-                <Typography variant="body1" fontFamily="monospace" sx={{ wordBreak: 'break-all' }}>
-                  {displayPartner.uid}
-                </Typography>
+              <Stack spacing={2} flex={1} minWidth={0}>
+                <Stack spacing={1}>
+                  <Typography variant="body2" color="text.secondary">
+                    UID
+                  </Typography>
+                  <Typography variant="body1" fontFamily="monospace" sx={{ wordBreak: 'break-all' }}>
+                    {displayPartner.uid}
+                  </Typography>
+                </Stack>
 
                 <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                   <Chip label={displayPartner.sex ?? '성별 미상'} size="small" variant="outlined" />

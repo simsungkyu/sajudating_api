@@ -2663,6 +2663,35 @@ func (ec *executionContext) fieldContext_PhyIdealPartner_similarityScore(_ conte
 	return fc, nil
 }
 
+func (ec *executionContext) _PhyIdealPartner_hasImage(ctx context.Context, field graphql.CollectedField, obj *model.PhyIdealPartner) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_PhyIdealPartner_hasImage,
+		func(ctx context.Context) (any, error) {
+			return obj.HasImage, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_PhyIdealPartner_hasImage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PhyIdealPartner",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_sajuProfiles(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -5275,7 +5304,7 @@ func (ec *executionContext) unmarshalInputPhyIdealPartnerSearchInput(ctx context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"limit", "offset", "sex"}
+	fieldsInOrder := [...]string{"limit", "offset", "sex", "hasImage"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5303,6 +5332,13 @@ func (ec *executionContext) unmarshalInputPhyIdealPartnerSearchInput(ctx context
 				return it, err
 			}
 			it.Sex = data
+		case "hasImage":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasImage"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.HasImage = data
 		}
 	}
 
@@ -5986,6 +6022,11 @@ func (ec *executionContext) _PhyIdealPartner(ctx context.Context, sel ast.Select
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
 		case "similarityScore":
 			out.Values[i] = ec._PhyIdealPartner_similarityScore(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "hasImage":
+			out.Values[i] = ec._PhyIdealPartner_hasImage(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
