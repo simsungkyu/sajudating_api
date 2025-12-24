@@ -86,6 +86,7 @@ func createIndexes() error {
 		"ai_executions",
 		"saju_profiles",
 		"phy_ideal_partners",
+		"saju_profile_logs",
 	}
 
 	// Create unique index on uid field for all collections

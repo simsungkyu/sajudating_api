@@ -18,12 +18,14 @@ import (
 )
 
 type AdminSajuProfileService struct {
-	sajuRepo *dao.SajuProfileRepository
+	sajuRepo           *dao.SajuProfileRepository
+	sajuProfileLogRepo *dao.SajuProfileLogRepository
 }
 
 func NewAdminSajuProfileService() *AdminSajuProfileService {
 	return &AdminSajuProfileService{
-		sajuRepo: dao.NewSajuProfileRepository(),
+		sajuRepo:           dao.NewSajuProfileRepository(),
+		sajuProfileLogRepo: dao.NewSajuProfileLogRepository(),
 	}
 }
 
@@ -213,4 +215,32 @@ func (s *AdminSajuProfileService) GetSajuProfileImage(ctx context.Context, uid s
 		return "", err
 	}
 	return base64.StdEncoding.EncodeToString(imageData), nil
+}
+
+// Load Saju Profile Logs
+func (s *AdminSajuProfileService) GetSajuProfileLogs(ctx context.Context, input model.SajuProfileLogSearchInput) (*model.SimpleResult, error) {
+	logs, total, err := s.sajuProfileLogRepo.FindWithPagination(input.Limit, input.Offset, input.SajuUID, input.Status)
+	if err != nil {
+		return &model.SimpleResult{
+			Ok:  false,
+			Msg: utils.StrPtr(fmt.Sprintf("Failed to retrieve saju profile logs: %v", err)),
+		}, nil
+	}
+	nodes := []model.Node{}
+	for _, log := range logs {
+		nodes = append(nodes, model.SajuProfileLog{
+			UID:       log.Uid,
+			CreatedAt: log.CreatedAt,
+			SajuUID:   log.SajuUid,
+			Status:    log.Status,
+			Text:      log.Text,
+		})
+	}
+	return &model.SimpleResult{
+		Ok:     true,
+		Nodes:  nodes,
+		Total:  utils.IntPtr(int(total)),
+		Limit:  utils.IntPtr(input.Limit),
+		Offset: utils.IntPtr(input.Offset),
+	}, nil
 }

@@ -144,6 +144,8 @@ type PhyIdealPartner struct {
 	Sex              string  `json:"sex"`
 	Age              int     `json:"age"`
 	Image            string  `json:"image"`
+	EmbeddingModel   string  `json:"embeddingModel"`
+	EmbeddingText    string  `json:"embeddingText"`
 	SimilarityScore  float64 `json:"similarityScore"`
 	HasImage         bool    `json:"hasImage"`
 }
@@ -194,6 +196,7 @@ type SajuProfile struct {
 	MyFeatureMouth          string  `json:"myFeatureMouth"`
 	MyFeatureFaceShape      string  `json:"myFeatureFaceShape"`
 	MyFeatureNotes          string  `json:"myFeatureNotes"`
+	PartnerEmbeddingText    string  `json:"partnerEmbeddingText"`
 	PartnerMatchTips        string  `json:"partnerMatchTips"`
 	PartnerSummary          string  `json:"partnerSummary"`
 	PartnerFeatureEyes      string  `json:"partnerFeatureEyes"`
@@ -214,6 +217,26 @@ type SajuProfileCreateInput struct {
 	Image     string `json:"image"`
 	Birthdate string `json:"birthdate"`
 	Sex       string `json:"sex"`
+}
+
+type SajuProfileLog struct {
+	ID        *string `json:"id,omitempty"`
+	UID       string  `json:"uid"`
+	CreatedAt int64   `json:"createdAt"`
+	UpdatedAt int64   `json:"updatedAt"`
+	SajuUID   string  `json:"sajuUid"`
+	Status    string  `json:"status"`
+	Text      string  `json:"text"`
+}
+
+func (SajuProfileLog) IsNode()             {}
+func (this SajuProfileLog) GetID() *string { return this.ID }
+
+type SajuProfileLogSearchInput struct {
+	Limit   int     `json:"limit"`
+	Offset  int     `json:"offset"`
+	SajuUID string  `json:"sajuUid"`
+	Status  *string `json:"status,omitempty"`
 }
 
 type SajuProfileSearchInput struct {

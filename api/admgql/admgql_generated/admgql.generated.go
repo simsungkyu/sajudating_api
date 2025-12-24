@@ -38,6 +38,7 @@ type QueryResolver interface {
 	SajuProfileSimilarPartners(ctx context.Context, uid string, limit int, offset int) (*model.SimpleResult, error)
 	PhyIdealPartners(ctx context.Context, input model.PhyIdealPartnerSearchInput) (*model.SimpleResult, error)
 	PhyIdealPartner(ctx context.Context, uid string) (*model.SimpleResult, error)
+	SajuProfileLogs(ctx context.Context, input model.SajuProfileLogSearchInput) (*model.SimpleResult, error)
 	AiMetas(ctx context.Context, input model.AiMetaSearchInput) (*model.SimpleResult, error)
 	AiMeta(ctx context.Context, uid string) (*model.SimpleResult, error)
 	AiMetaTypes(ctx context.Context) (*model.SimpleResult, error)
@@ -250,6 +251,17 @@ func (ec *executionContext) field_Query_phyIdealPartners_args(ctx context.Contex
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNPhyIdealPartnerSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐPhyIdealPartnerSearchInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_sajuProfileLogs_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNSajuProfileLogSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuProfileLogSearchInput)
 	if err != nil {
 		return nil, err
 	}
@@ -2634,6 +2646,64 @@ func (ec *executionContext) fieldContext_PhyIdealPartner_image(_ context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _PhyIdealPartner_embeddingModel(ctx context.Context, field graphql.CollectedField, obj *model.PhyIdealPartner) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_PhyIdealPartner_embeddingModel,
+		func(ctx context.Context) (any, error) {
+			return obj.EmbeddingModel, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_PhyIdealPartner_embeddingModel(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PhyIdealPartner",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PhyIdealPartner_embeddingText(ctx context.Context, field graphql.CollectedField, obj *model.PhyIdealPartner) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_PhyIdealPartner_embeddingText,
+		func(ctx context.Context) (any, error) {
+			return obj.EmbeddingText, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_PhyIdealPartner_embeddingText(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PhyIdealPartner",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _PhyIdealPartner_similarityScore(ctx context.Context, field graphql.CollectedField, obj *model.PhyIdealPartner) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -3021,6 +3091,73 @@ func (ec *executionContext) fieldContext_Query_phyIdealPartner(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_phyIdealPartner_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_sajuProfileLogs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_sajuProfileLogs,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().SajuProfileLogs(ctx, fc.Args["input"].(model.SajuProfileLogSearchInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_sajuProfileLogs(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_sajuProfileLogs_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4172,6 +4309,35 @@ func (ec *executionContext) fieldContext_SajuProfile_myFeatureNotes(_ context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _SajuProfile_partnerEmbeddingText(ctx context.Context, field graphql.CollectedField, obj *model.SajuProfile) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuProfile_partnerEmbeddingText,
+		func(ctx context.Context) (any, error) {
+			return obj.PartnerEmbeddingText, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuProfile_partnerEmbeddingText(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuProfile",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SajuProfile_partnerMatchTips(ctx context.Context, field graphql.CollectedField, obj *model.SajuProfile) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -4486,6 +4652,209 @@ func (ec *executionContext) fieldContext_SajuProfile_phyPartnerSimilarity(_ cont
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuProfileLog_id(ctx context.Context, field graphql.CollectedField, obj *model.SajuProfileLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuProfileLog_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalOID2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuProfileLog_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuProfileLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuProfileLog_uid(ctx context.Context, field graphql.CollectedField, obj *model.SajuProfileLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuProfileLog_uid,
+		func(ctx context.Context) (any, error) {
+			return obj.UID, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuProfileLog_uid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuProfileLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuProfileLog_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.SajuProfileLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuProfileLog_createdAt,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		ec.marshalNBigInt2int64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuProfileLog_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuProfileLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BigInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuProfileLog_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.SajuProfileLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuProfileLog_updatedAt,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdatedAt, nil
+		},
+		nil,
+		ec.marshalNBigInt2int64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuProfileLog_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuProfileLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BigInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuProfileLog_sajuUid(ctx context.Context, field graphql.CollectedField, obj *model.SajuProfileLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuProfileLog_sajuUid,
+		func(ctx context.Context) (any, error) {
+			return obj.SajuUID, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuProfileLog_sajuUid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuProfileLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuProfileLog_status(ctx context.Context, field graphql.CollectedField, obj *model.SajuProfileLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuProfileLog_status,
+		func(ctx context.Context) (any, error) {
+			return obj.Status, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuProfileLog_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuProfileLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuProfileLog_text(ctx context.Context, field graphql.CollectedField, obj *model.SajuProfileLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuProfileLog_text,
+		func(ctx context.Context) (any, error) {
+			return obj.Text, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuProfileLog_text(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuProfileLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5386,6 +5755,54 @@ func (ec *executionContext) unmarshalInputSajuProfileCreateInput(ctx context.Con
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputSajuProfileLogSearchInput(ctx context.Context, obj any) (model.SajuProfileLogSearchInput, error) {
+	var it model.SajuProfileLogSearchInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"limit", "offset", "sajuUid", "status"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "limit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
+		case "offset":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Offset = data
+		case "sajuUid":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sajuUid"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SajuUID = data
+		case "status":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputSajuProfileSearchInput(ctx context.Context, obj any) (model.SajuProfileSearchInput, error) {
 	var it model.SajuProfileSearchInput
 	asMap := map[string]any{}
@@ -5442,6 +5859,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
+	case model.SajuProfileLog:
+		return ec._SajuProfileLog(ctx, sel, &obj)
+	case *model.SajuProfileLog:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._SajuProfileLog(ctx, sel, obj)
 	case model.SajuProfile:
 		return ec._SajuProfile(ctx, sel, &obj)
 	case *model.SajuProfile:
@@ -6020,6 +6444,16 @@ func (ec *executionContext) _PhyIdealPartner(ctx context.Context, sel ast.Select
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+		case "embeddingModel":
+			out.Values[i] = ec._PhyIdealPartner_embeddingModel(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "embeddingText":
+			out.Values[i] = ec._PhyIdealPartner_embeddingText(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "similarityScore":
 			out.Values[i] = ec._PhyIdealPartner_similarityScore(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -6170,6 +6604,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_phyIdealPartner(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "sajuProfileLogs":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_sajuProfileLogs(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -6506,6 +6962,11 @@ func (ec *executionContext) _SajuProfile(ctx context.Context, sel ast.SelectionS
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}
+		case "partnerEmbeddingText":
+			out.Values[i] = ec._SajuProfile_partnerEmbeddingText(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
 		case "partnerMatchTips":
 			out.Values[i] = ec._SajuProfile_partnerMatchTips(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -6560,6 +7021,72 @@ func (ec *executionContext) _SajuProfile(ctx context.Context, sel ast.SelectionS
 			out.Values[i] = ec._SajuProfile_phyPartnerSimilarity(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var sajuProfileLogImplementors = []string{"SajuProfileLog", "Node"}
+
+func (ec *executionContext) _SajuProfileLog(ctx context.Context, sel ast.SelectionSet, obj *model.SajuProfileLog) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sajuProfileLogImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SajuProfileLog")
+		case "id":
+			out.Values[i] = ec._SajuProfileLog_id(ctx, field, obj)
+		case "uid":
+			out.Values[i] = ec._SajuProfileLog_uid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._SajuProfileLog_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._SajuProfileLog_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "sajuUid":
+			out.Values[i] = ec._SajuProfileLog_sajuUid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "status":
+			out.Values[i] = ec._SajuProfileLog_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "text":
+			out.Values[i] = ec._SajuProfileLog_text(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -6786,6 +7313,11 @@ func (ec *executionContext) unmarshalNPhyIdealPartnerSearchInput2sajudating_api�
 
 func (ec *executionContext) unmarshalNSajuProfileCreateInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuProfileCreateInput(ctx context.Context, v any) (model.SajuProfileCreateInput, error) {
 	res, err := ec.unmarshalInputSajuProfileCreateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSajuProfileLogSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuProfileLogSearchInput(ctx context.Context, v any) (model.SajuProfileLogSearchInput, error) {
+	res, err := ec.unmarshalInputSajuProfileLogSearchInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

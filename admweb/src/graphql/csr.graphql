@@ -18,6 +18,7 @@ fragment sajuProfileBasic on SajuProfile {
   myFeatureMouth
   myFeatureFaceShape
   myFeatureNotes
+  partnerEmbeddingText
   partnerMatchTips
   partnerSummary
   partnerFeatureEyes
@@ -44,6 +45,8 @@ fragment phyIdealPartnerBasic on PhyIdealPartner {
   sex
   age
   # image
+  embeddingModel
+  embeddingText
   similarityScore
   hasImage
 }
@@ -100,6 +103,21 @@ query phyIdealPartner($uid: String!) {
     node {
       ... on PhyIdealPartner {
         ...phyIdealPartnerBasic
+      }
+    }
+  }
+}
+
+query sajuProfileLogs($input: SajuProfileLogSearchInput!) {
+  sajuProfileLogs(input: $input) {
+    ok
+    msg
+    nodes {
+      ... on SajuProfileLog {
+        uid
+        createdAt
+        status
+        text
       }
     }
   }

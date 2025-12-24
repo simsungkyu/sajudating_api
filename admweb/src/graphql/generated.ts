@@ -199,6 +199,8 @@ export type PhyIdealPartner = Node & {
   __typename?: 'PhyIdealPartner';
   age: Scalars['Int']['output'];
   createdAt: Scalars['BigInt']['output'];
+  embeddingModel: Scalars['String']['output'];
+  embeddingText: Scalars['String']['output'];
   featureEyes: Scalars['String']['output'];
   featureFaceShape: Scalars['String']['output'];
   featureMouth: Scalars['String']['output'];
@@ -245,6 +247,7 @@ export type Query = {
   phyIdealPartner: SimpleResult;
   phyIdealPartners: SimpleResult;
   sajuProfile: SimpleResult;
+  sajuProfileLogs: SimpleResult;
   sajuProfileSimilarPartners: SimpleResult;
   sajuProfiles: SimpleResult;
 };
@@ -296,6 +299,11 @@ export type QuerySajuProfileArgs = {
 };
 
 
+export type QuerySajuProfileLogsArgs = {
+  input: SajuProfileLogSearchInput;
+};
+
+
 export type QuerySajuProfileSimilarPartnersArgs = {
   limit: Scalars['Int']['input'];
   offset: Scalars['Int']['input'];
@@ -323,6 +331,7 @@ export type SajuProfile = Node & {
   nickname: Scalars['String']['output'];
   palja: Scalars['String']['output'];
   partnerAge: Scalars['Int']['output'];
+  partnerEmbeddingText: Scalars['String']['output'];
   partnerFeatureEyes: Scalars['String']['output'];
   partnerFeatureFaceShape: Scalars['String']['output'];
   partnerFeatureMouth: Scalars['String']['output'];
@@ -348,6 +357,24 @@ export type SajuProfileCreateInput = {
   sex: Scalars['String']['input'];
 };
 
+export type SajuProfileLog = Node & {
+  __typename?: 'SajuProfileLog';
+  createdAt: Scalars['BigInt']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
+  sajuUid: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  text: Scalars['String']['output'];
+  uid: Scalars['String']['output'];
+  updatedAt: Scalars['BigInt']['output'];
+};
+
+export type SajuProfileLogSearchInput = {
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
+  sajuUid: Scalars['String']['input'];
+  status?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type SajuProfileSearchInput = {
   limit: Scalars['Int']['input'];
   offset: Scalars['Int']['input'];
@@ -371,9 +398,9 @@ export type SimpleResult = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
-export type SajuProfileBasicFragment = { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number };
+export type SajuProfileBasicFragment = { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerEmbeddingText: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number };
 
-export type PhyIdealPartnerBasicFragment = { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number, hasImage: boolean };
+export type PhyIdealPartnerBasicFragment = { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean };
 
 export type SajuProfilesQueryVariables = Exact<{
   input: SajuProfileSearchInput;
@@ -385,7 +412,8 @@ export type SajuProfilesQuery = { __typename?: 'Query', sajuProfiles: { __typena
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
-      | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
+      | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerEmbeddingText: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
+      | { __typename?: 'SajuProfileLog' }
     > | null } };
 
 export type SajuProfileQueryVariables = Exact<{
@@ -398,7 +426,8 @@ export type SajuProfileQuery = { __typename?: 'Query', sajuProfile: { __typename
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
-      | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
+      | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerEmbeddingText: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
+      | { __typename?: 'SajuProfileLog' }
      | null } };
 
 export type SajuProfileSimilarPartnersQueryVariables = Exact<{
@@ -412,8 +441,9 @@ export type SajuProfileSimilarPartnersQuery = { __typename?: 'Query', sajuProfil
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
-      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number, hasImage: boolean }
+      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean }
       | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
     > | null } };
 
 export type PhyIdealPartnersQueryVariables = Exact<{
@@ -425,8 +455,9 @@ export type PhyIdealPartnersQuery = { __typename?: 'Query', phyIdealPartners: { 
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
-      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number, hasImage: boolean }
+      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean }
       | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
     > | null } };
 
 export type PhyIdealPartnerQueryVariables = Exact<{
@@ -438,9 +469,24 @@ export type PhyIdealPartnerQuery = { __typename?: 'Query', phyIdealPartner: { __
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
-      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, similarityScore: number, hasImage: boolean }
+      | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean }
       | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
      | null } };
+
+export type SajuProfileLogsQueryVariables = Exact<{
+  input: SajuProfileLogSearchInput;
+}>;
+
+
+export type SajuProfileLogsQuery = { __typename?: 'Query', sajuProfileLogs: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, nodes?: Array<
+      | { __typename?: 'AiExecution' }
+      | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
+      | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog', uid: string, createdAt: any, status: string, text: string }
+    > | null } };
 
 export type AiMetaBasicFragment = { __typename?: 'AiMeta', uid: string, createdAt: any, updatedAt: any, name: string, desc: string, metaType: string, prompt: string, model: string, temperature: number, maxTokens: number, size: string, inUse: boolean };
 
@@ -455,6 +501,7 @@ export type AiMetasQuery = { __typename?: 'Query', aiMetas: { __typename?: 'Simp
       | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
     > | null } };
 
 export type PutAiMetaMutationVariables = Exact<{
@@ -491,6 +538,7 @@ export type AiExecutionQuery = { __typename?: 'Query', aiExecution: { __typename
       | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
      | null } };
 
 export type AiExecutionsQueryVariables = Exact<{
@@ -504,6 +552,7 @@ export type AiExecutionsQuery = { __typename?: 'Query', aiExecutions: { __typena
       | { __typename?: 'AiMetaType' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
     > | null } };
 
 export type RunAiExecutionMutationVariables = Exact<{
@@ -522,6 +571,7 @@ export type GetAiMetaTypesQuery = { __typename?: 'Query', aiMetaTypes: { __typen
       | { __typename?: 'AiMetaType', type: string, inputFields: Array<string>, outputFields: Array<string>, hasInputImage: boolean, hasOutputImage: boolean }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
     > | null } };
 
 export type GetAiMetaKVsQueryVariables = Exact<{
@@ -559,6 +609,7 @@ export const SajuProfileBasicFragmentDoc = gql`
   myFeatureMouth
   myFeatureFaceShape
   myFeatureNotes
+  partnerEmbeddingText
   partnerMatchTips
   partnerSummary
   partnerFeatureEyes
@@ -585,6 +636,8 @@ export const PhyIdealPartnerBasicFragmentDoc = gql`
   personalityMatch
   sex
   age
+  embeddingModel
+  embeddingText
   similarityScore
   hasImage
 }
@@ -883,6 +936,58 @@ export type PhyIdealPartnerQueryHookResult = ReturnType<typeof usePhyIdealPartne
 export type PhyIdealPartnerLazyQueryHookResult = ReturnType<typeof usePhyIdealPartnerLazyQuery>;
 export type PhyIdealPartnerSuspenseQueryHookResult = ReturnType<typeof usePhyIdealPartnerSuspenseQuery>;
 export type PhyIdealPartnerQueryResult = Apollo.QueryResult<PhyIdealPartnerQuery, PhyIdealPartnerQueryVariables>;
+export const SajuProfileLogsDocument = gql`
+    query sajuProfileLogs($input: SajuProfileLogSearchInput!) {
+  sajuProfileLogs(input: $input) {
+    ok
+    msg
+    nodes {
+      ... on SajuProfileLog {
+        uid
+        createdAt
+        status
+        text
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useSajuProfileLogsQuery__
+ *
+ * To run a query within a React component, call `useSajuProfileLogsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSajuProfileLogsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSajuProfileLogsQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useSajuProfileLogsQuery(baseOptions: Apollo.QueryHookOptions<SajuProfileLogsQuery, SajuProfileLogsQueryVariables> & ({ variables: SajuProfileLogsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SajuProfileLogsQuery, SajuProfileLogsQueryVariables>(SajuProfileLogsDocument, options);
+      }
+export function useSajuProfileLogsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SajuProfileLogsQuery, SajuProfileLogsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SajuProfileLogsQuery, SajuProfileLogsQueryVariables>(SajuProfileLogsDocument, options);
+        }
+// @ts-ignore
+export function useSajuProfileLogsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SajuProfileLogsQuery, SajuProfileLogsQueryVariables>): Apollo.UseSuspenseQueryResult<SajuProfileLogsQuery, SajuProfileLogsQueryVariables>;
+export function useSajuProfileLogsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SajuProfileLogsQuery, SajuProfileLogsQueryVariables>): Apollo.UseSuspenseQueryResult<SajuProfileLogsQuery | undefined, SajuProfileLogsQueryVariables>;
+export function useSajuProfileLogsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SajuProfileLogsQuery, SajuProfileLogsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SajuProfileLogsQuery, SajuProfileLogsQueryVariables>(SajuProfileLogsDocument, options);
+        }
+export type SajuProfileLogsQueryHookResult = ReturnType<typeof useSajuProfileLogsQuery>;
+export type SajuProfileLogsLazyQueryHookResult = ReturnType<typeof useSajuProfileLogsLazyQuery>;
+export type SajuProfileLogsSuspenseQueryHookResult = ReturnType<typeof useSajuProfileLogsSuspenseQuery>;
+export type SajuProfileLogsQueryResult = Apollo.QueryResult<SajuProfileLogsQuery, SajuProfileLogsQueryVariables>;
 export const AiMetasDocument = gql`
     query aiMetas($input: AiMetaSearchInput!) {
   aiMetas(input: $input) {

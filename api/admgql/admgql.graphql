@@ -37,6 +37,8 @@ type Query {
   ): SimpleResult!
   phyIdealPartners(input: PhyIdealPartnerSearchInput!): SimpleResult!
   phyIdealPartner(uid: String!): SimpleResult!
+  sajuProfileLogs(input: SajuProfileLogSearchInput!): SimpleResult!
+
   aiMetas(input: AiMetaSearchInput!): SimpleResult!
   aiMeta(uid: String!): SimpleResult!
   aiMetaTypes: SimpleResult!
@@ -85,6 +87,7 @@ type SajuProfile implements Node {
   myFeatureFaceShape: String!
   myFeatureNotes: String!
   #
+  partnerEmbeddingText: String!
   partnerMatchTips: String!
   #
   partnerSummary: String!
@@ -131,6 +134,9 @@ type PhyIdealPartner implements Node {
   age: Int!
   # Image Data (Generated or Uploaded)
   image: String!
+  # Embedding
+  embeddingModel: String!
+  embeddingText: String!
 
   # 유사도
   similarityScore: Float!
@@ -154,6 +160,23 @@ input PhyIdealPartnerSearchInput {
   offset: Int!
   sex: String
   hasImage: Boolean
+}
+
+# Saju Profile Log
+type SajuProfileLog implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  sajuUid: String!
+  status: String!
+  text: String!
+}
+input SajuProfileLogSearchInput {
+  limit: Int!
+  offset: Int!
+  sajuUid: String!
+  status: String
 }
 
 # ai meta

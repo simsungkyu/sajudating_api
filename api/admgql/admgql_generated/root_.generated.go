@@ -116,6 +116,8 @@ type ComplexityRoot struct {
 	PhyIdealPartner struct {
 		Age              func(childComplexity int) int
 		CreatedAt        func(childComplexity int) int
+		EmbeddingModel   func(childComplexity int) int
+		EmbeddingText    func(childComplexity int) int
 		FeatureEyes      func(childComplexity int) int
 		FeatureFaceShape func(childComplexity int) int
 		FeatureMouth     func(childComplexity int) int
@@ -142,6 +144,7 @@ type ComplexityRoot struct {
 		PhyIdealPartner            func(childComplexity int, uid string) int
 		PhyIdealPartners           func(childComplexity int, input model.PhyIdealPartnerSearchInput) int
 		SajuProfile                func(childComplexity int, uid string) int
+		SajuProfileLogs            func(childComplexity int, input model.SajuProfileLogSearchInput) int
 		SajuProfileSimilarPartners func(childComplexity int, uid string, limit int, offset int) int
 		SajuProfiles               func(childComplexity int, input model.SajuProfileSearchInput) int
 	}
@@ -161,6 +164,7 @@ type ComplexityRoot struct {
 		Nickname                func(childComplexity int) int
 		Palja                   func(childComplexity int) int
 		PartnerAge              func(childComplexity int) int
+		PartnerEmbeddingText    func(childComplexity int) int
 		PartnerFeatureEyes      func(childComplexity int) int
 		PartnerFeatureFaceShape func(childComplexity int) int
 		PartnerFeatureMouth     func(childComplexity int) int
@@ -178,6 +182,16 @@ type ComplexityRoot struct {
 		Sex                     func(childComplexity int) int
 		UID                     func(childComplexity int) int
 		UpdatedAt               func(childComplexity int) int
+	}
+
+	SajuProfileLog struct {
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		SajuUID   func(childComplexity int) int
+		Status    func(childComplexity int) int
+		Text      func(childComplexity int) int
+		UID       func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
 	}
 
 	SimpleResult struct {
@@ -659,6 +673,20 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.PhyIdealPartner.CreatedAt(childComplexity), true
 
+	case "PhyIdealPartner.embeddingModel":
+		if e.complexity.PhyIdealPartner.EmbeddingModel == nil {
+			break
+		}
+
+		return e.complexity.PhyIdealPartner.EmbeddingModel(childComplexity), true
+
+	case "PhyIdealPartner.embeddingText":
+		if e.complexity.PhyIdealPartner.EmbeddingText == nil {
+			break
+		}
+
+		return e.complexity.PhyIdealPartner.EmbeddingText(childComplexity), true
+
 	case "PhyIdealPartner.featureEyes":
 		if e.complexity.PhyIdealPartner.FeatureEyes == nil {
 			break
@@ -865,6 +893,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.SajuProfile(childComplexity, args["uid"].(string)), true
 
+	case "Query.sajuProfileLogs":
+		if e.complexity.Query.SajuProfileLogs == nil {
+			break
+		}
+
+		args, err := ec.field_Query_sajuProfileLogs_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.SajuProfileLogs(childComplexity, args["input"].(model.SajuProfileLogSearchInput)), true
+
 	case "Query.sajuProfileSimilarPartners":
 		if e.complexity.Query.SajuProfileSimilarPartners == nil {
 			break
@@ -987,6 +1027,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SajuProfile.PartnerAge(childComplexity), true
 
+	case "SajuProfile.partnerEmbeddingText":
+		if e.complexity.SajuProfile.PartnerEmbeddingText == nil {
+			break
+		}
+
+		return e.complexity.SajuProfile.PartnerEmbeddingText(childComplexity), true
+
 	case "SajuProfile.partnerFeatureEyes":
 		if e.complexity.SajuProfile.PartnerFeatureEyes == nil {
 			break
@@ -1106,6 +1153,55 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SajuProfile.UpdatedAt(childComplexity), true
 
+	case "SajuProfileLog.createdAt":
+		if e.complexity.SajuProfileLog.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.SajuProfileLog.CreatedAt(childComplexity), true
+
+	case "SajuProfileLog.id":
+		if e.complexity.SajuProfileLog.ID == nil {
+			break
+		}
+
+		return e.complexity.SajuProfileLog.ID(childComplexity), true
+
+	case "SajuProfileLog.sajuUid":
+		if e.complexity.SajuProfileLog.SajuUID == nil {
+			break
+		}
+
+		return e.complexity.SajuProfileLog.SajuUID(childComplexity), true
+
+	case "SajuProfileLog.status":
+		if e.complexity.SajuProfileLog.Status == nil {
+			break
+		}
+
+		return e.complexity.SajuProfileLog.Status(childComplexity), true
+
+	case "SajuProfileLog.text":
+		if e.complexity.SajuProfileLog.Text == nil {
+			break
+		}
+
+		return e.complexity.SajuProfileLog.Text(childComplexity), true
+
+	case "SajuProfileLog.uid":
+		if e.complexity.SajuProfileLog.UID == nil {
+			break
+		}
+
+		return e.complexity.SajuProfileLog.UID(childComplexity), true
+
+	case "SajuProfileLog.updatedAt":
+		if e.complexity.SajuProfileLog.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.SajuProfileLog.UpdatedAt(childComplexity), true
+
 	case "SimpleResult.base64Value":
 		if e.complexity.SimpleResult.Base64Value == nil {
 			break
@@ -1207,6 +1303,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputPhyIdealPartnerCreateInput,
 		ec.unmarshalInputPhyIdealPartnerSearchInput,
 		ec.unmarshalInputSajuProfileCreateInput,
+		ec.unmarshalInputSajuProfileLogSearchInput,
 		ec.unmarshalInputSajuProfileSearchInput,
 	)
 	first := true
@@ -1344,6 +1441,8 @@ type Query {
   ): SimpleResult!
   phyIdealPartners(input: PhyIdealPartnerSearchInput!): SimpleResult!
   phyIdealPartner(uid: String!): SimpleResult!
+  sajuProfileLogs(input: SajuProfileLogSearchInput!): SimpleResult!
+
   aiMetas(input: AiMetaSearchInput!): SimpleResult!
   aiMeta(uid: String!): SimpleResult!
   aiMetaTypes: SimpleResult!
@@ -1392,6 +1491,7 @@ type SajuProfile implements Node {
   myFeatureFaceShape: String!
   myFeatureNotes: String!
   #
+  partnerEmbeddingText: String!
   partnerMatchTips: String!
   #
   partnerSummary: String!
@@ -1438,6 +1538,9 @@ type PhyIdealPartner implements Node {
   age: Int!
   # Image Data (Generated or Uploaded)
   image: String!
+  # Embedding
+  embeddingModel: String!
+  embeddingText: String!
 
   # 유사도
   similarityScore: Float!
@@ -1461,6 +1564,23 @@ input PhyIdealPartnerSearchInput {
   offset: Int!
   sex: String
   hasImage: Boolean
+}
+
+# Saju Profile Log
+type SajuProfileLog implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  sajuUid: String!
+  status: String!
+  text: String!
+}
+input SajuProfileLogSearchInput {
+  limit: Int!
+  offset: Int!
+  sajuUid: String!
+  status: String
 }
 
 # ai meta

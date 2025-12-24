@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	utils "sajudating_api/api/utils"
 	"strings"
 )
 
@@ -29,12 +30,27 @@ type SajuAnalysisRequest struct {
 
 // SajuAnalysisResponse represents the JSON response from OpenAI
 type SajuAnalysisResponse struct {
-	Nickname    string `json:"nickname"`
-	Sex         string `json:"sex"`
-	Age         int    `json:"age,omitempty"`
-	Summary     string `json:"summary"`
-	Content     string `json:"content"`
-	PartnerTips string `json:"partner_tips"`
+	Nickname    string            `json:"nickname"`
+	Sex         string            `json:"sex"`
+	Age         utils.IntOrString `json:"age"`
+	Summary     string            `json:"summary"`
+	Content     string            `json:"content"`
+	PartnerTips string            `json:"partner_tips"`
+	// 추가적인 데이터 옵셔널
+	LifeReading struct {
+		CorePersonality    string `json:"core_personality,omitempty"`
+		TalentAndWorkStyle string `json:"talent_and_work_style,omitempty"`
+		MoneyAndReality    string `json:"money_and_reality,omitempty"`
+		StressAndEnergy    string `json:"stress_and_energy,omitempty"`
+		GrowthTheme        string `json:"growth_theme,omitempty"`
+	} `json:"life_reading,omitempty"`
+	LoveReading struct {
+		AttractionStyle      string `json:"attraction_style,omitempty"`
+		DatingVibe           string `json:"dating_vibe,omitempty"`
+		DrawnToPartner       string `json:"drawn_to_partner,omitempty"`
+		RelationshipPitfalls string `json:"relationship_pitfalls,omitempty"`
+		CommitmentPattern    string `json:"commitment_pattern,omitempty"`
+	} `json:"love_reading,omitempty"`
 }
 
 // buildPrompt constructs the prompt for Saju analysis based on the Python code

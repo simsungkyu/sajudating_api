@@ -32,6 +32,7 @@ func SajuProfileToModel(profile *entity.SajuProfile) *model.SajuProfile {
 		MyFeatureMouth:          profile.MyFeatureMouth,
 		MyFeatureFaceShape:      profile.MyFeatureFaceShape,
 		MyFeatureNotes:          profile.MyFeatureNotes,
+		PartnerEmbeddingText:    profile.GeneratePhyPartnerEmbeddingText(),
 		PartnerMatchTips:        profile.PartnerMatchTips,
 		PartnerSummary:          profile.PartnerSummary,
 		PartnerFeatureEyes:      profile.PartnerFeatureEyes,
@@ -128,6 +129,8 @@ func PhyIdealPartnerToModel(partner *entity.PhyIdealPartner) *model.PhyIdealPart
 		PersonalityMatch: partner.PersonalityMatch,
 		Sex:              partner.Sex,
 		Age:              partner.Age,
+		EmbeddingModel:   partner.EmbeddingModel,
+		EmbeddingText:    partner.EmbeddingText,
 		SimilarityScore:  partner.SimilarityScore,
 		HasImage:         partner.HasImage,
 	}

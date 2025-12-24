@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	utils "sajudating_api/api/utils"
 	"strconv"
 	"strings"
 	"time"
@@ -106,9 +107,9 @@ type PhyAnalysisResponse struct {
 	Summary                 string `json:"summary"`
 	Content                 string `json:"content"`
 	IdealPartnerPhysiognomy struct {
-		PartnerSummary           string `json:"partner_summary"`
-		PartnerAge               int    `json:"partner_age"`
-		PartnerSex               string `json:"partner_sex"`
+		PartnerSummary           string            `json:"partner_summary"`
+		PartnerAge               utils.IntOrString `json:"partner_age"`
+		PartnerSex               string            `json:"partner_sex"`
 		FacialFeaturePreferences struct {
 			Eyes      FaceFeaturesEyesType  `json:"eyes"`
 			Nose      FaceFeaturesNoseType  `json:"nose"`
@@ -122,12 +123,16 @@ type PhyAnalysisResponse struct {
 func (p *PhyAnalysisResponse) GetAge() int {
 	age, err := strconv.Atoi(p.Age)
 	if err != nil {
-		return 0
+		return 25
 	}
 	return age
 }
 func (p *PhyAnalysisResponse) GetPartnerAge() int {
-	return p.IdealPartnerPhysiognomy.PartnerAge
+	age, err := strconv.Atoi(p.IdealPartnerPhysiognomy.PartnerAge.String())
+	if err != nil {
+		return 25
+	}
+	return age
 }
 
 // buildFaceExtractionPrompt constructs the prompt for face feature extraction

@@ -44,18 +44,18 @@ type SuccessResponse struct {
 }
 
 type PhyPartnerResponse struct {
-	Uid                  string `json:"uid"`
-	Summary              string `json:"summary"`
-	FeatureEyes          string `json:"feature_eyes"`
-	FeatureNose          string `json:"feature_nose"`
-	FeatureMouth         string `json:"feature_mouth"`
-	FeatureFaceShape     string `json:"feature_face_shape"`
-	PersonalityMatch     string `json:"personality_match"`
-	Sex                  string `json:"sex"`
-	Age                  int    `json:"age"`
-	ImageMimeType        string `json:"image_mime_type,omitempty"`
-	HasImage             bool   `json:"has_image"`
-	CreatedAt            int64  `json:"created_at"`
+	Uid              string `json:"uid"`
+	Summary          string `json:"summary"`
+	FeatureEyes      string `json:"feature_eyes"`
+	FeatureNose      string `json:"feature_nose"`
+	FeatureMouth     string `json:"feature_mouth"`
+	FeatureFaceShape string `json:"feature_face_shape"`
+	PersonalityMatch string `json:"personality_match"`
+	Sex              string `json:"sex"`
+	Age              string `json:"age"`
+	ImageMimeType    string `json:"image_mime_type,omitempty"`
+	HasImage         bool   `json:"has_image"`
+	CreatedAt        int64  `json:"created_at"`
 }
 
 type PhyPartnerCreateRequest struct {

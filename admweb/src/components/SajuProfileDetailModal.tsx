@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 import { usePhyIdealPartnerQuery, useSajuProfileQuery } from '../graphql/generated';
 import SajuProfileSimilarPartersModal from './SajuProfileSimilarPartersModal';
 import AIExecutionListModal from './AIExecutionListModal';
+import SajuProfileLogListModal from './SajuProfileLogListModal';
 
 const toMillis = (value: unknown): number | null => {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null;
@@ -93,10 +94,12 @@ const Field = ({
 const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileDetailModalProps) => {
   const [similarPartnersOpen, setSimilarPartnersOpen] = useState(false);
   const [aiExecutionsOpen, setAiExecutionsOpen] = useState(false);
+  const [logsOpen, setLogsOpen] = useState(false);
   useEffect(() => {
     if (!open) {
       setSimilarPartnersOpen(false);
       setAiExecutionsOpen(false);
+      setLogsOpen(false);
     }
   }, [open]);
 
@@ -135,6 +138,7 @@ const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileD
         myFeatureMouth: node.myFeatureMouth,
         myFeatureFaceShape: node.myFeatureFaceShape,
         myFeatureNotes: node.myFeatureNotes,
+        partnerEmbeddingText: node.partnerEmbeddingText,
         partnerMatchTips: node.partnerMatchTips,
         partnerSummary: node.partnerSummary,
         partnerFeatureEyes: node.partnerFeatureEyes,
@@ -178,6 +182,8 @@ const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileD
         sex: partnerNode.sex,
         age: partnerNode.age,
         similarityScore: partnerNode.similarityScore,
+        embeddingModel: partnerNode.embeddingModel,
+        embeddingText: partnerNode.embeddingText,
       }
     : null;
 
@@ -364,6 +370,7 @@ const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileD
                 <Field label="partnerPersonalityMatch" value={full?.partnerPersonalityMatch} />
                 <Field label="partnerSex" value={full?.partnerSex} />
                 <Field label="partnerAge" value={full?.partnerAge} />
+                <Field label="partnerEmbeddingText" value={full?.partnerEmbeddingText} monospace />
               </Stack>
 
               {phyPartnerUid ? (
@@ -373,10 +380,12 @@ const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileD
                   {partnerQueryResult.loading ? <LinearProgress sx={{ mt: 1 }} /> : null}
                   <Stack spacing={1.25}>
                     <Field label="uid" value={matchedPartner?.uid ?? phyPartnerUid} monospace />
+                    <Field label="similarityScore" value={full?.phyPartnerSimilarity != null ? `${(full.phyPartnerSimilarity * 100).toFixed(2)}%` : '-'} />
+                    <Field label="embeddingText" value={matchedPartner?.embeddingText} />
+                    <Field label="embeddingModel" value={matchedPartner?.embeddingModel} monospace />
                     <Field label="sex" value={matchedPartner?.sex} />
                     <Field label="age" value={matchedPartner?.age} />
                     <Field label="phyPartnerSimilarity" value={full?.phyPartnerSimilarity} />
-                    <Field label="similarityScore" value={matchedPartner?.similarityScore} />
                     <Field label="createdAt" value={formatDate(matchedPartner?.createdAt)} monospace />
                     <Field label="updatedAt" value={formatDate(matchedPartner?.updatedAt)} monospace />
                     <Divider />
@@ -409,6 +418,13 @@ const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileD
             >
               AI Executions
             </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setLogsOpen(true)}
+              disabled={!displayProfile?.uid}
+            >
+              Logs
+            </Button>
           </Stack>
           <Stack direction="row" spacing={1}>
             <Button onClick={onClose} color="inherit">
@@ -434,6 +450,11 @@ const SajuProfileDetailModal = ({ open, profile, onClose, onEdit }: SajuProfileD
             open={aiExecutionsOpen}
             runSajuProfileUid={displayProfile.uid}
             onClose={() => setAiExecutionsOpen(false)}
+          />
+          <SajuProfileLogListModal
+            open={logsOpen}
+            sajuProfileUid={displayProfile.uid}
+            onClose={() => setLogsOpen(false)}
           />
         </>
       ) : null}

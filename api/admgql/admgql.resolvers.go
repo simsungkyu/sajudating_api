@@ -87,6 +87,11 @@ func (r *queryResolver) PhyIdealPartner(ctx context.Context, uid string) (*model
 	return getAdminPhyPartnerService().GetPhyPartner(ctx, uid)
 }
 
+// SajuProfileLogs is the resolver for the sajuProfileLogs field.
+func (r *queryResolver) SajuProfileLogs(ctx context.Context, input model.SajuProfileLogSearchInput) (*model.SimpleResult, error) {
+	return getAdminSajuProfileService().GetSajuProfileLogs(ctx, input)
+}
+
 // AiMetas is the resolver for the aiMetas field.
 func (r *queryResolver) AiMetas(ctx context.Context, input model.AiMetaSearchInput) (*model.SimpleResult, error) {
 	return getAdminAiMetaService().GetAiMetas(ctx, input)

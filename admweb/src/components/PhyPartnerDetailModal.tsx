@@ -115,6 +115,8 @@ const PhyPartnerDetailModal = ({ open, partner, onClose, onEdit }: PhyPartnerDet
         personalityMatch: node.personalityMatch,
         sex: node.sex,
         age: node.age,
+        embeddingModel: node.embeddingModel,
+        embeddingText: node.embeddingText,
       }
     : null;
 
@@ -246,6 +248,16 @@ const PhyPartnerDetailModal = ({ open, partner, onClose, onEdit }: PhyPartnerDet
                 <Field label="featureMouth" value={full?.featureMouth} />
                 <Field label="featureFaceShape" value={full?.featureFaceShape} />
                 <Field label="personalityMatch" value={full?.personalityMatch} />
+              </Stack>
+            </Stack>
+
+            <Divider />
+
+            <Stack spacing={1.25}>
+              <Typography fontWeight={800}>임베딩 정보</Typography>
+              <Stack spacing={1.25}>
+                <Field label="embeddingModel" value={full?.embeddingModel} monospace />
+                <Field label="embeddingText" value={full?.embeddingText} />
               </Stack>
             </Stack>
           </Stack>

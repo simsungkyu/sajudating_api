@@ -93,3 +93,11 @@ func (p *PhyIdealPartner) GenerateEmbeddingText() string {
 	return fmt.Sprintf("요약:%s, 눈:%s, 코:%s, 입:%s, 얼굴형:%s, 성향:%s, 성별:%s, 나이:%d,",
 		p.Summary, p.FeatureEyes, p.FeatureNose, p.FeatureMouth, p.FeatureFaceShape, p.PersonalityMatch, p.Sex, p.Age)
 }
+
+type SajuProfileLog struct {
+	Uid       string `bson:"uid"`
+	SajuUid   string `bson:"saju_uid"`
+	CreatedAt int64  `bson:"created_at"`
+	Status    string `bson:"status"` // debug, error
+	Text      string `bson:"text"`
+}

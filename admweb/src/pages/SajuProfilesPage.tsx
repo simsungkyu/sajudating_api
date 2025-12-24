@@ -242,7 +242,7 @@ const SajuProfilesPage = () => {
               >
                 사용자 API 테스트
               </Button>
-              <Button
+              {/* <Button
                 variant="contained"
                 size="small"
                 startIcon={<AddRoundedIcon />}
@@ -253,7 +253,7 @@ const SajuProfilesPage = () => {
                 disabled={!token}
               >
                 추가
-              </Button>
+              </Button> */}
             </Stack>
           </Stack>
         </CardContent>

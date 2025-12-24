@@ -25,39 +25,54 @@ import (
 type SajuProfileService struct {
 	sajuProfileRepo     *dao.SajuProfileRepository
 	phyIdealPartnerRepo *dao.PhyIdealPartnerRepository
+	sajuProfileLogRepo  *dao.SajuProfileLogRepository
 }
 
 func NewSajuProfileService() *SajuProfileService {
 	return &SajuProfileService{
 		sajuProfileRepo:     dao.NewSajuProfileRepository(),
 		phyIdealPartnerRepo: dao.NewPhyIdealPartnerRepository(),
+		sajuProfileLogRepo:  dao.NewSajuProfileLogRepository(),
 	}
+}
+
+// Create Saju Profile Log
+func (s *SajuProfileService) log(uid string, status string, text string) error {
+	uuid := utils.GenUid()
+	log.Printf("[SajuLog-%s|%s] %s", uuid, status, text)
+	log := &entity.SajuProfileLog{
+		Uid:     uuid,
+		SajuUid: uid,
+		Status:  status,
+		Text:    text,
+	}
+	return s.sajuProfileLogRepo.Create(log)
 }
 
 // POST /api/saju_profile
 // 프로필 생성 직후 리턴, 내부 추론 과정은 별도 스레드로 처리
 func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Request) {
-	log.Printf("[CreateSajuProfile] Request started - Method: %s, URL: %s", r.Method, r.URL.Path)
+	profileUid := utils.GenUid()
+	s.log(profileUid, "info", fmt.Sprintf("[CreateSajuProfile] Request started - Method: %s, URL: %s", r.Method, r.URL.Path))
 
-	log.Printf("[CreateSajuProfile] Parsing multipart form (max size: 10MB)")
+	s.log(profileUid, "info", "[CreateSajuProfile] Parsing multipart form (max size: 10MB)")
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
-		log.Printf("[CreateSajuProfile] Failed to parse form data: %v", err)
+		s.log(profileUid, "error", fmt.Sprintf("[CreateSajuProfile] Failed to parse form data: %v", err))
 		utils.RespondWithError(w, http.StatusBadRequest, "Failed to parse form data")
 		return
 	}
-	log.Printf("[CreateSajuProfile] Form data parsed successfully")
+	s.log(profileUid, "info", "[CreateSajuProfile] Form data parsed successfully")
 
 	birthdate := r.FormValue("birthdate")
 	sex := r.FormValue("sex")
-	log.Printf("[CreateSajuProfile] Extracted form values - Birthdate: %s, Sex: %s", birthdate, sex)
+	s.log(profileUid, "info", fmt.Sprintf("[CreateSajuProfile] Extracted form values - Birthdate: %s, Sex: %s", birthdate, sex))
 
 	if birthdate == "" || sex == "" {
-		log.Printf("[CreateSajuProfile] Validation failed - missing required fields (birthdate: %s, sex: %s)", birthdate, sex)
+		s.log(profileUid, "error", fmt.Sprintf("[CreateSajuProfile] Validation failed - missing required fields (birthdate: %s, sex: %s)", birthdate, sex))
 		utils.RespondWithError(w, http.StatusBadRequest, "Birthdate and sex are required")
 		return
 	}
 
-	profileUid := utils.GenUid()
 	profile := &entity.SajuProfile{
 		Uid:       profileUid,
 		Birthdate: birthdate,
@@ -69,16 +84,16 @@ func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Re
 	// 이미지 처리
 	file, header, err := r.FormFile("image")
 	if err != nil {
-		log.Printf("[CreateSajuProfile] No image file provided: %v", err)
+		s.log(profileUid, "error", fmt.Sprintf("[CreateSajuProfile] No image file provided: %v", err))
 		utils.RespondWithError(w, http.StatusBadRequest, "No image file provided")
 		return
 	}
-	log.Printf("[CreateSajuProfile] Image file found - Filename: %s, Content-Type: %s", header.Filename, header.Header.Get("Content-Type"))
+	s.log(profileUid, "info", fmt.Sprintf("[CreateSajuProfile] Image file found - Filename: %s, Content-Type: %s", header.Filename, header.Header.Get("Content-Type")))
 	defer file.Close()
 
 	imageData, err := io.ReadAll(file)
 	if err != nil {
-		log.Printf("[CreateSajuProfile] Failed to read image file: %v", err)
+		s.log(profileUid, "error", fmt.Sprintf("[CreateSajuProfile] Failed to read image file: %v", err))
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to read image")
 		return
 	}
@@ -87,19 +102,19 @@ func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Re
 	imagePath := utils.GetSajuProfileImagePath(profileUid)
 	err, _ = imageS3Dao.SaveImageToS3(imagePath, imageData)
 	if err != nil {
-		log.Printf("[CreateSajuProfile] Failed to save image to S3: %v", err)
+		s.log(profileUid, "error", fmt.Sprintf("[CreateSajuProfile] Failed to save image to S3: %v", err))
 		// utils.RespondWithError(w, http.StatusInternalServerError, "Failed to save image to S3")
 		// return
 	}
 
 	// profile.ImageData = imageData
 	profile.ImageMimeType = header.Header.Get("Content-Type")
-	log.Printf("[CreateSajuProfile] Image processed successfully - Size: %d bytes, MimeType: %s", len(imageData), profile.ImageMimeType)
+	s.log(profileUid, "info", fmt.Sprintf("[CreateSajuProfile] Image processed successfully - Size: %d bytes, MimeType: %s", len(imageData), profile.ImageMimeType))
 
 	// 팔자 생성
 	paljaResult, err := extdao.GenPalja(profile.Birthdate, "") // 빈 문자열 = 기본값 Asia/Seoul 사용
 	if err != nil {
-		log.Printf("[GenPalja] Failed to call sxtwl: %v", err)
+		s.log(profileUid, "error", fmt.Sprintf("[GenPalja] Failed to call sxtwl: %v", err))
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to call sxtwl")
 		return
 	}
@@ -107,7 +122,7 @@ func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Re
 
 	// Save profile initiated
 	if err := s.sajuProfileRepo.Create(profile); err != nil {
-		log.Printf("[CreateSajuProfile] Failed to create saju profile: %v", err)
+		s.log(profileUid, "error", fmt.Sprintf("[CreateSajuProfile] Failed to create saju profile: %v", err))
 		utils.RespondWithError(w, http.StatusInternalServerError, "Failed to create saju profile")
 		return
 	}
@@ -115,12 +130,12 @@ func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Re
 	go func(uid string, birthdate string, sex string, palja string) {
 		response, err := s.RequestSaju(uid, birthdate, sex, palja)
 		if err != nil {
-			log.Printf("[RequestSaju] Failed to request saju: %v", err)
+			s.log(uid, "error", fmt.Sprintf("[RequestSaju] Failed to request saju: %v", err))
 			return
 		}
-		err = s.updateSajuSummary(uid, response.Summary, response.Content, response.Nickname, response.PartnerTips)
+		err = s.sajuProfileRepo.UpdateSajuSummary(uid, response.Summary, response.Content, response.Nickname, response.PartnerTips)
 		if err != nil {
-			log.Printf("[updateSajuSummary] Failed to update saju profile: %v", err)
+			s.log(uid, "error", fmt.Sprintf("[updateSajuSummary] Failed to update saju profile: %v", err))
 			return
 		}
 
@@ -131,13 +146,13 @@ func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Re
 	go func(uid, base64Image, sex, birthdate string) {
 		faceFeatures, phyAnalysisResponse, phyPartnerUid, err := s.RequestPhy(uid, base64Image, profile.Sex, profile.Birthdate)
 		if err != nil {
-			log.Printf("[CreateSajuProfile] Failed to request phy analysis: %v", err)
-			s.updateStatus(uid, utils.StrPtr("error"), nil, nil, nil)
+			s.log(uid, "error", fmt.Sprintf("[CreateSajuProfile] Failed to request phy analysis: %v", err))
+			s.sajuProfileRepo.UpdateStatus(uid, utils.StrPtr("error"), nil, nil, nil)
 			return
 		}
 		sajuProfile, err := dao.NewSajuProfileRepository().FindByUID(uid)
 		if err != nil {
-			log.Printf("[CreateSajuProfile] Saju profile not found: %v", err)
+			s.log(uid, "error", fmt.Sprintf("[CreateSajuProfile] Saju profile not found: %v", err))
 			return
 		}
 
@@ -176,7 +191,7 @@ func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Re
 	json.NewEncoder(w).Encode(types.APIResponse[types.SajuProfile]{
 		Data: result,
 	})
-	log.Printf("[CreateSajuProfile] Request completed successfully - UID: %s", profile.Uid)
+	s.log(profileUid, "success", fmt.Sprintf("[CreateSajuProfile] Request completed successfully - UID: %s", profile.Uid))
 }
 
 // GET /api/saju_profile/:uid
@@ -310,10 +325,16 @@ func (s *SajuProfileService) RequestPhy(uid, imageBase64, sex, birth string) (
 	// }
 	faceFeatures, err := s.runFaceFeature(uid, imageBase64, sex, birth)
 	if err != nil {
-		log.Printf("[RequestPhy] Failed to extract face features: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[RequestPhy] Failed to extract face features: %v", err))
 		return nil, nil, "", err
 	}
-	s.updateFaceFeatures(uid, faceFeatures)
+	s.sajuProfileRepo.UpdateFaceFeatures(uid,
+		faceFeatures.Eyes.ToString(),
+		faceFeatures.Nose.ToString(),
+		faceFeatures.Mouth.ToString(),
+		faceFeatures.FaceShape,
+		faceFeatures.Notes,
+	)
 
 	// 관상 추론
 	// log.Printf("[RequestPhy] InterpretPhysiognomy: %s, %s, %s", sex, age, faceFeatures.ToString())
@@ -324,29 +345,29 @@ func (s *SajuProfileService) RequestPhy(uid, imageBase64, sex, birth string) (
 	// }
 	phyAnalysisResponse, err := s.runPhy(uid, faceFeatures, sex, birth)
 	if err != nil {
-		log.Printf("[RequestPhy] Failed to interpret physiognomy: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[RequestPhy] Failed to interpret physiognomy: %v", err))
 		return nil, nil, "", err
 	}
 	s.updatePhyAnalysisResponse(uid, phyAnalysisResponse)
-	phyPartner, err := s.createPhyPartner(phyAnalysisResponse, partnerSex)
+	phyPartner, err := s.createPhyPartner(uid, phyAnalysisResponse, partnerSex)
 	if err != nil {
-		log.Printf("[RequestPhy] Failed to create phy partner: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[RequestPhy] Failed to create phy partner: %v", err))
 		return nil, nil, "", err
 	}
 	// 유사한 이미지 조회 후 조건부 이미지 생성
 	openaiDao := extdao.NewOpenAIExtDao()
 	embedding, err := openaiDao.CreateEmbedding(context.Background(), "", phyPartner.GenerateEmbeddingText())
 	if err != nil {
-		log.Printf("[RequestPhy] Failed to create embedding: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[RequestPhy] Failed to create embedding: %v", err))
 		return nil, nil, "", err
 	}
 	phyPartner.Embedding = utils.ConvertFloat32ToFloat64(embedding)
 
 	similarPhyPartner, similarityScore, err := s.phyIdealPartnerRepo.FindMostSimilarByEmbedding(
-		phyPartner.Embedding, partnerSex, 0.95,
+		phyPartner.Embedding, partnerSex, 0.99,
 	)
 	if err != nil {
-		log.Printf("[RequestPhy] Failed to find similar phy partner: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[RequestPhy] Failed to find similar phy partner: %v", err))
 		// return nil, nil, "", err
 	}
 
@@ -357,7 +378,7 @@ func (s *SajuProfileService) RequestPhy(uid, imageBase64, sex, birth string) (
 	} else {
 		matchedPartnerUid = phyPartner.Uid
 		// 이미지 생성.
-		log.Printf("[RequestPhy] GenerateIdealPartnerImage: %s, %d, %s", phyAnalysisResponse.Summary, phyAnalysisResponse.IdealPartnerPhysiognomy.PartnerAge, partnerSex)
+		s.log(uid, "info", fmt.Sprintf("[RequestPhy] GenerateIdealPartnerImage: %s, %d, %s", phyAnalysisResponse.Summary, phyAnalysisResponse.GetPartnerAge(), partnerSex))
 		// idealPartnerImage, err := extDao.GenerateIdealPartnerImage(context.Background(), phyAnalysisResponse, partnerSex)
 		// if err != nil {
 		// 	log.Printf("[RequestPhy] Failed to generate ideal partner image: %v", err)
@@ -365,7 +386,7 @@ func (s *SajuProfileService) RequestPhy(uid, imageBase64, sex, birth string) (
 		// }
 		idealPartnerImage, err := s.runIdealPartnerImage(uid, sex, birth, phyAnalysisResponse)
 		if err != nil {
-			log.Printf("[RequestPhy] Failed to generate ideal partner image: %v", err)
+			s.log(uid, "error", fmt.Sprintf("[RequestPhy] Failed to generate ideal partner image: %v", err))
 			return nil, nil, "", err
 		}
 		// 파트너 이미지 S3에 저장
@@ -373,13 +394,13 @@ func (s *SajuProfileService) RequestPhy(uid, imageBase64, sex, birth string) (
 		imagePath := utils.GetPhyPartnerImagePath(phyPartner.Uid)
 		err, _ = imageS3Dao.SaveImageToS3(imagePath, idealPartnerImage)
 		if err != nil {
-			log.Printf("Failed to save image to S3: %v", err)
+			s.log(uid, "error", fmt.Sprintf("[RequestPhy] Failed to save image to S3: %v", err))
 			return nil, nil, "", err
 		}
 		// 파트너에 파일 메타정보 업데이트
 		err = s.phyIdealPartnerRepo.UpdateImageMimeType(phyPartner.Uid, "image/png")
 		if err != nil {
-			log.Printf("[RequestPhy] Failed to update phy partner image mime type: %v", err)
+			s.log(uid, "error", fmt.Sprintf("[RequestPhy] Failed to update phy partner image mime type: %v", err))
 			return nil, nil, "", err
 		}
 
@@ -533,18 +554,6 @@ func (s *SajuProfileService) GetSajuProfilePartnerResult(w http.ResponseWriter, 
 	})
 }
 
-// ! internal methods
-func (s *SajuProfileService) updateStatus(uid string, status, sajuStatus, phyStatus, partnerStatus *string) error {
-	return s.sajuProfileRepo.UpdateStatus(uid, status, sajuStatus, phyStatus, partnerStatus)
-}
-
-func (s *SajuProfileService) updateSajuSummary(uid string, summary string, content string, nickname string, partner_tips string) error {
-	return s.sajuProfileRepo.UpdateSajuSummary(uid, summary, content, nickname, partner_tips)
-}
-func (s *SajuProfileService) updateFaceFeatures(uid string, features *extdao.FaceFeatures) error {
-	return s.sajuProfileRepo.UpdateFaceFeatures(uid, features.Eyes.ToString(), features.Nose.ToString(), features.Mouth.ToString(), features.FaceShape, features.Notes)
-}
-
 func (s *SajuProfileService) updatePhyAnalysisResponse(uid string, response *extdao.PhyAnalysisResponse) error {
 	return s.sajuProfileRepo.UpdatePhyAnalysisResponse(uid,
 		response.Summary, response.Content, response.GetAge(),
@@ -555,7 +564,8 @@ func (s *SajuProfileService) updatePhyAnalysisResponse(uid string, response *ext
 		response.IdealPartnerPhysiognomy.FacialFeaturePreferences.FaceShape,
 		response.IdealPartnerPhysiognomy.PersonalityMatch,
 		response.IdealPartnerPhysiognomy.PartnerSex,
-		response.GetPartnerAge())
+		response.GetPartnerAge(),
+	)
 }
 
 func (s *SajuProfileService) updatePartner(uid string, partner_uid string, partner_similarity float64) error {
@@ -563,7 +573,7 @@ func (s *SajuProfileService) updatePartner(uid string, partner_uid string, partn
 }
 
 // PhyIdealPartner 생성
-func (s *SajuProfileService) createPhyPartner(response *extdao.PhyAnalysisResponse, sex string) (*entity.PhyIdealPartner, error) {
+func (s *SajuProfileService) createPhyPartner(uid string, response *extdao.PhyAnalysisResponse, sex string) (*entity.PhyIdealPartner, error) {
 	now := time.Now().UnixMilli()
 	phyPartner := &entity.PhyIdealPartner{
 		Uid:              utils.GenUid(),
@@ -584,14 +594,14 @@ func (s *SajuProfileService) createPhyPartner(response *extdao.PhyAnalysisRespon
 	openaiDao := extdao.NewOpenAIExtDao()
 	embedding, err := openaiDao.CreateEmbedding(context.Background(), "", phyPartner.EmbeddingText)
 	if err != nil {
-		log.Printf("[RequestPhy] Failed to create embedding: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[createPhyPartner] Failed to create embedding: %v", err))
 		return nil, err
 	}
 	phyPartner.Embedding = utils.ConvertFloat32ToFloat64(embedding)
 	phyPartner.EmbeddingModel = "text-embedding-3-small"
 
 	if err := s.phyIdealPartnerRepo.Create(phyPartner); err != nil {
-		log.Printf("[RequestPhy] Failed to save PhyIdealPartner to database: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[createPhyPartner] Failed to save PhyIdealPartner to database: %v", err))
 		return nil, err
 	}
 	return phyPartner, nil
@@ -634,7 +644,7 @@ func (s *SajuProfileService) runSaju(uid, sex, birth string) (*extdao.SajuAnalys
 	metaType := string(types.AiMetaTypeSaju)
 	aiMeta, err := dao.NewAIMetaRepository().FindInUseByMetaType(metaType)
 	if err != nil {
-		log.Printf("[RequestSaju] Failed to find ai meta: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[runSaju] Failed to find ai meta: %v", err))
 		return nil, err
 	}
 	// aiMeta 조회
@@ -661,19 +671,19 @@ func (s *SajuProfileService) runSaju(uid, sex, birth string) (*extdao.SajuAnalys
 		aiExecutionInput, utils.StrPtr("system"), utils.StrPtr(uid),
 	)
 	if err != nil {
-		log.Printf("[runSaju] Failed to run ai execution: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[runSaju] Failed to run ai execution: %v", err))
 		return nil, err
 	}
 	if !sr.Ok {
-		log.Printf("[runSaju] Failed to run ai execution: %v", sr.Err)
-		return nil, fmt.Errorf("%s: %s", sr.Err, sr.Msg)
+		s.log(uid, "error", fmt.Sprintf("[runSaju] Failed to run ai execution: %v", sr.Err))
+		return nil, fmt.Errorf("%v: %v", sr.Err, sr.Msg)
 	}
 	if sr.Value != nil {
 		// log.Printf("[runSaju] Ai execution result: %s", *sr.Value)
 		var resp extdao.SajuAnalysisResponse
 		errOfUnmarshal := json.Unmarshal([]byte(*sr.Value), &resp)
 		if errOfUnmarshal != nil {
-			log.Printf("[runSaju] Failed to unmarshal response: %v", errOfUnmarshal)
+			s.log(uid, "error", fmt.Sprintf("[runSaju] Failed to unmarshal response: %v", errOfUnmarshal))
 			return nil, errOfUnmarshal
 		}
 		return &resp, nil
@@ -685,7 +695,7 @@ func (s *SajuProfileService) runFaceFeature(uid, imageBase64, sex, birth string)
 	metaType := string(types.AiMetaTypeFaceFeature)
 	aiMeta, err := dao.NewAIMetaRepository().FindInUseByMetaType(metaType)
 	if err != nil {
-		log.Printf("[runFaceFeature] Failed to find ai meta: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[runFaceFeature] Failed to find ai meta: %v", err))
 		return nil, err
 	}
 	// aiMeta 조회
@@ -713,19 +723,19 @@ func (s *SajuProfileService) runFaceFeature(uid, imageBase64, sex, birth string)
 		aiExecutionInput, utils.StrPtr("system"), utils.StrPtr(uid),
 	)
 	if err != nil {
-		log.Printf("[runFaceFeature] Failed to run ai execution: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[runFaceFeature] Failed to run ai execution: %v", err))
 		return nil, err
 	}
 	if !sr.Ok {
-		log.Printf("[runFaceFeature] Failed to run ai execution: %v", sr.Err)
-		return nil, fmt.Errorf("%s: %s", sr.Err, sr.Msg)
+		s.log(uid, "error", fmt.Sprintf("[runFaceFeature] Failed to run ai execution: %v", sr.Err))
+		return nil, fmt.Errorf("%v: %v", sr.Err, sr.Msg)
 	}
 	if sr.Value != nil {
 		// log.Printf("[runFaceFeature] Ai execution result: %s", *sr.Value)
 		var resp extdao.FaceFeatures
 		errOfUnmarshal := json.Unmarshal([]byte(*sr.Value), &resp)
 		if errOfUnmarshal != nil {
-			log.Printf("[runFaceFeature] Failed to unmarshal response: %v", errOfUnmarshal)
+			s.log(uid, "error", fmt.Sprintf("[runFaceFeature] Failed to unmarshal response: %v", errOfUnmarshal))
 			return nil, errOfUnmarshal
 		}
 		return &resp, nil
@@ -737,7 +747,7 @@ func (s *SajuProfileService) runPhy(uid string, faceFeatures *extdao.FaceFeature
 	metaType := string(types.AiMetaTypePhy)
 	aiMeta, err := dao.NewAIMetaRepository().FindInUseByMetaType(metaType)
 	if err != nil {
-		log.Printf("[runPhy] Failed to find ai meta: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[runPhy] Failed to find ai meta: %v", err))
 		return nil, err
 	}
 	// aiMeta 조회
@@ -765,19 +775,19 @@ func (s *SajuProfileService) runPhy(uid string, faceFeatures *extdao.FaceFeature
 		aiExecutionInput, utils.StrPtr("system"), utils.StrPtr(uid),
 	)
 	if err != nil {
-		log.Printf("[runPhy] Failed to run ai execution: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[runPhy] Failed to run ai execution: %v", err))
 		return nil, err
 	}
 	if !sr.Ok {
-		log.Printf("[runPhy] Failed to run ai execution: %v", sr.Err)
-		return nil, fmt.Errorf("%s: %s", sr.Err, sr.Msg)
+		s.log(uid, "error", fmt.Sprintf("[runPhy] Failed to run ai execution: %v", sr.Err))
+		return nil, fmt.Errorf("%v: %v", sr.Err, sr.Msg)
 	}
 	if sr.Value != nil {
 		// log.Printf("[runPhy] Ai execution result: %s", *sr.Value)
 		var resp extdao.PhyAnalysisResponse
 		errOfUnmarshal := json.Unmarshal([]byte(*sr.Value), &resp)
 		if errOfUnmarshal != nil {
-			log.Printf("[runPhy] Failed to unmarshal response: %v", errOfUnmarshal)
+			s.log(uid, "error", fmt.Sprintf("[runPhy] Failed to unmarshal response: %v", errOfUnmarshal))
 			return nil, errOfUnmarshal
 		}
 		return &resp, nil
@@ -792,7 +802,7 @@ func (s *SajuProfileService) runIdealPartnerImage(uid, sex, birth string, phyAna
 	}
 	aiMeta, err := dao.NewAIMetaRepository().FindInUseByMetaType(metaType)
 	if err != nil {
-		log.Printf("[runIdealPartnerImage] Failed to find ai meta: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[runIdealPartnerImage] Failed to find ai meta: %v", err))
 		return nil, err
 	}
 	// aiMeta 조회
@@ -824,17 +834,17 @@ func (s *SajuProfileService) runIdealPartnerImage(uid, sex, birth string, phyAna
 		aiExecutionInput, utils.StrPtr("system"), utils.StrPtr(uid),
 	)
 	if err != nil {
-		log.Printf("[runIdealPartnerImage] Failed to run ai execution: %v", err)
+		s.log(uid, "error", fmt.Sprintf("[runIdealPartnerImage] Failed to run ai execution: %v", err))
 		return nil, err
 	}
 	if !sr.Ok {
-		log.Printf("[runIdealPartnerImage] Failed to run ai execution: %v", sr.Err)
-		return nil, fmt.Errorf("%s: %s", sr.Err, sr.Msg)
+		s.log(uid, "error", fmt.Sprintf("[runIdealPartnerImage] Failed to run ai execution: %v", sr.Err))
+		return nil, fmt.Errorf("%v: %v", sr.Err, sr.Msg)
 	}
 	if sr.Base64Value != nil {
 		imageData, err := base64.StdEncoding.DecodeString(*sr.Base64Value)
 		if err != nil {
-			log.Printf("[runIdealPartnerImage] Failed to decode base64 value: %v", err)
+			s.log(uid, "error", fmt.Sprintf("[runIdealPartnerImage] Failed to decode base64 value: %v", err))
 			return nil, err
 		}
 
