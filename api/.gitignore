@@ -9,6 +9,10 @@ __pycache__/
 # Go build artifacts
 api
 bin/
+tmp/
+
+# Air hot reload
+build-errors.log
 
 # Environment files
 .env

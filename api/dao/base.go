@@ -87,6 +87,8 @@ func createIndexes() error {
 		"saju_profiles",
 		"phy_ideal_partners",
 		"saju_profile_logs",
+		"admin_users",
+		"admin_user_logs",
 	}
 
 	// Create unique index on uid field for all collections
@@ -103,6 +105,13 @@ func createIndexes() error {
 		log.Printf("Warning: Failed to create vector search index: %v", err)
 	} else {
 		log.Printf("Successfully ensured vector search index for phy_ideal_partners")
+	}
+
+	// Create unique index on email field for admin_users
+	if err := createUniqueEmailIndex(ctx); err != nil {
+		log.Printf("Warning: Failed to create email index for admin_users: %v", err)
+	} else {
+		log.Printf("Successfully ensured email unique index for admin_users")
 	}
 
 	return nil
@@ -174,6 +183,27 @@ func createVectorSearchIndex(ctx context.Context) error {
 		}
 		log.Printf("failed to create vector search index (requires Atlas): %v", err.Error())
 		return fmt.Errorf("failed to create vector search index (requires Atlas): %w", err)
+	}
+
+	return nil
+}
+
+// createUniqueEmailIndex creates a unique index on the email field for admin_users
+func createUniqueEmailIndex(ctx context.Context) error {
+	collection := database.Collection("admin_users")
+
+	indexModel := mongo.IndexModel{
+		Keys:    bson.D{{Key: "email", Value: 1}},
+		Options: options.Index().SetUnique(true).SetName("email_unique"),
+	}
+
+	_, err := collection.Indexes().CreateOne(ctx, indexModel)
+	if err != nil {
+		// Check if error is because index already exists
+		if mongo.IsDuplicateKeyError(err) || isIndexExistsError(err) {
+			return nil // Index already exists, not an error
+		}
+		return fmt.Errorf("failed to create email index: %w", err)
 	}
 
 	return nil

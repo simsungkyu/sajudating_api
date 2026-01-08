@@ -102,15 +102,20 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
+		CreateAdminUser       func(childComplexity int, email string, password string) int
 		CreatePhyIdealPartner func(childComplexity int, input model.PhyIdealPartnerCreateInput) int
 		CreateSajuProfile     func(childComplexity int, input model.SajuProfileCreateInput) int
 		DelAiMeta             func(childComplexity int, uid string) int
 		DeletePhyIdealPartner func(childComplexity int, uid string) int
 		DeleteSajuProfile     func(childComplexity int, uid string) int
+		Login                 func(childComplexity int, email string, password string, otp string) int
+		Logout                func(childComplexity int) int
 		PutAiMeta             func(childComplexity int, input model.AiMetaInput) int
 		RunAiExecution        func(childComplexity int, input model.AiExcutionInput) int
+		SetAdminUserActive    func(childComplexity int, uid string, active bool) int
 		SetAiMetaDefault      func(childComplexity int, uid string) int
 		SetAiMetaInUse        func(childComplexity int, uid string) int
+		UpdateAdminUser       func(childComplexity int, uid string, email string, password string) int
 	}
 
 	PhyIdealPartner struct {
@@ -551,6 +556,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.KV.V(childComplexity), true
 
+	case "Mutation.createAdminUser":
+		if e.complexity.Mutation.CreateAdminUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createAdminUser_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateAdminUser(childComplexity, args["email"].(string), args["password"].(string)), true
+
 	case "Mutation.createPhyIdealPartner":
 		if e.complexity.Mutation.CreatePhyIdealPartner == nil {
 			break
@@ -611,6 +628,25 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.DeleteSajuProfile(childComplexity, args["uid"].(string)), true
 
+	case "Mutation.login":
+		if e.complexity.Mutation.Login == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_login_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Login(childComplexity, args["email"].(string), args["password"].(string), args["otp"].(string)), true
+
+	case "Mutation.logout":
+		if e.complexity.Mutation.Logout == nil {
+			break
+		}
+
+		return e.complexity.Mutation.Logout(childComplexity), true
+
 	case "Mutation.putAiMeta":
 		if e.complexity.Mutation.PutAiMeta == nil {
 			break
@@ -635,6 +671,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Mutation.RunAiExecution(childComplexity, args["input"].(model.AiExcutionInput)), true
 
+	case "Mutation.setAdminUserActive":
+		if e.complexity.Mutation.SetAdminUserActive == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_setAdminUserActive_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.SetAdminUserActive(childComplexity, args["uid"].(string), args["active"].(bool)), true
+
 	case "Mutation.setAiMetaDefault":
 		if e.complexity.Mutation.SetAiMetaDefault == nil {
 			break
@@ -658,6 +706,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.SetAiMetaInUse(childComplexity, args["uid"].(string)), true
+
+	case "Mutation.updateAdminUser":
+		if e.complexity.Mutation.UpdateAdminUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateAdminUser_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateAdminUser(childComplexity, args["uid"].(string), args["email"].(string), args["password"].(string)), true
 
 	case "PhyIdealPartner.age":
 		if e.complexity.PhyIdealPartner.Age == nil {
@@ -1446,13 +1506,24 @@ type Query {
   aiMetas(input: AiMetaSearchInput!): SimpleResult!
   aiMeta(uid: String!): SimpleResult!
   aiMetaTypes: SimpleResult!
-  aiMetaKVs(input:AiMetaKVsInput!): SimpleResult! #kvs는 출력되는값
+  aiMetaKVs(input: AiMetaKVsInput!): SimpleResult! #kvs는 출력되는값
   aiExecutions(input: AiExecutionSearchInput!): SimpleResult!
   aiExecution(uid: String!): SimpleResult!
   palja(birthdate: String!, timezone: String!): SimpleResult!
 }
 
 type Mutation {
+  # AdminUser
+  login(email: String!, password: String!, otp: String!): SimpleResult! # 로그인 - 권한없이 가능
+  logout: SimpleResult! # 로그아웃 - 로그인 권한 필요
+  createAdminUser(email: String!, password: String!): SimpleResult! # 관리자 생성 join - 권한없이 가능
+  setAdminUserActive(uid: String!, active: Boolean!): SimpleResult! # 관리자 활성화 비활성화 - 로그인 권한 필요
+  updateAdminUser(
+    uid: String!
+    email: String!
+    password: String!
+  ): SimpleResult! # 관리자 정보 수정 - 로그인 권한 필요
+  # SajuProfile
   createSajuProfile(input: SajuProfileCreateInput!): SimpleResult
   deleteSajuProfile(uid: String!): SimpleResult
 
@@ -1598,7 +1669,6 @@ type AiMeta implements Node {
   temperature: Float!
   maxTokens: Int!
   size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
-
   inUse: Boolean! # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
 }
 
@@ -1611,7 +1681,7 @@ input AiMetaInput {
   model: String!
   temperature: Float!
   maxTokens: Int!
-  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈 
+  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
 }
 
 input AiMetaSearchInput {
@@ -1649,7 +1719,7 @@ type AiExecution implements Node {
   inputTokens: Int!
   outputTokens: Int!
   totalTokens: Int!
-  # 
+  #
   runBy: String # admin, system
   runSajuProfileUid: String # saju profile uid
 }
@@ -1679,9 +1749,9 @@ input AiExecutionSearchInput {
   runSajuProfileUid: String # saju profile uid
 }
 
-# 
+#
 input AiMetaKVsInput {
-  type: String! # Meta type 
+  type: String! # Meta type
   kvs: [KVInput!]! # 메타에 따른 입력값들 - 사전정의됨
 }
 
@@ -1692,6 +1762,7 @@ type AiMetaType implements Node {
   outputFields: [String!]!
   hasInputImage: Boolean!
   hasOutputImage: Boolean!
-}`, BuiltIn: false},
+}
+`, BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)

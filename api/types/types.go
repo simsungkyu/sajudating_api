@@ -31,8 +31,8 @@ type SajuProfile struct {
 	Palja          string `json:"palja,omitempty"`            // 팔자
 	PaljaHanja     string `json:"palja_hanja,omitempty"`      // 팔자 한자
 	PaljaMainShape string `json:"palja_main_shape,omitempty"` // 팔자 일주 형상
-	Image          string `json:"image,omitempty"`            // base64 encoded image
-	PartnerImage   string `json:"partner_image,omitempty"`    // base64 encoded image
+	// Image          string `json:"image,omitempty"`            // base64 encoded image 본인 이미지 전송불가 처리
+	PartnerImage string `json:"partner_image,omitempty"` // base64 encoded image
 
 	Nickname string          `json:"nickname,omitempty"` // saju
 	Saju     SajuContent     `json:"saju,omitempty"`     // saju

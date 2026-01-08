@@ -79,8 +79,6 @@ func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Re
 		Sex:       sex,
 	}
 
-	imageS3Dao := extdao.NewImageS3Dao()
-
 	// 이미지 처리
 	file, header, err := r.FormFile("image")
 	if err != nil {
@@ -98,14 +96,13 @@ func (s *SajuProfileService) CreateSajuProfile(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// 이미지를 S3에 저장
-	imagePath := utils.GetSajuProfileImagePath(profileUid)
-	err, _ = imageS3Dao.SaveImageToS3(imagePath, imageData)
-	if err != nil {
-		s.log(profileUid, "error", fmt.Sprintf("[CreateSajuProfile] Failed to save image to S3: %v", err))
-		// utils.RespondWithError(w, http.StatusInternalServerError, "Failed to save image to S3")
-		// return
-	}
+	// 이미지를 S3에 저장 하지 않음
+	// imageS3Dao := extdao.NewImageS3Dao()
+	// imagePath := utils.GetSajuProfileImagePath(profileUid)
+	// err, _ = imageS3Dao.SaveImageToS3(imagePath, imageData)
+	// if err != nil {
+	// 	s.log(profileUid, "error", fmt.Sprintf("[CreateSajuProfile] Failed to save image to S3: %v", err))
+	// }
 
 	// profile.ImageData = imageData
 	profile.ImageMimeType = header.Header.Get("Content-Type")
@@ -206,12 +203,13 @@ func (s *SajuProfileService) GetSajuProfile(w http.ResponseWriter, r *http.Reque
 	}
 
 	imageS3Dao := extdao.NewImageS3Dao()
-	imageData, err, _ := imageS3Dao.GetImageFromS3(fmt.Sprintf("saju_profile/%s", uid))
-	if err != nil {
-		log.Printf("Failed to get image from S3: %v", err)
-		imageData = []byte{}
-	}
-	imageBase64 := base64.StdEncoding.EncodeToString(imageData)
+	// 유저 이미지 전송 금지
+	// imageData, err, _ := imageS3Dao.GetImageFromS3(fmt.Sprintf("saju_profile/%s", uid))
+	// if err != nil {
+	// 	log.Printf("Failed to get image from S3: %v", err)
+	// 	imageData = []byte{}
+	// }
+	// imageBase64 := base64.StdEncoding.EncodeToString(imageData)
 
 	partnerImageBase64 := ""
 	if profile.PhyPartnerUid != "" {
@@ -226,9 +224,9 @@ func (s *SajuProfileService) GetSajuProfile(w http.ResponseWriter, r *http.Reque
 	data := types.SajuProfile{
 		Uid: profile.Uid,
 		// input
-		Birthdate:      profile.Birthdate,
-		Sex:            profile.Sex,
-		Image:          imageBase64,
+		Birthdate: profile.Birthdate,
+		Sex:       profile.Sex,
+		// Image:          imageBase64,
 		Palja:          profile.Palja,
 		PaljaHanja:     utils.ConvertPaljaToWithHanja(profile.Palja),
 		PaljaMainShape: utils.GetImageSentenceOfIlju(profile.Palja),

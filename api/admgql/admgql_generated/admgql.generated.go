@@ -19,6 +19,11 @@ import (
 // region    ************************** generated!.gotpl **************************
 
 type MutationResolver interface {
+	Login(ctx context.Context, email string, password string, otp string) (*model.SimpleResult, error)
+	Logout(ctx context.Context) (*model.SimpleResult, error)
+	CreateAdminUser(ctx context.Context, email string, password string) (*model.SimpleResult, error)
+	SetAdminUserActive(ctx context.Context, uid string, active bool) (*model.SimpleResult, error)
+	UpdateAdminUser(ctx context.Context, uid string, email string, password string) (*model.SimpleResult, error)
 	CreateSajuProfile(ctx context.Context, input model.SajuProfileCreateInput) (*model.SimpleResult, error)
 	DeleteSajuProfile(ctx context.Context, uid string) (*model.SimpleResult, error)
 	CreatePhyIdealPartner(ctx context.Context, input model.PhyIdealPartnerCreateInput) (*model.SimpleResult, error)
@@ -54,6 +59,22 @@ type SajuProfileResolver interface {
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_createAdminUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "email", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["email"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "password", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["password"] = arg1
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createPhyIdealPartner_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
@@ -110,6 +131,27 @@ func (ec *executionContext) field_Mutation_deleteSajuProfile_args(ctx context.Co
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_login_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "email", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["email"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "password", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["password"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "otp", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["otp"] = arg2
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_putAiMeta_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -132,6 +174,22 @@ func (ec *executionContext) field_Mutation_runAiExecution_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_setAdminUserActive_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "uid", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["uid"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "active", ec.unmarshalNBoolean2bool)
+	if err != nil {
+		return nil, err
+	}
+	args["active"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_setAiMetaDefault_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -151,6 +209,27 @@ func (ec *executionContext) field_Mutation_setAiMetaInUse_args(ctx context.Conte
 		return nil, err
 	}
 	args["uid"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateAdminUser_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "uid", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["uid"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "email", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["email"] = arg1
+	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "password", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["password"] = arg2
 	return args, nil
 }
 
@@ -1662,6 +1741,329 @@ func (ec *executionContext) fieldContext_KV_v(_ context.Context, field graphql.C
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
 		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_login,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().Login(ctx, fc.Args["email"].(string), fc.Args["password"].(string), fc.Args["otp"].(string))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_login(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_login_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_logout(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_logout,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Mutation().Logout(ctx)
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_logout(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createAdminUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_createAdminUser,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().CreateAdminUser(ctx, fc.Args["email"].(string), fc.Args["password"].(string))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createAdminUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createAdminUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_setAdminUserActive(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_setAdminUserActive,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().SetAdminUserActive(ctx, fc.Args["uid"].(string), fc.Args["active"].(bool))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_setAdminUserActive(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_setAdminUserActive_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateAdminUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateAdminUser,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Mutation().UpdateAdminUser(ctx, fc.Args["uid"].(string), fc.Args["email"].(string), fc.Args["password"].(string))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateAdminUser(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateAdminUser_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
 	}
 	return fc, nil
 }
@@ -6278,6 +6680,41 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "login":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_login(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "logout":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_logout(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createAdminUser":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createAdminUser(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "setAdminUserActive":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_setAdminUserActive(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateAdminUser":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateAdminUser(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createSajuProfile":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createSajuProfile(ctx, field)

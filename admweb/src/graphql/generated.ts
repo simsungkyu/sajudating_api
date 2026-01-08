@@ -135,15 +135,26 @@ export type KvInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createAdminUser: SimpleResult;
   createPhyIdealPartner?: Maybe<SimpleResult>;
   createSajuProfile?: Maybe<SimpleResult>;
   delAiMeta?: Maybe<SimpleResult>;
   deletePhyIdealPartner?: Maybe<SimpleResult>;
   deleteSajuProfile?: Maybe<SimpleResult>;
+  login: SimpleResult;
+  logout: SimpleResult;
   putAiMeta?: Maybe<SimpleResult>;
   runAiExecution: SimpleResult;
+  setAdminUserActive: SimpleResult;
   setAiMetaDefault?: Maybe<SimpleResult>;
   setAiMetaInUse?: Maybe<SimpleResult>;
+  updateAdminUser: SimpleResult;
+};
+
+
+export type MutationCreateAdminUserArgs = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 };
 
 
@@ -172,6 +183,13 @@ export type MutationDeleteSajuProfileArgs = {
 };
 
 
+export type MutationLoginArgs = {
+  email: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+
 export type MutationPutAiMetaArgs = {
   input: AiMetaInput;
 };
@@ -182,12 +200,25 @@ export type MutationRunAiExecutionArgs = {
 };
 
 
+export type MutationSetAdminUserActiveArgs = {
+  active: Scalars['Boolean']['input'];
+  uid: Scalars['String']['input'];
+};
+
+
 export type MutationSetAiMetaDefaultArgs = {
   uid: Scalars['String']['input'];
 };
 
 
 export type MutationSetAiMetaInUseArgs = {
+  uid: Scalars['String']['input'];
+};
+
+
+export type MutationUpdateAdminUserArgs = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
   uid: Scalars['String']['input'];
 };
 
@@ -588,6 +619,23 @@ export type PaljaQueryVariables = Exact<{
 
 
 export type PaljaQuery = { __typename?: 'Query', palja: { __typename?: 'SimpleResult', ok: boolean, value?: string | null } };
+
+export type LoginMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  otp: Scalars['String']['input'];
+}>;
+
+
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'SimpleResult', ok: boolean, value?: string | null, err?: string | null, msg?: string | null } };
+
+export type CreateAdminUserMutationVariables = Exact<{
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+}>;
+
+
+export type CreateAdminUserMutation = { __typename?: 'Mutation', createAdminUser: { __typename?: 'SimpleResult', ok: boolean, uid?: string | null, value?: string | null, err?: string | null, msg?: string | null } };
 
 export const SajuProfileBasicFragmentDoc = gql`
     fragment sajuProfileBasic on SajuProfile {
@@ -1422,3 +1470,79 @@ export type PaljaQueryHookResult = ReturnType<typeof usePaljaQuery>;
 export type PaljaLazyQueryHookResult = ReturnType<typeof usePaljaLazyQuery>;
 export type PaljaSuspenseQueryHookResult = ReturnType<typeof usePaljaSuspenseQuery>;
 export type PaljaQueryResult = Apollo.QueryResult<PaljaQuery, PaljaQueryVariables>;
+export const LoginDocument = gql`
+    mutation login($email: String!, $password: String!, $otp: String!) {
+  login(email: $email, password: $password, otp: $otp) {
+    ok
+    value
+    err
+    msg
+  }
+}
+    `;
+export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
+
+/**
+ * __useLoginMutation__
+ *
+ * To run a mutation, you first call `useLoginMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginMutation, { data, loading, error }] = useLoginMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *      otp: // value for 'otp'
+ *   },
+ * });
+ */
+export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, options);
+      }
+export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
+export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
+export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const CreateAdminUserDocument = gql`
+    mutation createAdminUser($email: String!, $password: String!) {
+  createAdminUser(email: $email, password: $password) {
+    ok
+    uid
+    value
+    err
+    msg
+  }
+}
+    `;
+export type CreateAdminUserMutationFn = Apollo.MutationFunction<CreateAdminUserMutation, CreateAdminUserMutationVariables>;
+
+/**
+ * __useCreateAdminUserMutation__
+ *
+ * To run a mutation, you first call `useCreateAdminUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateAdminUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createAdminUserMutation, { data, loading, error }] = useCreateAdminUserMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useCreateAdminUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateAdminUserMutation, CreateAdminUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateAdminUserMutation, CreateAdminUserMutationVariables>(CreateAdminUserDocument, options);
+      }
+export type CreateAdminUserMutationHookResult = ReturnType<typeof useCreateAdminUserMutation>;
+export type CreateAdminUserMutationResult = Apollo.MutationResult<CreateAdminUserMutation>;
+export type CreateAdminUserMutationOptions = Apollo.BaseMutationOptions<CreateAdminUserMutation, CreateAdminUserMutationVariables>;

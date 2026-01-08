@@ -1,7 +1,11 @@
-.PHONY: run build clean
+.PHONY: run build clean dev
 
 run:
 	go run server.go
+
+dev:
+	@which air > /dev/null || go install github.com/cosmtrek/air@latest
+	air
 
 clean:
 	rm -rf bin/

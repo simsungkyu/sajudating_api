@@ -10,6 +10,7 @@ export const VISION_MODELS = [
 export const IMAGE_MODELS = [
     { value: 'gpt-image-1-mini', label: 'GPT-Image 1 Mini' },
     { value: 'gpt-image-1', label: 'GPT-Image 1' },
+    { value: 'gpt-image-1.5', label: 'GPT-Image 1.5' },
     { value: 'dall-e-3', label: 'DALL-E 3' },
     { value: 'dall-e-2', label: 'DALL-E 2' },
 ];

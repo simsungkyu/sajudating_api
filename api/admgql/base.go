@@ -18,6 +18,8 @@ var (
 	adminPhyPartnerServiceOnce  sync.Once
 	adminToolService            *service.AdminToolService
 	adminToolServiceOnce        sync.Once
+	adminUserService            *service.AdminUserService
+	adminUserServiceOnce        sync.Once
 )
 
 func getAdminAiMetaService() *service.AdminAIMetaService {
@@ -53,4 +55,11 @@ func getAdminToolService() *service.AdminToolService {
 		adminToolService = service.NewAdminToolService()
 	})
 	return adminToolService
+}
+
+func getAdminUserService() *service.AdminUserService {
+	adminUserServiceOnce.Do(func() {
+		adminUserService = service.NewAdminUserService()
+	})
+	return adminUserService
 }

@@ -42,13 +42,24 @@ type Query {
   aiMetas(input: AiMetaSearchInput!): SimpleResult!
   aiMeta(uid: String!): SimpleResult!
   aiMetaTypes: SimpleResult!
-  aiMetaKVs(input:AiMetaKVsInput!): SimpleResult! #kvs는 출력되는값
+  aiMetaKVs(input: AiMetaKVsInput!): SimpleResult! #kvs는 출력되는값
   aiExecutions(input: AiExecutionSearchInput!): SimpleResult!
   aiExecution(uid: String!): SimpleResult!
   palja(birthdate: String!, timezone: String!): SimpleResult!
 }
 
 type Mutation {
+  # AdminUser
+  login(email: String!, password: String!, otp: String!): SimpleResult! # 로그인 - 권한없이 가능
+  logout: SimpleResult! # 로그아웃 - 로그인 권한 필요
+  createAdminUser(email: String!, password: String!): SimpleResult! # 관리자 생성 join - 권한없이 가능
+  setAdminUserActive(uid: String!, active: Boolean!): SimpleResult! # 관리자 활성화 비활성화 - 로그인 권한 필요
+  updateAdminUser(
+    uid: String!
+    email: String!
+    password: String!
+  ): SimpleResult! # 관리자 정보 수정 - 로그인 권한 필요
+  # SajuProfile
   createSajuProfile(input: SajuProfileCreateInput!): SimpleResult
   deleteSajuProfile(uid: String!): SimpleResult
 
@@ -194,7 +205,6 @@ type AiMeta implements Node {
   temperature: Float!
   maxTokens: Int!
   size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
-
   inUse: Boolean! # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
 }
 
@@ -207,7 +217,7 @@ input AiMetaInput {
   model: String!
   temperature: Float!
   maxTokens: Int!
-  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈 
+  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
 }
 
 input AiMetaSearchInput {
@@ -245,7 +255,7 @@ type AiExecution implements Node {
   inputTokens: Int!
   outputTokens: Int!
   totalTokens: Int!
-  # 
+  #
   runBy: String # admin, system
   runSajuProfileUid: String # saju profile uid
 }
@@ -275,9 +285,9 @@ input AiExecutionSearchInput {
   runSajuProfileUid: String # saju profile uid
 }
 
-# 
+#
 input AiMetaKVsInput {
-  type: String! # Meta type 
+  type: String! # Meta type
   kvs: [KVInput!]! # 메타에 따른 입력값들 - 사전정의됨
 }
 

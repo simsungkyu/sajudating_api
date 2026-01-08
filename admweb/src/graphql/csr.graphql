@@ -275,3 +275,22 @@ query palja($birthdate: String!, $timezone: String!) {
     value
   }
 }
+
+mutation login($email: String!, $password: String!, $otp: String!) {
+  login(email: $email, password: $password, otp: $otp) {
+    ok
+    value
+    err
+    msg
+  }
+}
+
+mutation createAdminUser($email: String!, $password: String!) {
+  createAdminUser(email: $email, password: $password) {
+    ok
+    uid
+    value
+    err
+    msg
+  }
+}

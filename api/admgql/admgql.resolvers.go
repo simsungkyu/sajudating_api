@@ -12,6 +12,31 @@ import (
 	"sajudating_api/api/utils"
 )
 
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, email string, password string, otp string) (*model.SimpleResult, error) {
+	return getAdminUserService().Login(ctx, email, password, otp)
+}
+
+// Logout is the resolver for the logout field.
+func (r *mutationResolver) Logout(ctx context.Context) (*model.SimpleResult, error) {
+	return getAdminUserService().Logout(ctx)
+}
+
+// CreateAdminUser is the resolver for the createAdminUser field.
+func (r *mutationResolver) CreateAdminUser(ctx context.Context, email string, password string) (*model.SimpleResult, error) {
+	return getAdminUserService().CreateAdminUser(ctx, email, password)
+}
+
+// SetAdminUserActive is the resolver for the setAdminUserActive field.
+func (r *mutationResolver) SetAdminUserActive(ctx context.Context, uid string, active bool) (*model.SimpleResult, error) {
+	return getAdminUserService().SetAdminUserActive(ctx, uid, active)
+}
+
+// UpdateAdminUser is the resolver for the updateAdminUser field.
+func (r *mutationResolver) UpdateAdminUser(ctx context.Context, uid string, email string, password string) (*model.SimpleResult, error) {
+	return getAdminUserService().UpdateAdminUser(ctx, uid, email, password)
+}
+
 // CreateSajuProfile is the resolver for the createSajuProfile field.
 func (r *mutationResolver) CreateSajuProfile(ctx context.Context, input model.SajuProfileCreateInput) (*model.SimpleResult, error) {
 	return getAdminSajuProfileService().CreateSajuProfileGql(ctx, input)
