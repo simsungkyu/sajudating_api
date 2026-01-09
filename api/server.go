@@ -11,6 +11,7 @@ import (
 	"sajudating_api/api/middleware"
 	"sajudating_api/api/routes"
 	"sajudating_api/api/service"
+	"sajudating_api/api/utils/dslog"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/go-chi/chi/v5"
@@ -25,6 +26,8 @@ func main() {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
 	defer dao.CloseDatabase()
+	// 로컬 로그 초기화
+	dslog.InitDsLog()
 
 	// Chi Router
 	r := chi.NewRouter()

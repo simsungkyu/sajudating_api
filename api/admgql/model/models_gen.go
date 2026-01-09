@@ -127,6 +127,24 @@ type KVInput struct {
 	V string `json:"v"`
 }
 
+type LocalLog struct {
+	ID        *string `json:"id,omitempty"`
+	UID       string  `json:"uid"`
+	CreatedAt int64   `json:"createdAt"`
+	ExpiresAt int64   `json:"expiresAt"`
+	Status    string  `json:"status"`
+	Text      string  `json:"text"`
+}
+
+func (LocalLog) IsNode()             {}
+func (this LocalLog) GetID() *string { return this.ID }
+
+type LocalLogSearchInput struct {
+	Limit  int     `json:"limit"`
+	Offset *int    `json:"offset,omitempty"`
+	Status *string `json:"status,omitempty"`
+}
+
 type Mutation struct {
 }
 
@@ -260,3 +278,14 @@ type SimpleResult struct {
 	Limit       *int    `json:"limit,omitempty"`
 	Offset      *int    `json:"offset,omitempty"`
 }
+
+type SystemStats struct {
+	ID          *string `json:"id,omitempty"`
+	Hostname    string  `json:"hostname"`
+	CPUUsage    float64 `json:"cpuUsage"`
+	MemoryUsage int     `json:"memoryUsage"`
+	MemoryTotal int     `json:"memoryTotal"`
+}
+
+func (SystemStats) IsNode()             {}
+func (this SystemStats) GetID() *string { return this.ID }

@@ -89,6 +89,7 @@ func createIndexes() error {
 		"saju_profile_logs",
 		"admin_users",
 		"admin_user_logs",
+		"local_logs",
 	}
 
 	// Create unique index on uid field for all collections

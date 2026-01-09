@@ -101,6 +101,15 @@ type ComplexityRoot struct {
 		V func(childComplexity int) int
 	}
 
+	LocalLog struct {
+		CreatedAt func(childComplexity int) int
+		ExpiresAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Status    func(childComplexity int) int
+		Text      func(childComplexity int) int
+		UID       func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CreateAdminUser       func(childComplexity int, email string, password string) int
 		CreatePhyIdealPartner func(childComplexity int, input model.PhyIdealPartnerCreateInput) int
@@ -145,6 +154,7 @@ type ComplexityRoot struct {
 		AiMetaKVs                  func(childComplexity int, input model.AiMetaKVsInput) int
 		AiMetaTypes                func(childComplexity int) int
 		AiMetas                    func(childComplexity int, input model.AiMetaSearchInput) int
+		LocalLogs                  func(childComplexity int, input model.LocalLogSearchInput) int
 		Palja                      func(childComplexity int, birthdate string, timezone string) int
 		PhyIdealPartner            func(childComplexity int, uid string) int
 		PhyIdealPartners           func(childComplexity int, input model.PhyIdealPartnerSearchInput) int
@@ -152,6 +162,7 @@ type ComplexityRoot struct {
 		SajuProfileLogs            func(childComplexity int, input model.SajuProfileLogSearchInput) int
 		SajuProfileSimilarPartners func(childComplexity int, uid string, limit int, offset int) int
 		SajuProfiles               func(childComplexity int, input model.SajuProfileSearchInput) int
+		SystemStats                func(childComplexity int) int
 	}
 
 	SajuProfile struct {
@@ -212,6 +223,14 @@ type ComplexityRoot struct {
 		Total       func(childComplexity int) int
 		UID         func(childComplexity int) int
 		Value       func(childComplexity int) int
+	}
+
+	SystemStats struct {
+		CPUUsage    func(childComplexity int) int
+		Hostname    func(childComplexity int) int
+		ID          func(childComplexity int) int
+		MemoryTotal func(childComplexity int) int
+		MemoryUsage func(childComplexity int) int
 	}
 }
 
@@ -555,6 +574,48 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.KV.V(childComplexity), true
+
+	case "LocalLog.createdAt":
+		if e.complexity.LocalLog.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.LocalLog.CreatedAt(childComplexity), true
+
+	case "LocalLog.expiresAt":
+		if e.complexity.LocalLog.ExpiresAt == nil {
+			break
+		}
+
+		return e.complexity.LocalLog.ExpiresAt(childComplexity), true
+
+	case "LocalLog.id":
+		if e.complexity.LocalLog.ID == nil {
+			break
+		}
+
+		return e.complexity.LocalLog.ID(childComplexity), true
+
+	case "LocalLog.status":
+		if e.complexity.LocalLog.Status == nil {
+			break
+		}
+
+		return e.complexity.LocalLog.Status(childComplexity), true
+
+	case "LocalLog.text":
+		if e.complexity.LocalLog.Text == nil {
+			break
+		}
+
+		return e.complexity.LocalLog.Text(childComplexity), true
+
+	case "LocalLog.uid":
+		if e.complexity.LocalLog.UID == nil {
+			break
+		}
+
+		return e.complexity.LocalLog.UID(childComplexity), true
 
 	case "Mutation.createAdminUser":
 		if e.complexity.Mutation.CreateAdminUser == nil {
@@ -905,6 +966,18 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.Query.AiMetas(childComplexity, args["input"].(model.AiMetaSearchInput)), true
 
+	case "Query.localLogs":
+		if e.complexity.Query.LocalLogs == nil {
+			break
+		}
+
+		args, err := ec.field_Query_localLogs_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.LocalLogs(childComplexity, args["input"].(model.LocalLogSearchInput)), true
+
 	case "Query.palja":
 		if e.complexity.Query.Palja == nil {
 			break
@@ -988,6 +1061,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Query.SajuProfiles(childComplexity, args["input"].(model.SajuProfileSearchInput)), true
+
+	case "Query.systemStats":
+		if e.complexity.Query.SystemStats == nil {
+			break
+		}
+
+		return e.complexity.Query.SystemStats(childComplexity), true
 
 	case "SajuProfile.birthdate":
 		if e.complexity.SajuProfile.Birthdate == nil {
@@ -1346,6 +1426,41 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 		return e.complexity.SimpleResult.Value(childComplexity), true
 
+	case "SystemStats.cpuUsage":
+		if e.complexity.SystemStats.CPUUsage == nil {
+			break
+		}
+
+		return e.complexity.SystemStats.CPUUsage(childComplexity), true
+
+	case "SystemStats.hostname":
+		if e.complexity.SystemStats.Hostname == nil {
+			break
+		}
+
+		return e.complexity.SystemStats.Hostname(childComplexity), true
+
+	case "SystemStats.id":
+		if e.complexity.SystemStats.ID == nil {
+			break
+		}
+
+		return e.complexity.SystemStats.ID(childComplexity), true
+
+	case "SystemStats.memoryTotal":
+		if e.complexity.SystemStats.MemoryTotal == nil {
+			break
+		}
+
+		return e.complexity.SystemStats.MemoryTotal(childComplexity), true
+
+	case "SystemStats.memoryUsage":
+		if e.complexity.SystemStats.MemoryUsage == nil {
+			break
+		}
+
+		return e.complexity.SystemStats.MemoryUsage(childComplexity), true
+
 	}
 	return 0, false
 }
@@ -1360,6 +1475,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputAiMetaKVsInput,
 		ec.unmarshalInputAiMetaSearchInput,
 		ec.unmarshalInputKVInput,
+		ec.unmarshalInputLocalLogSearchInput,
 		ec.unmarshalInputPhyIdealPartnerCreateInput,
 		ec.unmarshalInputPhyIdealPartnerSearchInput,
 		ec.unmarshalInputSajuProfileCreateInput,
@@ -1510,6 +1626,9 @@ type Query {
   aiExecutions(input: AiExecutionSearchInput!): SimpleResult!
   aiExecution(uid: String!): SimpleResult!
   palja(birthdate: String!, timezone: String!): SimpleResult!
+
+  localLogs(input: LocalLogSearchInput!): SimpleResult!
+  systemStats: SimpleResult!
 }
 
 type Mutation {
@@ -1762,6 +1881,30 @@ type AiMetaType implements Node {
   outputFields: [String!]!
   hasInputImage: Boolean!
   hasOutputImage: Boolean!
+}
+
+# ! Local Log
+type LocalLog implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  expiresAt: BigInt!
+  status: String!
+  text: String!
+}
+input LocalLogSearchInput {
+  limit: Int!
+  offset: Int
+  status: String
+}
+
+# ! System Stats
+type SystemStats implements Node {
+  id: ID
+  hostname: String!
+  cpuUsage: Float! # 0.0 ~ 100.00
+  memoryUsage: Int! # bytes
+  memoryTotal: Int! # bytes
 }
 `, BuiltIn: false},
 }

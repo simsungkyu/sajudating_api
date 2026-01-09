@@ -1,3 +1,4 @@
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
 import SpaceDashboardRoundedIcon from '@mui/icons-material/SpaceDashboardRounded';
 import SmartToyRoundedIcon from '@mui/icons-material/SmartToyRounded';
@@ -53,6 +54,9 @@ const ProtectedLayout = () => {
             </Button>
             <Button component={RouterLink} to="/ai-meta" color="inherit" startIcon={<SmartToyRoundedIcon />}>
               AI 메타
+            </Button>
+            <Button component={RouterLink} to="/local-logs" color="inherit" startIcon={<DescriptionRoundedIcon />}>
+              로그
             </Button>
           </Stack>
           <Stack direction="row" spacing={1} alignItems="center">

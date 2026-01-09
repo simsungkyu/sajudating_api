@@ -133,6 +133,22 @@ export type KvInput = {
   v: Scalars['String']['input'];
 };
 
+export type LocalLog = Node & {
+  __typename?: 'LocalLog';
+  createdAt: Scalars['BigInt']['output'];
+  expiresAt: Scalars['BigInt']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
+  status: Scalars['String']['output'];
+  text: Scalars['String']['output'];
+  uid: Scalars['String']['output'];
+};
+
+export type LocalLogSearchInput = {
+  limit: Scalars['Int']['input'];
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createAdminUser: SimpleResult;
@@ -274,6 +290,7 @@ export type Query = {
   aiMetaKVs: SimpleResult;
   aiMetaTypes: SimpleResult;
   aiMetas: SimpleResult;
+  localLogs: SimpleResult;
   palja: SimpleResult;
   phyIdealPartner: SimpleResult;
   phyIdealPartners: SimpleResult;
@@ -281,6 +298,7 @@ export type Query = {
   sajuProfileLogs: SimpleResult;
   sajuProfileSimilarPartners: SimpleResult;
   sajuProfiles: SimpleResult;
+  systemStats: SimpleResult;
 };
 
 
@@ -306,6 +324,11 @@ export type QueryAiMetaKVsArgs = {
 
 export type QueryAiMetasArgs = {
   input: AiMetaSearchInput;
+};
+
+
+export type QueryLocalLogsArgs = {
+  input: LocalLogSearchInput;
 };
 
 
@@ -429,6 +452,15 @@ export type SimpleResult = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+export type SystemStats = Node & {
+  __typename?: 'SystemStats';
+  cpuUsage: Scalars['Float']['output'];
+  hostname: Scalars['String']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
+  memoryTotal: Scalars['Int']['output'];
+  memoryUsage: Scalars['Int']['output'];
+};
+
 export type SajuProfileBasicFragment = { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerEmbeddingText: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number };
 
 export type PhyIdealPartnerBasicFragment = { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean };
@@ -442,9 +474,11 @@ export type SajuProfilesQuery = { __typename?: 'Query', sajuProfiles: { __typena
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerEmbeddingText: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
     > | null } };
 
 export type SajuProfileQueryVariables = Exact<{
@@ -456,9 +490,11 @@ export type SajuProfileQuery = { __typename?: 'Query', sajuProfile: { __typename
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerEmbeddingText: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
      | null } };
 
 export type SajuProfileSimilarPartnersQueryVariables = Exact<{
@@ -472,9 +508,11 @@ export type SajuProfileSimilarPartnersQuery = { __typename?: 'Query', sajuProfil
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
     > | null } };
 
 export type PhyIdealPartnersQueryVariables = Exact<{
@@ -486,9 +524,11 @@ export type PhyIdealPartnersQuery = { __typename?: 'Query', phyIdealPartners: { 
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
     > | null } };
 
 export type PhyIdealPartnerQueryVariables = Exact<{
@@ -500,9 +540,11 @@ export type PhyIdealPartnerQuery = { __typename?: 'Query', phyIdealPartner: { __
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
      | null } };
 
 export type SajuProfileLogsQueryVariables = Exact<{
@@ -514,9 +556,11 @@ export type SajuProfileLogsQuery = { __typename?: 'Query', sajuProfileLogs: { __
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog', uid: string, createdAt: any, status: string, text: string }
+      | { __typename?: 'SystemStats' }
     > | null } };
 
 export type AiMetaBasicFragment = { __typename?: 'AiMeta', uid: string, createdAt: any, updatedAt: any, name: string, desc: string, metaType: string, prompt: string, model: string, temperature: number, maxTokens: number, size: string, inUse: boolean };
@@ -530,9 +574,11 @@ export type AiMetasQuery = { __typename?: 'Query', aiMetas: { __typename?: 'Simp
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta', uid: string, createdAt: any, updatedAt: any, name: string, desc: string, metaType: string, prompt: string, model: string, temperature: number, maxTokens: number, size: string, inUse: boolean }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
     > | null } };
 
 export type PutAiMetaMutationVariables = Exact<{
@@ -567,9 +613,11 @@ export type AiExecutionQuery = { __typename?: 'Query', aiExecution: { __typename
       | { __typename?: 'AiExecution', uid: string, status: string, metaUid: string, metaType: string, prompt: string, valued_prompt: string, model: string, temperature: number, maxTokens: number, size: string, inputImageBase64?: string | null, outputText?: string | null, errorMessage: string, outputImageBase64?: string | null, createdAt: any, updatedAt: any, elapsedTime: number, inputTokens: number, outputTokens: number, totalTokens: number, runBy?: string | null, runSajuProfileUid?: string | null, inputkvs: Array<{ __typename?: 'KV', k: string, v: string }>, outputkvs: Array<{ __typename?: 'KV', k: string, v: string }> }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
      | null } };
 
 export type AiExecutionsQueryVariables = Exact<{
@@ -581,9 +629,11 @@ export type AiExecutionsQuery = { __typename?: 'Query', aiExecutions: { __typena
       | { __typename?: 'AiExecution', uid: string, status: string, metaUid: string, metaType: string, prompt: string, valued_prompt: string, model: string, temperature: number, maxTokens: number, size: string, inputImageBase64?: string | null, outputText?: string | null, errorMessage: string, outputImageBase64?: string | null, createdAt: any, updatedAt: any, elapsedTime: number, inputTokens: number, outputTokens: number, totalTokens: number, runBy?: string | null, runSajuProfileUid?: string | null, inputkvs: Array<{ __typename?: 'KV', k: string, v: string }>, outputkvs: Array<{ __typename?: 'KV', k: string, v: string }> }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
     > | null } };
 
 export type RunAiExecutionMutationVariables = Exact<{
@@ -600,9 +650,11 @@ export type GetAiMetaTypesQuery = { __typename?: 'Query', aiMetaTypes: { __typen
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType', type: string, inputFields: Array<string>, outputFields: Array<string>, hasInputImage: boolean, hasOutputImage: boolean }
+      | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
     > | null } };
 
 export type GetAiMetaKVsQueryVariables = Exact<{
@@ -636,6 +688,40 @@ export type CreateAdminUserMutationVariables = Exact<{
 
 
 export type CreateAdminUserMutation = { __typename?: 'Mutation', createAdminUser: { __typename?: 'SimpleResult', ok: boolean, uid?: string | null, value?: string | null, err?: string | null, msg?: string | null } };
+
+export type LocalLogBasicFragment = { __typename?: 'LocalLog', uid: string, createdAt: any, expiresAt: any, status: string, text: string };
+
+export type LocalLogsQueryVariables = Exact<{
+  input: LocalLogSearchInput;
+}>;
+
+
+export type LocalLogsQuery = { __typename?: 'Query', localLogs: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, total?: number | null, limit?: number | null, offset?: number | null, nodes?: Array<
+      | { __typename?: 'AiExecution' }
+      | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog', uid: string, createdAt: any, expiresAt: any, status: string, text: string }
+      | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats' }
+    > | null } };
+
+export type SystemStatsBasicFragment = { __typename?: 'SystemStats', hostname: string, cpuUsage: number, memoryUsage: number, memoryTotal: number };
+
+export type SystemStatsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SystemStatsQuery = { __typename?: 'Query', systemStats: { __typename?: 'SimpleResult', ok: boolean, node?:
+      | { __typename?: 'AiExecution' }
+      | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
+      | { __typename?: 'LocalLog' }
+      | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SystemStats', hostname: string, cpuUsage: number, memoryUsage: number, memoryTotal: number }
+     | null } };
 
 export const SajuProfileBasicFragmentDoc = gql`
     fragment sajuProfileBasic on SajuProfile {
@@ -738,6 +824,23 @@ export const AiExecutionBasicFragmentDoc = gql`
   totalTokens
   runBy
   runSajuProfileUid
+}
+    `;
+export const LocalLogBasicFragmentDoc = gql`
+    fragment localLogBasic on LocalLog {
+  uid
+  createdAt
+  expiresAt
+  status
+  text
+}
+    `;
+export const SystemStatsBasicFragmentDoc = gql`
+    fragment systemStatsBasic on SystemStats {
+  hostname
+  cpuUsage
+  memoryUsage
+  memoryTotal
 }
     `;
 export const SajuProfilesDocument = gql`
@@ -1546,3 +1649,102 @@ export function useCreateAdminUserMutation(baseOptions?: Apollo.MutationHookOpti
 export type CreateAdminUserMutationHookResult = ReturnType<typeof useCreateAdminUserMutation>;
 export type CreateAdminUserMutationResult = Apollo.MutationResult<CreateAdminUserMutation>;
 export type CreateAdminUserMutationOptions = Apollo.BaseMutationOptions<CreateAdminUserMutation, CreateAdminUserMutationVariables>;
+export const LocalLogsDocument = gql`
+    query localLogs($input: LocalLogSearchInput!) {
+  localLogs(input: $input) {
+    ok
+    msg
+    total
+    limit
+    offset
+    nodes {
+      ... on LocalLog {
+        ...localLogBasic
+      }
+    }
+  }
+}
+    ${LocalLogBasicFragmentDoc}`;
+
+/**
+ * __useLocalLogsQuery__
+ *
+ * To run a query within a React component, call `useLocalLogsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLocalLogsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLocalLogsQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useLocalLogsQuery(baseOptions: Apollo.QueryHookOptions<LocalLogsQuery, LocalLogsQueryVariables> & ({ variables: LocalLogsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<LocalLogsQuery, LocalLogsQueryVariables>(LocalLogsDocument, options);
+      }
+export function useLocalLogsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<LocalLogsQuery, LocalLogsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<LocalLogsQuery, LocalLogsQueryVariables>(LocalLogsDocument, options);
+        }
+// @ts-ignore
+export function useLocalLogsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<LocalLogsQuery, LocalLogsQueryVariables>): Apollo.UseSuspenseQueryResult<LocalLogsQuery, LocalLogsQueryVariables>;
+export function useLocalLogsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<LocalLogsQuery, LocalLogsQueryVariables>): Apollo.UseSuspenseQueryResult<LocalLogsQuery | undefined, LocalLogsQueryVariables>;
+export function useLocalLogsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<LocalLogsQuery, LocalLogsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<LocalLogsQuery, LocalLogsQueryVariables>(LocalLogsDocument, options);
+        }
+export type LocalLogsQueryHookResult = ReturnType<typeof useLocalLogsQuery>;
+export type LocalLogsLazyQueryHookResult = ReturnType<typeof useLocalLogsLazyQuery>;
+export type LocalLogsSuspenseQueryHookResult = ReturnType<typeof useLocalLogsSuspenseQuery>;
+export type LocalLogsQueryResult = Apollo.QueryResult<LocalLogsQuery, LocalLogsQueryVariables>;
+export const SystemStatsDocument = gql`
+    query systemStats {
+  systemStats {
+    ok
+    node {
+      ... on SystemStats {
+        ...systemStatsBasic
+      }
+    }
+  }
+}
+    ${SystemStatsBasicFragmentDoc}`;
+
+/**
+ * __useSystemStatsQuery__
+ *
+ * To run a query within a React component, call `useSystemStatsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSystemStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSystemStatsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSystemStatsQuery(baseOptions?: Apollo.QueryHookOptions<SystemStatsQuery, SystemStatsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SystemStatsQuery, SystemStatsQueryVariables>(SystemStatsDocument, options);
+      }
+export function useSystemStatsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SystemStatsQuery, SystemStatsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SystemStatsQuery, SystemStatsQueryVariables>(SystemStatsDocument, options);
+        }
+// @ts-ignore
+export function useSystemStatsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<SystemStatsQuery, SystemStatsQueryVariables>): Apollo.UseSuspenseQueryResult<SystemStatsQuery, SystemStatsQueryVariables>;
+export function useSystemStatsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SystemStatsQuery, SystemStatsQueryVariables>): Apollo.UseSuspenseQueryResult<SystemStatsQuery | undefined, SystemStatsQueryVariables>;
+export function useSystemStatsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<SystemStatsQuery, SystemStatsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<SystemStatsQuery, SystemStatsQueryVariables>(SystemStatsDocument, options);
+        }
+export type SystemStatsQueryHookResult = ReturnType<typeof useSystemStatsQuery>;
+export type SystemStatsLazyQueryHookResult = ReturnType<typeof useSystemStatsLazyQuery>;
+export type SystemStatsSuspenseQueryHookResult = ReturnType<typeof useSystemStatsSuspenseQuery>;
+export type SystemStatsQueryResult = Apollo.QueryResult<SystemStatsQuery, SystemStatsQueryVariables>;

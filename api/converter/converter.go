@@ -135,3 +135,13 @@ func PhyIdealPartnerToModel(partner *entity.PhyIdealPartner) *model.PhyIdealPart
 		HasImage:         partner.HasImage,
 	}
 }
+
+func LocalLogToModel(log *entity.LocalLog) *model.LocalLog {
+	return &model.LocalLog{
+		UID:       log.Uid,
+		CreatedAt: log.CreatedAt,
+		ExpiresAt: log.ExpiresAt,
+		Status:    log.Status,
+		Text:      log.Text,
+	}
+}

@@ -152,6 +152,16 @@ func (r *queryResolver) Palja(ctx context.Context, birthdate string, timezone st
 	return getAdminToolService().GetPaljaGql(ctx, birthdate, timezone)
 }
 
+// LocalLogs is the resolver for the localLogs field.
+func (r *queryResolver) LocalLogs(ctx context.Context, input model.LocalLogSearchInput) (*model.SimpleResult, error) {
+	return getLocalLogService().GetLocalLogs(ctx, input)
+}
+
+// SystemStats is the resolver for the systemStats field.
+func (r *queryResolver) SystemStats(ctx context.Context) (*model.SimpleResult, error) {
+	return getLocalLogService().GetSystemStats(ctx)
+}
+
 // Image is the resolver for the image field.
 func (r *sajuProfileResolver) Image(ctx context.Context, obj *model.SajuProfile) (string, error) {
 	return getAdminSajuProfileService().GetSajuProfileImage(ctx, obj.UID)

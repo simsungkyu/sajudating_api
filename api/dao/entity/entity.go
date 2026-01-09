@@ -2,6 +2,14 @@ package entity
 
 import "fmt"
 
+type LocalLog struct {
+	Uid       string `bson:"uid"`
+	CreatedAt int64  `bson:"created_at"`
+	ExpiresAt int64  `bson:"expires_at"` // 만료시간 - 삭제됨
+	Status    string `bson:"status"`     // init / ing / done / error
+	Text      string `bson:"text"`
+}
+
 type SajuProfile struct {
 	Uid       string `bson:"uid"`
 	CreatedAt int64  `bson:"created_at"`

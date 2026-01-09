@@ -51,6 +51,8 @@ type QueryResolver interface {
 	AiExecutions(ctx context.Context, input model.AiExecutionSearchInput) (*model.SimpleResult, error)
 	AiExecution(ctx context.Context, uid string) (*model.SimpleResult, error)
 	Palja(ctx context.Context, birthdate string, timezone string) (*model.SimpleResult, error)
+	LocalLogs(ctx context.Context, input model.LocalLogSearchInput) (*model.SimpleResult, error)
+	SystemStats(ctx context.Context) (*model.SimpleResult, error)
 }
 type SajuProfileResolver interface {
 	Image(ctx context.Context, obj *model.SajuProfile) (string, error)
@@ -292,6 +294,17 @@ func (ec *executionContext) field_Query_aiMetas_args(ctx context.Context, rawArg
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNAiMetaSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐAiMetaSearchInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_localLogs_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNLocalLogSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐLocalLogSearchInput)
 	if err != nil {
 		return nil, err
 	}
@@ -1735,6 +1748,180 @@ func (ec *executionContext) _KV_v(ctx context.Context, field graphql.CollectedFi
 func (ec *executionContext) fieldContext_KV_v(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "KV",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LocalLog_id(ctx context.Context, field graphql.CollectedField, obj *model.LocalLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LocalLog_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalOID2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LocalLog_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LocalLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LocalLog_uid(ctx context.Context, field graphql.CollectedField, obj *model.LocalLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LocalLog_uid,
+		func(ctx context.Context) (any, error) {
+			return obj.UID, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LocalLog_uid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LocalLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LocalLog_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.LocalLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LocalLog_createdAt,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		ec.marshalNBigInt2int64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LocalLog_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LocalLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BigInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LocalLog_expiresAt(ctx context.Context, field graphql.CollectedField, obj *model.LocalLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LocalLog_expiresAt,
+		func(ctx context.Context) (any, error) {
+			return obj.ExpiresAt, nil
+		},
+		nil,
+		ec.marshalNBigInt2int64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LocalLog_expiresAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LocalLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BigInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LocalLog_status(ctx context.Context, field graphql.CollectedField, obj *model.LocalLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LocalLog_status,
+		func(ctx context.Context) (any, error) {
+			return obj.Status, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LocalLog_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LocalLog",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LocalLog_text(ctx context.Context, field graphql.CollectedField, obj *model.LocalLog) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LocalLog_text,
+		func(ctx context.Context) (any, error) {
+			return obj.Text, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_LocalLog_text(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LocalLog",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -4023,6 +4210,128 @@ func (ec *executionContext) fieldContext_Query_palja(ctx context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_localLogs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_localLogs,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.resolvers.Query().LocalLogs(ctx, fc.Args["input"].(model.LocalLogSearchInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_localLogs(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_localLogs_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_systemStats(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_systemStats,
+		func(ctx context.Context) (any, error) {
+			return ec.resolvers.Query().SystemStats(ctx)
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_systemStats(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -5616,6 +5925,151 @@ func (ec *executionContext) fieldContext_SimpleResult_offset(_ context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _SystemStats_id(ctx context.Context, field graphql.CollectedField, obj *model.SystemStats) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SystemStats_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalOID2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SystemStats_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SystemStats",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SystemStats_hostname(ctx context.Context, field graphql.CollectedField, obj *model.SystemStats) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SystemStats_hostname,
+		func(ctx context.Context) (any, error) {
+			return obj.Hostname, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SystemStats_hostname(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SystemStats",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SystemStats_cpuUsage(ctx context.Context, field graphql.CollectedField, obj *model.SystemStats) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SystemStats_cpuUsage,
+		func(ctx context.Context) (any, error) {
+			return obj.CPUUsage, nil
+		},
+		nil,
+		ec.marshalNFloat2float64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SystemStats_cpuUsage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SystemStats",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SystemStats_memoryUsage(ctx context.Context, field graphql.CollectedField, obj *model.SystemStats) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SystemStats_memoryUsage,
+		func(ctx context.Context) (any, error) {
+			return obj.MemoryUsage, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SystemStats_memoryUsage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SystemStats",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SystemStats_memoryTotal(ctx context.Context, field graphql.CollectedField, obj *model.SystemStats) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SystemStats_memoryTotal,
+		func(ctx context.Context) (any, error) {
+			return obj.MemoryTotal, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SystemStats_memoryTotal(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SystemStats",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -5985,6 +6439,47 @@ func (ec *executionContext) unmarshalInputKVInput(ctx context.Context, obj any) 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputLocalLogSearchInput(ctx context.Context, obj any) (model.LocalLogSearchInput, error) {
+	var it model.LocalLogSearchInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"limit", "offset", "status"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "limit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
+		case "offset":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Offset = data
+		case "status":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputPhyIdealPartnerCreateInput(ctx context.Context, obj any) (model.PhyIdealPartnerCreateInput, error) {
 	var it model.PhyIdealPartnerCreateInput
 	asMap := map[string]any{}
@@ -6261,6 +6756,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
+	case model.SystemStats:
+		return ec._SystemStats(ctx, sel, &obj)
+	case *model.SystemStats:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._SystemStats(ctx, sel, obj)
 	case model.SajuProfileLog:
 		return ec._SajuProfileLog(ctx, sel, &obj)
 	case *model.SajuProfileLog:
@@ -6282,6 +6784,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._PhyIdealPartner(ctx, sel, obj)
+	case model.LocalLog:
+		return ec._LocalLog(ctx, sel, &obj)
+	case *model.LocalLog:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._LocalLog(ctx, sel, obj)
 	case model.AiMetaType:
 		return ec._AiMetaType(ctx, sel, &obj)
 	case *model.AiMetaType:
@@ -6635,6 +7144,67 @@ func (ec *executionContext) _KV(ctx context.Context, sel ast.SelectionSet, obj *
 			}
 		case "v":
 			out.Values[i] = ec._KV_v(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var localLogImplementors = []string{"LocalLog", "Node"}
+
+func (ec *executionContext) _LocalLog(ctx context.Context, sel ast.SelectionSet, obj *model.LocalLog) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, localLogImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LocalLog")
+		case "id":
+			out.Values[i] = ec._LocalLog_id(ctx, field, obj)
+		case "uid":
+			out.Values[i] = ec._LocalLog_uid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._LocalLog_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "expiresAt":
+			out.Values[i] = ec._LocalLog_expiresAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "status":
+			out.Values[i] = ec._LocalLog_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "text":
+			out.Values[i] = ec._LocalLog_text(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -7229,6 +7799,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "localLogs":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_localLogs(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "systemStats":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_systemStats(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -7609,6 +8223,62 @@ func (ec *executionContext) _SimpleResult(ctx context.Context, sel ast.Selection
 	return out
 }
 
+var systemStatsImplementors = []string{"SystemStats", "Node"}
+
+func (ec *executionContext) _SystemStats(ctx context.Context, sel ast.SelectionSet, obj *model.SystemStats) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, systemStatsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SystemStats")
+		case "id":
+			out.Values[i] = ec._SystemStats_id(ctx, field, obj)
+		case "hostname":
+			out.Values[i] = ec._SystemStats_hostname(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "cpuUsage":
+			out.Values[i] = ec._SystemStats_cpuUsage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "memoryUsage":
+			out.Values[i] = ec._SystemStats_memoryUsage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "memoryTotal":
+			out.Values[i] = ec._SystemStats_memoryTotal(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
@@ -7726,6 +8396,11 @@ func (ec *executionContext) unmarshalNKVInput2ᚕᚖsajudating_apiᚋapiᚋadmgq
 func (ec *executionContext) unmarshalNKVInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKVInput(ctx context.Context, v any) (*model.KVInput, error) {
 	res, err := ec.unmarshalInputKVInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNLocalLogSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐLocalLogSearchInput(ctx context.Context, v any) (model.LocalLogSearchInput, error) {
+	res, err := ec.unmarshalInputLocalLogSearchInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNNode2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐNode(ctx context.Context, sel ast.SelectionSet, v model.Node) graphql.Marshaler {

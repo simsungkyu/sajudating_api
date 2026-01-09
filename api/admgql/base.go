@@ -20,6 +20,8 @@ var (
 	adminToolServiceOnce        sync.Once
 	adminUserService            *service.AdminUserService
 	adminUserServiceOnce        sync.Once
+	localLogService             *service.LocalLogService
+	localLogServiceOnce         sync.Once
 )
 
 func getAdminAiMetaService() *service.AdminAIMetaService {
@@ -62,4 +64,11 @@ func getAdminUserService() *service.AdminUserService {
 		adminUserService = service.NewAdminUserService()
 	})
 	return adminUserService
+}
+
+func getLocalLogService() *service.LocalLogService {
+	localLogServiceOnce.Do(func() {
+		localLogService = service.NewLocalLogService()
+	})
+	return localLogService
 }

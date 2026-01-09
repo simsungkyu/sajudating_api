@@ -46,6 +46,9 @@ type Query {
   aiExecutions(input: AiExecutionSearchInput!): SimpleResult!
   aiExecution(uid: String!): SimpleResult!
   palja(birthdate: String!, timezone: String!): SimpleResult!
+
+  localLogs(input: LocalLogSearchInput!): SimpleResult!
+  systemStats: SimpleResult!
 }
 
 type Mutation {
@@ -298,4 +301,28 @@ type AiMetaType implements Node {
   outputFields: [String!]!
   hasInputImage: Boolean!
   hasOutputImage: Boolean!
+}
+
+# ! Local Log
+type LocalLog implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  expiresAt: BigInt!
+  status: String!
+  text: String!
+}
+input LocalLogSearchInput {
+  limit: Int!
+  offset: Int
+  status: String
+}
+
+# ! System Stats
+type SystemStats implements Node {
+  id: ID
+  hostname: String!
+  cpuUsage: Float! # 0.0 ~ 100.00
+  memoryUsage: Int! # bytes
+  memoryTotal: Int! # bytes
 }

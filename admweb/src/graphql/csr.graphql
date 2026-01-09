@@ -294,3 +294,44 @@ mutation createAdminUser($email: String!, $password: String!) {
     msg
   }
 }
+
+fragment localLogBasic on LocalLog {
+  uid
+  createdAt
+  expiresAt
+  status
+  text
+}
+
+query localLogs($input: LocalLogSearchInput!) {
+  localLogs(input: $input) {
+    ok
+    msg
+    total
+    limit
+    offset
+    nodes {
+      ... on LocalLog {
+        ...localLogBasic
+      }
+    }
+  }
+}
+
+fragment systemStatsBasic on SystemStats {
+  hostname
+  cpuUsage
+  memoryUsage
+  memoryTotal
+}
+
+query systemStats {
+  systemStats {
+    ok
+    node {
+      ... on SystemStats {
+        ...systemStatsBasic
+      }
+    }
+  }
+}
