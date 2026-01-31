@@ -15,7 +15,8 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Port string
+	Port     string
+	LocalMCP bool
 }
 
 type DatabaseConfig struct {
@@ -43,7 +44,8 @@ func LoadConfig() error {
 
 	AppConfig = &Config{
 		Server: ServerConfig{
-			Port: getEnv("SERVER_PORT", "8080"),
+			Port:     getEnv("SERVER_PORT", "8080"),
+			LocalMCP: getEnvBool("LOCAL_MCP", false),
 		},
 		Database: DatabaseConfig{
 			URI:    getEnv("MONGODB_URI", "mongodb://localhost:27017"),
@@ -69,4 +71,12 @@ func getEnv(key, defaultValue string) string {
 		return defaultValue
 	}
 	return value
+}
+
+func getEnvBool(key string, defaultValue bool) bool {
+	v := os.Getenv(key)
+	if v == "" {
+		return defaultValue
+	}
+	return v == "1" || v == "true" || v == "yes"
 }

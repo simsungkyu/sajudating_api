@@ -1,4 +1,4 @@
-.PHONY: run build clean dev
+.PHONY: run build clean dev gqlgen gqlgen-watch
 
 run:
 	go run server.go
@@ -32,3 +32,8 @@ buildpush:
 gqlgen:
 	go get github.com/99designs/gqlgen
 	go run github.com/99designs/gqlgen generate
+
+gqlgen-watch:
+	@command -v fswatch >/dev/null 2>&1 || (echo "Install fswatch: brew install fswatch" && exit 1)
+	$(MAKE) gqlgen
+	fswatch -o admgql gqlgen.yml | xargs -n1 -I{} $(MAKE) gqlgen

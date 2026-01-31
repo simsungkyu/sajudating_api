@@ -8,6 +8,7 @@ import (
 	"sajudating_api/api/admgql/admgql_generated"
 	"sajudating_api/api/config"
 	"sajudating_api/api/dao"
+	"sajudating_api/api/mcplocal"
 	"sajudating_api/api/middleware"
 	"sajudating_api/api/routes"
 	"sajudating_api/api/service"
@@ -43,6 +44,13 @@ func main() {
 	})
 	r.Get("/api/admimg/*", service.GetAdminImage)
 	log.Println("Initializing admin management graphql")
+
+	// local-only MCP server (streamable HTTP at /mcp) when LOCAL_MCP=true
+	if config.AppConfig.Server.LocalMCP {
+		mcpServer := mcplocal.NewServer()
+		r.Mount("/mcp", mcplocal.Handler(mcpServer))
+		log.Println("MCP server enabled at /mcp")
+	}
 
 	// init user api route
 	routes.InitRoutes()
