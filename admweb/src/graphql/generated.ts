@@ -15,7 +15,20 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  Any: { input: any; output: any; }
   BigInt: { input: any; output: any; }
+  Map: { input: any; output: any; }
+};
+
+export type AdminUser = Node & {
+  __typename?: 'AdminUser';
+  createdAt: Scalars['BigInt']['output'];
+  email: Scalars['String']['output'];
+  id?: Maybe<Scalars['ID']['output']>;
+  isActive: Scalars['Boolean']['output'];
+  uid: Scalars['String']['output'];
+  updatedAt: Scalars['BigInt']['output'];
+  username: Scalars['String']['output'];
 };
 
 export type AiExcutionInput = {
@@ -122,6 +135,563 @@ export type AiMetaType = Node & {
   type: Scalars['String']['output'];
 };
 
+export type ChemiGenerationPairInput = {
+  birthA: SajuBirthInput;
+  birthB: SajuBirthInput;
+  timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ChemiGenerationRequest = {
+  pair_input: ChemiGenerationPairInput;
+  targets: Array<ChemiGenerationTargetInput>;
+};
+
+export type ChemiGenerationResponse = {
+  __typename?: 'ChemiGenerationResponse';
+  targets: Array<ChemiGenerationTargetOutput>;
+};
+
+export type ChemiGenerationTargetInput = {
+  max_chars: Scalars['Int']['input'];
+  perspective: Scalars['String']['input'];
+};
+
+export type ChemiGenerationTargetOutput = {
+  __typename?: 'ChemiGenerationTargetOutput';
+  max_chars: Scalars['Int']['output'];
+  perspective: Scalars['String']['output'];
+  result: Scalars['String']['output'];
+};
+
+export type ExtractDaeunPeriod = {
+  __typename?: 'ExtractDaeunPeriod';
+  ageFrom: Scalars['Int']['output'];
+  ageTo: Scalars['Int']['output'];
+  branch: Scalars['Int']['output'];
+  branchEl?: Maybe<ExtractFiveEl>;
+  branchHanja?: Maybe<Scalars['String']['output']>;
+  branchKo?: Maybe<Scalars['String']['output']>;
+  branchTenGod?: Maybe<ExtractTenGod>;
+  branchTwelve?: Maybe<ExtractTwelveFate>;
+  branchYy?: Maybe<ExtractYinYang>;
+  day: Scalars['Int']['output'];
+  ganjiHanja?: Maybe<Scalars['String']['output']>;
+  ganjiKo?: Maybe<Scalars['String']['output']>;
+  month: Scalars['Int']['output'];
+  order: Scalars['Int']['output'];
+  startYear: Scalars['Int']['output'];
+  stem: Scalars['Int']['output'];
+  stemEl?: Maybe<ExtractFiveEl>;
+  stemHanja?: Maybe<Scalars['String']['output']>;
+  stemKo?: Maybe<Scalars['String']['output']>;
+  stemTenGod?: Maybe<ExtractTenGod>;
+  stemYy?: Maybe<ExtractYinYang>;
+  type: Scalars['String']['output'];
+  year: Scalars['Int']['output'];
+};
+
+export type ExtractElDistribution = {
+  __typename?: 'ExtractElDistribution';
+  earth: Scalars['Float']['output'];
+  fire: Scalars['Float']['output'];
+  metal: Scalars['Float']['output'];
+  water: Scalars['Float']['output'];
+  wood: Scalars['Float']['output'];
+};
+
+export type ExtractEngine = {
+  __typename?: 'ExtractEngine';
+  name: Scalars['String']['output'];
+  params?: Maybe<Scalars['Map']['output']>;
+  sys?: Maybe<Scalars['String']['output']>;
+  ver: Scalars['String']['output'];
+};
+
+export type ExtractEngineInput = {
+  name: Scalars['String']['input'];
+  params?: InputMaybe<Scalars['Map']['input']>;
+  sys?: InputMaybe<Scalars['String']['input']>;
+  ver: Scalars['String']['input'];
+};
+
+export type ExtractEvalItem = {
+  __typename?: 'ExtractEvalItem';
+  evidence: ExtractEvidence;
+  id: Scalars['String']['output'];
+  k: Scalars['String']['output'];
+  n: Scalars['String']['output'];
+  refs: Array<Scalars['Int']['output']>;
+  score: ExtractScore;
+  v?: Maybe<Scalars['Any']['output']>;
+};
+
+export type ExtractEvidence = {
+  __typename?: 'ExtractEvidence';
+  inputs: ExtractEvidenceInputs;
+  notes?: Maybe<Scalars['String']['output']>;
+  ruleId: Scalars['String']['output'];
+  ruleVer: Scalars['String']['output'];
+  sys?: Maybe<Scalars['String']['output']>;
+};
+
+export type ExtractEvidenceInputs = {
+  __typename?: 'ExtractEvidenceInputs';
+  nodes: Array<Scalars['Int']['output']>;
+  params?: Maybe<Scalars['Map']['output']>;
+};
+
+export type ExtractFactItem = {
+  __typename?: 'ExtractFactItem';
+  evidence: ExtractEvidence;
+  id: Scalars['String']['output'];
+  k: Scalars['String']['output'];
+  n: Scalars['String']['output'];
+  refs: Array<Scalars['Int']['output']>;
+  score?: Maybe<ExtractScore>;
+  v?: Maybe<Scalars['Any']['output']>;
+};
+
+export type ExtractFiveEl =
+  | 'EARTH'
+  | 'FIRE'
+  | 'METAL'
+  | 'WATER'
+  | 'WOOD';
+
+export type ExtractGeo = {
+  __typename?: 'ExtractGeo';
+  lat: Scalars['Float']['output'];
+  lon: Scalars['Float']['output'];
+};
+
+export type ExtractGeoInput = {
+  lat: Scalars['Float']['input'];
+  lon: Scalars['Float']['input'];
+};
+
+export type ExtractHourCandidate = {
+  __typename?: 'ExtractHourCandidate';
+  addedEdges?: Maybe<Array<Scalars['Int']['output']>>;
+  addedEvals?: Maybe<Array<Scalars['String']['output']>>;
+  addedFacts?: Maybe<Array<Scalars['String']['output']>>;
+  addedNodes?: Maybe<Array<Scalars['Int']['output']>>;
+  order: Scalars['Int']['output'];
+  pillar: ExtractPillar;
+  timeWindow?: Maybe<Scalars['String']['output']>;
+  weight?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ExtractHourContext = {
+  __typename?: 'ExtractHourContext';
+  candidates?: Maybe<Array<ExtractHourCandidate>>;
+  missingReason?: Maybe<Scalars['String']['output']>;
+  stableEdges?: Maybe<Array<Scalars['Int']['output']>>;
+  stableEvals?: Maybe<Array<Scalars['String']['output']>>;
+  stableFacts?: Maybe<Array<Scalars['String']['output']>>;
+  stableNodes?: Maybe<Array<Scalars['Int']['output']>>;
+  status: ExtractHourPillarStatus;
+};
+
+export type ExtractHourPillarStatus =
+  | 'ESTIMATED'
+  | 'KNOWN'
+  | 'MISSING';
+
+export type ExtractNodeKind =
+  | 'BRANCH'
+  | 'HIDDEN'
+  | 'STEM';
+
+export type ExtractPairCharts = {
+  __typename?: 'ExtractPairCharts';
+  a?: Maybe<ExtractSajuDoc>;
+  b?: Maybe<ExtractSajuDoc>;
+};
+
+export type ExtractPairDoc = Node & {
+  __typename?: 'ExtractPairDoc';
+  charts?: Maybe<ExtractPairCharts>;
+  createdAt?: Maybe<Scalars['String']['output']>;
+  edges?: Maybe<Array<ExtractPairEdge>>;
+  evals: Array<ExtractPairEvalItem>;
+  facts?: Maybe<Array<ExtractPairFactItem>>;
+  hourCtx?: Maybe<ExtractPairHourContext>;
+  id?: Maybe<Scalars['ID']['output']>;
+  input: ExtractPairInputDisplay;
+  metrics?: Maybe<ExtractPairMetrics>;
+  schemaVer: Scalars['String']['output'];
+};
+
+export type ExtractPairEdge = {
+  __typename?: 'ExtractPairEdge';
+  a: Scalars['Int']['output'];
+  active?: Maybe<Scalars['Boolean']['output']>;
+  b: Scalars['Int']['output'];
+  evidence?: Maybe<ExtractPairEvidence>;
+  id: Scalars['Int']['output'];
+  refsA?: Maybe<Array<Scalars['Int']['output']>>;
+  refsB?: Maybe<Array<Scalars['Int']['output']>>;
+  result?: Maybe<ExtractFiveEl>;
+  t: Scalars['String']['output'];
+  w?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ExtractPairEvalItem = {
+  __typename?: 'ExtractPairEvalItem';
+  evidence: ExtractPairEvidence;
+  id: Scalars['String']['output'];
+  k: ExtractPairEvalKind;
+  n: Scalars['String']['output'];
+  refsA: Array<Scalars['Int']['output']>;
+  refsB: Array<Scalars['Int']['output']>;
+  score: ExtractPairScore;
+  v?: Maybe<Scalars['Any']['output']>;
+};
+
+export type ExtractPairEvalKind =
+  | 'COMPLEMENT'
+  | 'CONFLICT'
+  | 'HARMONY'
+  | 'OVERALL'
+  | 'ROLE_FIT'
+  | 'TIMING';
+
+export type ExtractPairEvidence = {
+  __typename?: 'ExtractPairEvidence';
+  inputs: ExtractPairEvidenceInputs;
+  notes?: Maybe<Scalars['String']['output']>;
+  ruleId: Scalars['String']['output'];
+  ruleVer: Scalars['String']['output'];
+  sys?: Maybe<Scalars['String']['output']>;
+};
+
+export type ExtractPairEvidenceInputs = {
+  __typename?: 'ExtractPairEvidenceInputs';
+  nodesA: Array<Scalars['Int']['output']>;
+  nodesB: Array<Scalars['Int']['output']>;
+  params?: Maybe<Scalars['Map']['output']>;
+};
+
+export type ExtractPairFactItem = {
+  __typename?: 'ExtractPairFactItem';
+  evidence: ExtractPairEvidence;
+  id: Scalars['String']['output'];
+  k: Scalars['String']['output'];
+  n: Scalars['String']['output'];
+  refsA: Array<Scalars['Int']['output']>;
+  refsB: Array<Scalars['Int']['output']>;
+  score?: Maybe<ExtractPairScore>;
+  v?: Maybe<Scalars['Any']['output']>;
+};
+
+export type ExtractPairHourCandidate = {
+  __typename?: 'ExtractPairHourCandidate';
+  a: ExtractPairHourChoice;
+  addedEdges?: Maybe<Array<Scalars['Int']['output']>>;
+  addedEvals?: Maybe<Array<Scalars['String']['output']>>;
+  addedFacts?: Maybe<Array<Scalars['String']['output']>>;
+  b: ExtractPairHourChoice;
+  metricsDelta?: Maybe<ExtractPairMetrics>;
+  note?: Maybe<Scalars['String']['output']>;
+  order: Scalars['Int']['output'];
+  overallScore?: Maybe<ExtractPairScore>;
+  weight?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ExtractPairHourChoice = {
+  __typename?: 'ExtractPairHourChoice';
+  candidateOrder?: Maybe<Scalars['Int']['output']>;
+  pillar?: Maybe<ExtractPillar>;
+  status: ExtractHourPillarStatus;
+  timeWindow?: Maybe<Scalars['String']['output']>;
+  weight?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ExtractPairHourContext = {
+  __typename?: 'ExtractPairHourContext';
+  candidates?: Maybe<Array<ExtractPairHourCandidate>>;
+  missingReasonA?: Maybe<Scalars['String']['output']>;
+  missingReasonB?: Maybe<Scalars['String']['output']>;
+  stableEdges?: Maybe<Array<Scalars['Int']['output']>>;
+  stableEvals?: Maybe<Array<Scalars['String']['output']>>;
+  stableFacts?: Maybe<Array<Scalars['String']['output']>>;
+  statusA: ExtractHourPillarStatus;
+  statusB: ExtractHourPillarStatus;
+};
+
+export type ExtractPairInput = {
+  a: ExtractSajuInput;
+  b: ExtractSajuInput;
+  engine: ExtractEngineInput;
+  ruleSet?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ExtractPairInputDisplay = {
+  __typename?: 'ExtractPairInputDisplay';
+  a: ExtractSajuInputDisplay;
+  b: ExtractSajuInputDisplay;
+  engine: ExtractEngine;
+  ruleSet?: Maybe<Scalars['String']['output']>;
+};
+
+export type ExtractPairMetrics = {
+  __typename?: 'ExtractPairMetrics';
+  confidence?: Maybe<Scalars['Float']['output']>;
+  conflictIndex?: Maybe<Scalars['Float']['output']>;
+  elementComplement?: Maybe<Scalars['Float']['output']>;
+  harmonyIndex?: Maybe<Scalars['Float']['output']>;
+  netIndex?: Maybe<Scalars['Float']['output']>;
+  pressureRisk?: Maybe<Scalars['Float']['output']>;
+  roleFit?: Maybe<Scalars['Float']['output']>;
+  sensitivity?: Maybe<Scalars['Float']['output']>;
+  timingAlignment?: Maybe<Scalars['Float']['output']>;
+  usefulGodSupport?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ExtractPairScore = {
+  __typename?: 'ExtractPairScore';
+  confidence: Scalars['Float']['output'];
+  max: Scalars['Float']['output'];
+  min: Scalars['Float']['output'];
+  norm0_100: Scalars['Int']['output'];
+  parts?: Maybe<Array<ExtractPairScorePart>>;
+  total: Scalars['Float']['output'];
+};
+
+export type ExtractPairScorePart = {
+  __typename?: 'ExtractPairScorePart';
+  label: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  raw: Scalars['Float']['output'];
+  refsA?: Maybe<Array<Scalars['Int']['output']>>;
+  refsB?: Maybe<Array<Scalars['Int']['output']>>;
+  w: Scalars['Float']['output'];
+};
+
+export type ExtractPillar = {
+  __typename?: 'ExtractPillar';
+  branch: Scalars['Int']['output'];
+  gongMang?: Maybe<Array<Scalars['Int']['output']>>;
+  hidden?: Maybe<Array<Scalars['Int']['output']>>;
+  k: ExtractPillarKey;
+  naEum?: Maybe<Scalars['String']['output']>;
+  stem: Scalars['Int']['output'];
+};
+
+export type ExtractPillarKey =
+  | 'D'
+  | 'H'
+  | 'M'
+  | 'Y';
+
+export type ExtractSajuDoc = Node & {
+  __typename?: 'ExtractSajuDoc';
+  daeun?: Maybe<ExtractDaeunPeriod>;
+  daeunList?: Maybe<Array<ExtractDaeunPeriod>>;
+  dayMaster: Scalars['Int']['output'];
+  edges?: Maybe<Array<ExtractSajuEdge>>;
+  elBalance?: Maybe<ExtractElDistribution>;
+  evals: Array<ExtractEvalItem>;
+  facts: Array<ExtractFactItem>;
+  hourCtx?: Maybe<ExtractHourContext>;
+  id?: Maybe<Scalars['ID']['output']>;
+  ilun?: Maybe<ExtractDaeunPeriod>;
+  ilunList?: Maybe<Array<ExtractDaeunPeriod>>;
+  input: ExtractSajuInputDisplay;
+  nodes: Array<ExtractSajuNode>;
+  pillars: Array<ExtractPillar>;
+  schemaVer: Scalars['String']['output'];
+  seun?: Maybe<ExtractDaeunPeriod>;
+  seunList?: Maybe<Array<ExtractDaeunPeriod>>;
+  wolun?: Maybe<ExtractDaeunPeriod>;
+  wolunList?: Maybe<Array<ExtractDaeunPeriod>>;
+};
+
+export type ExtractSajuEdge = {
+  __typename?: 'ExtractSajuEdge';
+  a: Scalars['Int']['output'];
+  active?: Maybe<Scalars['Boolean']['output']>;
+  b: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  refs?: Maybe<Array<Scalars['Int']['output']>>;
+  result?: Maybe<ExtractFiveEl>;
+  t: Scalars['String']['output'];
+  w?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ExtractSajuInput = {
+  adjustedDt?: InputMaybe<Scalars['String']['input']>;
+  calendar?: InputMaybe<Scalars['String']['input']>;
+  dtLocal: Scalars['String']['input'];
+  engine: ExtractEngineInput;
+  fortuneBaseDt?: InputMaybe<Scalars['String']['input']>;
+  ilunMonth?: InputMaybe<Scalars['Int']['input']>;
+  ilunYear?: InputMaybe<Scalars['Int']['input']>;
+  leapMonth?: InputMaybe<Scalars['Boolean']['input']>;
+  loc?: InputMaybe<ExtractGeoInput>;
+  seunFromYear?: InputMaybe<Scalars['Int']['input']>;
+  seunToYear?: InputMaybe<Scalars['Int']['input']>;
+  sex?: InputMaybe<Scalars['String']['input']>;
+  solarDt?: InputMaybe<Scalars['String']['input']>;
+  timePrec?: InputMaybe<ExtractTimePrecision>;
+  tz: Scalars['String']['input'];
+  wolunYear?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ExtractSajuInputDisplay = {
+  __typename?: 'ExtractSajuInputDisplay';
+  adjustedDt?: Maybe<Scalars['String']['output']>;
+  calendar?: Maybe<Scalars['String']['output']>;
+  dtLocal: Scalars['String']['output'];
+  engine: ExtractEngine;
+  fortuneBaseDt?: Maybe<Scalars['String']['output']>;
+  ilunMonth?: Maybe<Scalars['Int']['output']>;
+  ilunYear?: Maybe<Scalars['Int']['output']>;
+  leapMonth?: Maybe<Scalars['Boolean']['output']>;
+  loc?: Maybe<ExtractGeo>;
+  seunFromYear?: Maybe<Scalars['Int']['output']>;
+  seunToYear?: Maybe<Scalars['Int']['output']>;
+  sex?: Maybe<Scalars['String']['output']>;
+  solarDt?: Maybe<Scalars['String']['output']>;
+  timePrec?: Maybe<ExtractTimePrecision>;
+  tz: Scalars['String']['output'];
+  wolunYear?: Maybe<Scalars['Int']['output']>;
+};
+
+export type ExtractSajuNode = {
+  __typename?: 'ExtractSajuNode';
+  branch?: Maybe<Scalars['Int']['output']>;
+  el: ExtractFiveEl;
+  id: Scalars['Int']['output'];
+  idx?: Maybe<Scalars['Int']['output']>;
+  kind: ExtractNodeKind;
+  pillar: ExtractPillarKey;
+  stem?: Maybe<Scalars['Int']['output']>;
+  strength?: Maybe<Scalars['Float']['output']>;
+  tenGod?: Maybe<ExtractTenGod>;
+  twelve?: Maybe<ExtractTwelveFate>;
+  yy: ExtractYinYang;
+};
+
+export type ExtractScore = {
+  __typename?: 'ExtractScore';
+  confidence: Scalars['Float']['output'];
+  max: Scalars['Float']['output'];
+  min: Scalars['Float']['output'];
+  norm0_100: Scalars['Int']['output'];
+  parts?: Maybe<Array<ExtractScorePart>>;
+  total: Scalars['Float']['output'];
+};
+
+export type ExtractScorePart = {
+  __typename?: 'ExtractScorePart';
+  label: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  raw: Scalars['Float']['output'];
+  refs?: Maybe<Array<Scalars['Int']['output']>>;
+  w: Scalars['Float']['output'];
+};
+
+export type ExtractTenGod =
+  | 'BIGYEON'
+  | 'GEOBJAE'
+  | 'JEONGGWAN'
+  | 'JEONGIN'
+  | 'JEONGJAE'
+  | 'PYEONGWAN'
+  | 'PYEONIN'
+  | 'PYEONJAE'
+  | 'SANGGWAN'
+  | 'SIKSHIN';
+
+export type ExtractTimePrecision =
+  | 'HOUR'
+  | 'MINUTE'
+  | 'UNKNOWN';
+
+export type ExtractTwelveFate =
+  | 'BYEONG'
+  | 'GEONROK'
+  | 'GWANDAE'
+  | 'JANGSAENG'
+  | 'JEOL'
+  | 'JEWANG'
+  | 'MOKYOK'
+  | 'MYO'
+  | 'SA'
+  | 'SWOE'
+  | 'TAE'
+  | 'YANG';
+
+export type ExtractYinYang =
+  | 'YANG'
+  | 'YIN';
+
+export type ItemNCard = Node & {
+  __typename?: 'ItemNCard';
+  cardId: Scalars['String']['output'];
+  category: Scalars['String']['output'];
+  contentJson: Scalars['String']['output'];
+  cooldownGroup: Scalars['String']['output'];
+  createdAt: Scalars['BigInt']['output'];
+  debugJson: Scalars['String']['output'];
+  deletedAt: Scalars['BigInt']['output'];
+  domains: Array<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  maxPerUser: Scalars['Int']['output'];
+  priority: Scalars['Int']['output'];
+  ruleSet: Scalars['String']['output'];
+  scope: Scalars['String']['output'];
+  scoreJson: Scalars['String']['output'];
+  status: Scalars['String']['output'];
+  tags: Array<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  triggerJson: Scalars['String']['output'];
+  uid: Scalars['String']['output'];
+  updatedAt: Scalars['BigInt']['output'];
+  version: Scalars['Int']['output'];
+};
+
+export type ItemNCardInput = {
+  cardId: Scalars['String']['input'];
+  category: Scalars['String']['input'];
+  contentJson: Scalars['String']['input'];
+  cooldownGroup: Scalars['String']['input'];
+  debugJson: Scalars['String']['input'];
+  domains: Array<Scalars['String']['input']>;
+  maxPerUser: Scalars['Int']['input'];
+  priority: Scalars['Int']['input'];
+  ruleSet: Scalars['String']['input'];
+  scope: Scalars['String']['input'];
+  scoreJson: Scalars['String']['input'];
+  status: Scalars['String']['input'];
+  tags: Array<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
+  triggerJson: Scalars['String']['input'];
+  version: Scalars['Int']['input'];
+};
+
+export type ItemNCardSearchInput = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  cooldownGroup?: InputMaybe<Scalars['String']['input']>;
+  domain?: InputMaybe<Scalars['String']['input']>;
+  includeDeleted?: InputMaybe<Scalars['Boolean']['input']>;
+  limit: Scalars['Int']['input'];
+  offset: Scalars['Int']['input'];
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  ruleSet?: InputMaybe<Scalars['String']['input']>;
+  scope?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type ItemnCardsByTokensInput = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  ruleSet?: InputMaybe<Scalars['String']['input']>;
+  tokens: Array<Scalars['String']['input']>;
+};
+
 export type Kv = {
   __typename?: 'KV';
   k: Scalars['String']['output'];
@@ -131,6 +701,16 @@ export type Kv = {
 export type KvInput = {
   k: Scalars['String']['input'];
   v: Scalars['String']['input'];
+};
+
+export type LlmRequestResult = Node & {
+  __typename?: 'LLMRequestResult';
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  inputTokens?: Maybe<Scalars['Int']['output']>;
+  outputTokens?: Maybe<Scalars['Int']['output']>;
+  responseText?: Maybe<Scalars['String']['output']>;
+  totalTokens?: Maybe<Scalars['Int']['output']>;
 };
 
 export type LocalLog = Node & {
@@ -152,25 +732,36 @@ export type LocalLogSearchInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createAdminUser: SimpleResult;
+  createItemnCard?: Maybe<SimpleResult>;
   createPhyIdealPartner?: Maybe<SimpleResult>;
   createSajuProfile?: Maybe<SimpleResult>;
   delAiMeta?: Maybe<SimpleResult>;
+  deleteItemnCard?: Maybe<SimpleResult>;
   deletePhyIdealPartner?: Maybe<SimpleResult>;
   deleteSajuProfile?: Maybe<SimpleResult>;
   login: SimpleResult;
   logout: SimpleResult;
   putAiMeta?: Maybe<SimpleResult>;
   runAiExecution: SimpleResult;
+  runChemiGeneration: ChemiGenerationResponse;
+  runSajuGeneration: SajuGenerationResponse;
+  sendLLMRequest: SimpleResult;
   setAdminUserActive: SimpleResult;
   setAiMetaDefault?: Maybe<SimpleResult>;
   setAiMetaInUse?: Maybe<SimpleResult>;
   updateAdminUser: SimpleResult;
+  updateItemnCard?: Maybe<SimpleResult>;
 };
 
 
 export type MutationCreateAdminUserArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationCreateItemnCardArgs = {
+  input: ItemNCardInput;
 };
 
 
@@ -185,6 +776,11 @@ export type MutationCreateSajuProfileArgs = {
 
 
 export type MutationDelAiMetaArgs = {
+  uid: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteItemnCardArgs = {
   uid: Scalars['String']['input'];
 };
 
@@ -216,6 +812,21 @@ export type MutationRunAiExecutionArgs = {
 };
 
 
+export type MutationRunChemiGenerationArgs = {
+  input: ChemiGenerationRequest;
+};
+
+
+export type MutationRunSajuGenerationArgs = {
+  input: SajuGenerationRequest;
+};
+
+
+export type MutationSendLlmRequestArgs = {
+  input: SendLlmRequestInput;
+};
+
+
 export type MutationSetAdminUserActiveArgs = {
   active: Scalars['Boolean']['input'];
   uid: Scalars['String']['input'];
@@ -238,8 +849,22 @@ export type MutationUpdateAdminUserArgs = {
   uid: Scalars['String']['input'];
 };
 
+
+export type MutationUpdateItemnCardArgs = {
+  input: ItemNCardInput;
+  uid: Scalars['String']['input'];
+};
+
 export type Node = {
   id?: Maybe<Scalars['ID']['output']>;
+};
+
+export type PairCardsByTokensInput = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  pTokens: Array<Scalars['String']['input']>;
+  ruleSet?: InputMaybe<Scalars['String']['input']>;
+  tokensA: Array<Scalars['String']['input']>;
+  tokensB: Array<Scalars['String']['input']>;
 };
 
 export type PhyIdealPartner = Node & {
@@ -284,16 +909,26 @@ export type PhyIdealPartnerSearchInput = {
 
 export type Query = {
   __typename?: 'Query';
+  adminUsers: SimpleResult;
   aiExecution: SimpleResult;
   aiExecutions: SimpleResult;
   aiMeta: SimpleResult;
   aiMetaKVs: SimpleResult;
   aiMetaTypes: SimpleResult;
   aiMetas: SimpleResult;
+  extract_pair: SimpleResult;
+  extract_saju: SimpleResult;
+  itemnCard?: Maybe<SimpleResult>;
+  itemnCardByCardId?: Maybe<SimpleResult>;
+  itemnCards: SimpleResult;
+  itemnCardsByTokens: SimpleResult;
   localLogs: SimpleResult;
+  pairCardsByTokens: SimpleResult;
   palja: SimpleResult;
   phyIdealPartner: SimpleResult;
   phyIdealPartners: SimpleResult;
+  sajuChart: SimpleResult;
+  sajuPairChart: SimpleResult;
   sajuProfile: SimpleResult;
   sajuProfileLogs: SimpleResult;
   sajuProfileSimilarPartners: SimpleResult;
@@ -327,8 +962,44 @@ export type QueryAiMetasArgs = {
 };
 
 
+export type QueryExtract_PairArgs = {
+  input: ExtractPairInput;
+};
+
+
+export type QueryExtract_SajuArgs = {
+  input: ExtractSajuInput;
+};
+
+
+export type QueryItemnCardArgs = {
+  uid?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryItemnCardByCardIdArgs = {
+  cardId: Scalars['String']['input'];
+  scope?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryItemnCardsArgs = {
+  input: ItemNCardSearchInput;
+};
+
+
+export type QueryItemnCardsByTokensArgs = {
+  input: ItemnCardsByTokensInput;
+};
+
+
 export type QueryLocalLogsArgs = {
   input: LocalLogSearchInput;
+};
+
+
+export type QueryPairCardsByTokensArgs = {
+  input: PairCardsByTokensInput;
 };
 
 
@@ -345,6 +1016,16 @@ export type QueryPhyIdealPartnerArgs = {
 
 export type QueryPhyIdealPartnersArgs = {
   input: PhyIdealPartnerSearchInput;
+};
+
+
+export type QuerySajuChartArgs = {
+  input: SajuChartInput;
+};
+
+
+export type QuerySajuPairChartArgs = {
+  input: SajuPairChartInput;
 };
 
 
@@ -367,6 +1048,108 @@ export type QuerySajuProfileSimilarPartnersArgs = {
 
 export type QuerySajuProfilesArgs = {
   input: SajuProfileSearchInput;
+};
+
+export type SajuBirthInput = {
+  date: Scalars['String']['input'];
+  time: Scalars['String']['input'];
+  time_precision?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SajuChart = Node & {
+  __typename?: 'SajuChart';
+  dm?: Maybe<Scalars['String']['output']>;
+  engineVersion?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  items?: Maybe<Array<Scalars['String']['output']>>;
+  itemsSummary?: Maybe<Scalars['String']['output']>;
+  mode?: Maybe<Scalars['String']['output']>;
+  period?: Maybe<Scalars['String']['output']>;
+  pillarSource?: Maybe<SajuPillarSource>;
+  pillars: SajuChartPillars;
+  ruleSet?: Maybe<Scalars['String']['output']>;
+  tokens?: Maybe<Array<Scalars['String']['output']>>;
+};
+
+export type SajuChartInput = {
+  birth: SajuBirthInput;
+  calendar?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<Scalars['String']['input']>;
+  includeTokens?: InputMaybe<Scalars['Boolean']['input']>;
+  mode: Scalars['String']['input'];
+  targetDaesoonIndex?: InputMaybe<Scalars['Int']['input']>;
+  targetDay?: InputMaybe<Scalars['Int']['input']>;
+  targetMonth?: InputMaybe<Scalars['Int']['input']>;
+  targetYear?: InputMaybe<Scalars['Int']['input']>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SajuChartPillars = {
+  __typename?: 'SajuChartPillars';
+  d: Scalars['String']['output'];
+  h: Scalars['String']['output'];
+  m: Scalars['String']['output'];
+  y: Scalars['String']['output'];
+};
+
+export type SajuGenerationRequest = {
+  targets: Array<SajuGenerationTargetInput>;
+  user_input: SajuGenerationUserInput;
+};
+
+export type SajuGenerationResponse = {
+  __typename?: 'SajuGenerationResponse';
+  targets: Array<SajuGenerationTargetOutput>;
+};
+
+export type SajuGenerationTargetInput = {
+  kind: Scalars['String']['input'];
+  max_chars: Scalars['Int']['input'];
+  period: Scalars['String']['input'];
+};
+
+export type SajuGenerationTargetOutput = {
+  __typename?: 'SajuGenerationTargetOutput';
+  kind: Scalars['String']['output'];
+  max_chars: Scalars['Int']['output'];
+  period: Scalars['String']['output'];
+  result: Scalars['String']['output'];
+};
+
+export type SajuGenerationUserInput = {
+  birth: SajuBirthInput;
+  gender?: InputMaybe<Scalars['String']['input']>;
+  rule_set?: InputMaybe<Scalars['String']['input']>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SajuPairChart = Node & {
+  __typename?: 'SajuPairChart';
+  chartA: SajuChart;
+  chartB: SajuChart;
+  engineVersion?: Maybe<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  pItems?: Maybe<Array<Scalars['String']['output']>>;
+  pItemsSummary?: Maybe<Scalars['String']['output']>;
+  pTokens: Array<Scalars['String']['output']>;
+  ruleSet?: Maybe<Scalars['String']['output']>;
+};
+
+export type SajuPairChartInput = {
+  birthA: SajuBirthInput;
+  birthB: SajuBirthInput;
+  calendar?: InputMaybe<Scalars['String']['input']>;
+  includeTokens?: InputMaybe<Scalars['Boolean']['input']>;
+  timezone?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SajuPillarSource = {
+  __typename?: 'SajuPillarSource';
+  baseDate: Scalars['String']['output'];
+  baseTimeUsed: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  mode: Scalars['String']['output'];
+  period: Scalars['String']['output'];
 };
 
 export type SajuProfile = Node & {
@@ -436,6 +1219,24 @@ export type SajuProfileSearchInput = {
   orderDirection?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type SelectedItemnCard = Node & {
+  __typename?: 'SelectedItemnCard';
+  cardId: Scalars['String']['output'];
+  contentSummary?: Maybe<Scalars['String']['output']>;
+  evidence: Array<Scalars['String']['output']>;
+  id?: Maybe<Scalars['ID']['output']>;
+  score: Scalars['Int']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type SendLlmRequestInput = {
+  maxTokens?: InputMaybe<Scalars['Int']['input']>;
+  model?: InputMaybe<Scalars['String']['input']>;
+  prompt: Scalars['String']['input'];
+  systemPrompt?: InputMaybe<Scalars['String']['input']>;
+  temperature?: InputMaybe<Scalars['Float']['input']>;
+};
+
 export type SimpleResult = {
   __typename?: 'SimpleResult';
   base64Value?: Maybe<Scalars['String']['output']>;
@@ -471,13 +1272,21 @@ export type SajuProfilesQueryVariables = Exact<{
 
 
 export type SajuProfilesQuery = { __typename?: 'Query', sajuProfiles: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, nodes?: Array<
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerEmbeddingText: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
     > | null } };
 
@@ -487,13 +1296,21 @@ export type SajuProfileQueryVariables = Exact<{
 
 
 export type SajuProfileQuery = { __typename?: 'Query', sajuProfile: { __typename?: 'SimpleResult', ok: boolean, node?:
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile', uid: string, createdAt: any, updatedAt: any, sex: string, birthdate: string, palja: string, email: string, imageMimeType: string, sajuSummary: string, sajuContent: string, nickname: string, phySummary: string, phyContent: string, myFeatureEyes: string, myFeatureNose: string, myFeatureMouth: string, myFeatureFaceShape: string, myFeatureNotes: string, partnerEmbeddingText: string, partnerMatchTips: string, partnerSummary: string, partnerFeatureEyes: string, partnerFeatureNose: string, partnerFeatureMouth: string, partnerFeatureFaceShape: string, partnerPersonalityMatch: string, partnerSex: string, partnerAge: number, phyPartnerUid: string, phyPartnerSimilarity: number }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
      | null } };
 
@@ -505,13 +1322,21 @@ export type SajuProfileSimilarPartnersQueryVariables = Exact<{
 
 
 export type SajuProfileSimilarPartnersQuery = { __typename?: 'Query', sajuProfileSimilarPartners: { __typename?: 'SimpleResult', ok: boolean, nodes?: Array<
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
     > | null } };
 
@@ -521,13 +1346,21 @@ export type PhyIdealPartnersQueryVariables = Exact<{
 
 
 export type PhyIdealPartnersQuery = { __typename?: 'Query', phyIdealPartners: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, nodes?: Array<
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
     > | null } };
 
@@ -537,13 +1370,21 @@ export type PhyIdealPartnerQueryVariables = Exact<{
 
 
 export type PhyIdealPartnerQuery = { __typename?: 'Query', phyIdealPartner: { __typename?: 'SimpleResult', ok: boolean, node?:
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner', uid: string, createdAt: any, updatedAt: any, summary: string, featureEyes: string, featureNose: string, featureMouth: string, featureFaceShape: string, personalityMatch: string, sex: string, age: number, embeddingModel: string, embeddingText: string, similarityScore: number, hasImage: boolean }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
      | null } };
 
@@ -553,13 +1394,21 @@ export type SajuProfileLogsQueryVariables = Exact<{
 
 
 export type SajuProfileLogsQuery = { __typename?: 'Query', sajuProfileLogs: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, nodes?: Array<
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog', uid: string, createdAt: any, status: string, text: string }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
     > | null } };
 
@@ -571,13 +1420,21 @@ export type AiMetasQueryVariables = Exact<{
 
 
 export type AiMetasQuery = { __typename?: 'Query', aiMetas: { __typename?: 'SimpleResult', ok: boolean, nodes?: Array<
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta', uid: string, createdAt: any, updatedAt: any, name: string, desc: string, metaType: string, prompt: string, model: string, temperature: number, maxTokens: number, size: string, inUse: boolean }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
     > | null } };
 
@@ -610,13 +1467,21 @@ export type AiExecutionQueryVariables = Exact<{
 
 
 export type AiExecutionQuery = { __typename?: 'Query', aiExecution: { __typename?: 'SimpleResult', ok: boolean, node?:
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution', uid: string, status: string, metaUid: string, metaType: string, prompt: string, valued_prompt: string, model: string, temperature: number, maxTokens: number, size: string, inputImageBase64?: string | null, outputText?: string | null, errorMessage: string, outputImageBase64?: string | null, createdAt: any, updatedAt: any, elapsedTime: number, inputTokens: number, outputTokens: number, totalTokens: number, runBy?: string | null, runSajuProfileUid?: string | null, inputkvs: Array<{ __typename?: 'KV', k: string, v: string }>, outputkvs: Array<{ __typename?: 'KV', k: string, v: string }> }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
      | null } };
 
@@ -626,13 +1491,21 @@ export type AiExecutionsQueryVariables = Exact<{
 
 
 export type AiExecutionsQuery = { __typename?: 'Query', aiExecutions: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, total?: number | null, limit?: number | null, offset?: number | null, nodes?: Array<
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution', uid: string, status: string, metaUid: string, metaType: string, prompt: string, valued_prompt: string, model: string, temperature: number, maxTokens: number, size: string, inputImageBase64?: string | null, outputText?: string | null, errorMessage: string, outputImageBase64?: string | null, createdAt: any, updatedAt: any, elapsedTime: number, inputTokens: number, outputTokens: number, totalTokens: number, runBy?: string | null, runSajuProfileUid?: string | null, inputkvs: Array<{ __typename?: 'KV', k: string, v: string }>, outputkvs: Array<{ __typename?: 'KV', k: string, v: string }> }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
     > | null } };
 
@@ -647,13 +1520,21 @@ export type GetAiMetaTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAiMetaTypesQuery = { __typename?: 'Query', aiMetaTypes: { __typename?: 'SimpleResult', ok: boolean, nodes?: Array<
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType', type: string, inputFields: Array<string>, outputFields: Array<string>, hasInputImage: boolean, hasOutputImage: boolean }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
     > | null } };
 
@@ -681,6 +1562,30 @@ export type LoginMutationVariables = Exact<{
 
 export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'SimpleResult', ok: boolean, value?: string | null, err?: string | null, msg?: string | null } };
 
+export type AdminUserBasicFragment = { __typename?: 'AdminUser', uid: string, createdAt: any, updatedAt: any, username: string, email: string, isActive: boolean };
+
+export type AdminUsersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AdminUsersQuery = { __typename?: 'Query', adminUsers: { __typename?: 'SimpleResult', ok: boolean, err?: string | null, msg?: string | null, total?: number | null, limit?: number | null, offset?: number | null, nodes?: Array<
+      | { __typename?: 'AdminUser', uid: string, createdAt: any, updatedAt: any, username: string, email: string, isActive: boolean }
+      | { __typename?: 'AiExecution' }
+      | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
+      | { __typename?: 'LocalLog' }
+      | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
+      | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
+      | { __typename?: 'SystemStats' }
+    > | null } };
+
 export type CreateAdminUserMutationVariables = Exact<{
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -688,6 +1593,23 @@ export type CreateAdminUserMutationVariables = Exact<{
 
 
 export type CreateAdminUserMutation = { __typename?: 'Mutation', createAdminUser: { __typename?: 'SimpleResult', ok: boolean, uid?: string | null, value?: string | null, err?: string | null, msg?: string | null } };
+
+export type SetAdminUserActiveMutationVariables = Exact<{
+  uid: Scalars['String']['input'];
+  active: Scalars['Boolean']['input'];
+}>;
+
+
+export type SetAdminUserActiveMutation = { __typename?: 'Mutation', setAdminUserActive: { __typename?: 'SimpleResult', ok: boolean, err?: string | null, msg?: string | null } };
+
+export type UpdateAdminUserMutationVariables = Exact<{
+  uid: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+}>;
+
+
+export type UpdateAdminUserMutation = { __typename?: 'Mutation', updateAdminUser: { __typename?: 'SimpleResult', ok: boolean, err?: string | null, msg?: string | null } };
 
 export type LocalLogBasicFragment = { __typename?: 'LocalLog', uid: string, createdAt: any, expiresAt: any, status: string, text: string };
 
@@ -697,13 +1619,21 @@ export type LocalLogsQueryVariables = Exact<{
 
 
 export type LocalLogsQuery = { __typename?: 'Query', localLogs: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, total?: number | null, limit?: number | null, offset?: number | null, nodes?: Array<
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog', uid: string, createdAt: any, expiresAt: any, status: string, text: string }
       | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats' }
     > | null } };
 
@@ -713,14 +1643,158 @@ export type SystemStatsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type SystemStatsQuery = { __typename?: 'Query', systemStats: { __typename?: 'SimpleResult', ok: boolean, node?:
+      | { __typename?: 'AdminUser' }
       | { __typename?: 'AiExecution' }
       | { __typename?: 'AiMeta' }
       | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard' }
+      | { __typename?: 'LLMRequestResult' }
       | { __typename?: 'LocalLog' }
       | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
       | { __typename?: 'SajuProfile' }
       | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
       | { __typename?: 'SystemStats', hostname: string, cpuUsage: number, memoryUsage: number, memoryTotal: number }
+     | null } };
+
+export type ItemnCardBasicFragment = { __typename?: 'ItemNCard', uid: string, cardId: string, version: number, status: string, ruleSet: string, scope: string, title: string, category: string, tags: Array<string>, domains: Array<string>, priority: number, triggerJson: string, scoreJson: string, contentJson: string, cooldownGroup: string, maxPerUser: number, debugJson: string, deletedAt: any, createdAt: any, updatedAt: any };
+
+export type ItemnCardsQueryVariables = Exact<{
+  input: ItemNCardSearchInput;
+}>;
+
+
+export type ItemnCardsQuery = { __typename?: 'Query', itemnCards: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, total?: number | null, limit?: number | null, offset?: number | null, nodes?: Array<
+      | { __typename?: 'AdminUser' }
+      | { __typename?: 'AiExecution' }
+      | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard', uid: string, cardId: string, version: number, status: string, ruleSet: string, scope: string, title: string, category: string, tags: Array<string>, domains: Array<string>, priority: number, triggerJson: string, scoreJson: string, contentJson: string, cooldownGroup: string, maxPerUser: number, debugJson: string, deletedAt: any, createdAt: any, updatedAt: any }
+      | { __typename?: 'LLMRequestResult' }
+      | { __typename?: 'LocalLog' }
+      | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
+      | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
+      | { __typename?: 'SystemStats' }
+    > | null } };
+
+export type ItemnCardQueryVariables = Exact<{
+  uid?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type ItemnCardQuery = { __typename?: 'Query', itemnCard?: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, node?:
+      | { __typename?: 'AdminUser' }
+      | { __typename?: 'AiExecution' }
+      | { __typename?: 'AiMeta' }
+      | { __typename?: 'AiMetaType' }
+      | { __typename?: 'ExtractPairDoc' }
+      | { __typename?: 'ExtractSajuDoc' }
+      | { __typename?: 'ItemNCard', uid: string, cardId: string, version: number, status: string, ruleSet: string, scope: string, title: string, category: string, tags: Array<string>, domains: Array<string>, priority: number, triggerJson: string, scoreJson: string, contentJson: string, cooldownGroup: string, maxPerUser: number, debugJson: string, deletedAt: any, createdAt: any, updatedAt: any }
+      | { __typename?: 'LLMRequestResult' }
+      | { __typename?: 'LocalLog' }
+      | { __typename?: 'PhyIdealPartner' }
+      | { __typename?: 'SajuChart' }
+      | { __typename?: 'SajuPairChart' }
+      | { __typename?: 'SajuProfile' }
+      | { __typename?: 'SajuProfileLog' }
+      | { __typename?: 'SelectedItemnCard' }
+      | { __typename?: 'SystemStats' }
+     | null } | null };
+
+export type CreateItemnCardMutationVariables = Exact<{
+  input: ItemNCardInput;
+}>;
+
+
+export type CreateItemnCardMutation = { __typename?: 'Mutation', createItemnCard?: { __typename?: 'SimpleResult', ok: boolean, uid?: string | null, msg?: string | null } | null };
+
+export type UpdateItemnCardMutationVariables = Exact<{
+  uid: Scalars['String']['input'];
+  input: ItemNCardInput;
+}>;
+
+
+export type UpdateItemnCardMutation = { __typename?: 'Mutation', updateItemnCard?: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null } | null };
+
+export type DeleteItemnCardMutationVariables = Exact<{
+  uid: Scalars['String']['input'];
+}>;
+
+
+export type DeleteItemnCardMutation = { __typename?: 'Mutation', deleteItemnCard?: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null } | null };
+
+export type RunSajuGenerationMutationVariables = Exact<{
+  input: SajuGenerationRequest;
+}>;
+
+
+export type RunSajuGenerationMutation = { __typename?: 'Mutation', runSajuGeneration: { __typename?: 'SajuGenerationResponse', targets: Array<{ __typename?: 'SajuGenerationTargetOutput', kind: string, period: string, max_chars: number, result: string }> } };
+
+export type RunChemiGenerationMutationVariables = Exact<{
+  input: ChemiGenerationRequest;
+}>;
+
+
+export type RunChemiGenerationMutation = { __typename?: 'Mutation', runChemiGeneration: { __typename?: 'ChemiGenerationResponse', targets: Array<{ __typename?: 'ChemiGenerationTargetOutput', perspective: string, max_chars: number, result: string }> } };
+
+export type ExtractSajuStep1DocFieldsFragment = { __typename?: 'ExtractSajuDoc', schemaVer: string, dayMaster: number, input: { __typename?: 'ExtractSajuInputDisplay', dtLocal: string, tz: string, calendar?: string | null, leapMonth?: boolean | null, sex?: string | null, timePrec?: ExtractTimePrecision | null, solarDt?: string | null, adjustedDt?: string | null, fortuneBaseDt?: string | null, seunFromYear?: number | null, seunToYear?: number | null, wolunYear?: number | null, ilunYear?: number | null, ilunMonth?: number | null, loc?: { __typename?: 'ExtractGeo', lat: number, lon: number } | null, engine: { __typename?: 'ExtractEngine', name: string, ver: string, sys?: string | null } }, pillars: Array<{ __typename?: 'ExtractPillar', k: ExtractPillarKey, stem: number, branch: number }>, daeun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, seun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, wolun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, ilun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, daeunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, seunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, wolunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, ilunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, elBalance?: { __typename?: 'ExtractElDistribution', wood: number, fire: number, earth: number, metal: number, water: number } | null, hourCtx?: { __typename?: 'ExtractHourContext', status: ExtractHourPillarStatus, missingReason?: string | null, candidates?: Array<{ __typename?: 'ExtractHourCandidate', order: number, timeWindow?: string | null, weight?: number | null }> | null } | null, facts: Array<{ __typename?: 'ExtractFactItem', k: string, n: string, v?: any | null, score?: { __typename?: 'ExtractScore', norm0_100: number } | null }>, evals: Array<{ __typename?: 'ExtractEvalItem', k: string, n: string, v?: any | null, score: { __typename?: 'ExtractScore', norm0_100: number } }> };
+
+export type ExtractSajuStep1QueryVariables = Exact<{
+  input: ExtractSajuInput;
+}>;
+
+
+export type ExtractSajuStep1Query = { __typename?: 'Query', extract_saju: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, node?:
+      | { __typename: 'AdminUser' }
+      | { __typename: 'AiExecution' }
+      | { __typename: 'AiMeta' }
+      | { __typename: 'AiMetaType' }
+      | { __typename: 'ExtractPairDoc' }
+      | { __typename: 'ExtractSajuDoc', schemaVer: string, dayMaster: number, input: { __typename?: 'ExtractSajuInputDisplay', dtLocal: string, tz: string, calendar?: string | null, leapMonth?: boolean | null, sex?: string | null, timePrec?: ExtractTimePrecision | null, solarDt?: string | null, adjustedDt?: string | null, fortuneBaseDt?: string | null, seunFromYear?: number | null, seunToYear?: number | null, wolunYear?: number | null, ilunYear?: number | null, ilunMonth?: number | null, loc?: { __typename?: 'ExtractGeo', lat: number, lon: number } | null, engine: { __typename?: 'ExtractEngine', name: string, ver: string, sys?: string | null } }, pillars: Array<{ __typename?: 'ExtractPillar', k: ExtractPillarKey, stem: number, branch: number }>, daeun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, seun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, wolun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, ilun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, daeunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, seunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, wolunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, ilunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, elBalance?: { __typename?: 'ExtractElDistribution', wood: number, fire: number, earth: number, metal: number, water: number } | null, hourCtx?: { __typename?: 'ExtractHourContext', status: ExtractHourPillarStatus, missingReason?: string | null, candidates?: Array<{ __typename?: 'ExtractHourCandidate', order: number, timeWindow?: string | null, weight?: number | null }> | null } | null, facts: Array<{ __typename?: 'ExtractFactItem', k: string, n: string, v?: any | null, score?: { __typename?: 'ExtractScore', norm0_100: number } | null }>, evals: Array<{ __typename?: 'ExtractEvalItem', k: string, n: string, v?: any | null, score: { __typename?: 'ExtractScore', norm0_100: number } }> }
+      | { __typename: 'ItemNCard' }
+      | { __typename: 'LLMRequestResult' }
+      | { __typename: 'LocalLog' }
+      | { __typename: 'PhyIdealPartner' }
+      | { __typename: 'SajuChart' }
+      | { __typename: 'SajuPairChart' }
+      | { __typename: 'SajuProfile' }
+      | { __typename: 'SajuProfileLog' }
+      | { __typename: 'SelectedItemnCard' }
+      | { __typename: 'SystemStats' }
+     | null } };
+
+export type ExtractPairStep1QueryVariables = Exact<{
+  input: ExtractPairInput;
+}>;
+
+
+export type ExtractPairStep1Query = { __typename?: 'Query', extract_pair: { __typename?: 'SimpleResult', ok: boolean, msg?: string | null, node?:
+      | { __typename: 'AdminUser' }
+      | { __typename: 'AiExecution' }
+      | { __typename: 'AiMeta' }
+      | { __typename: 'AiMetaType' }
+      | { __typename: 'ExtractPairDoc', schemaVer: string, input: { __typename?: 'ExtractPairInputDisplay', engine: { __typename?: 'ExtractEngine', name: string, ver: string } }, charts?: { __typename?: 'ExtractPairCharts', a?: { __typename?: 'ExtractSajuDoc', schemaVer: string, dayMaster: number, input: { __typename?: 'ExtractSajuInputDisplay', dtLocal: string, tz: string, calendar?: string | null, leapMonth?: boolean | null, sex?: string | null, timePrec?: ExtractTimePrecision | null, solarDt?: string | null, adjustedDt?: string | null, fortuneBaseDt?: string | null, seunFromYear?: number | null, seunToYear?: number | null, wolunYear?: number | null, ilunYear?: number | null, ilunMonth?: number | null, loc?: { __typename?: 'ExtractGeo', lat: number, lon: number } | null, engine: { __typename?: 'ExtractEngine', name: string, ver: string, sys?: string | null } }, pillars: Array<{ __typename?: 'ExtractPillar', k: ExtractPillarKey, stem: number, branch: number }>, daeun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, seun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, wolun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, ilun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, daeunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, seunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, wolunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, ilunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, elBalance?: { __typename?: 'ExtractElDistribution', wood: number, fire: number, earth: number, metal: number, water: number } | null, hourCtx?: { __typename?: 'ExtractHourContext', status: ExtractHourPillarStatus, missingReason?: string | null, candidates?: Array<{ __typename?: 'ExtractHourCandidate', order: number, timeWindow?: string | null, weight?: number | null }> | null } | null, facts: Array<{ __typename?: 'ExtractFactItem', k: string, n: string, v?: any | null, score?: { __typename?: 'ExtractScore', norm0_100: number } | null }>, evals: Array<{ __typename?: 'ExtractEvalItem', k: string, n: string, v?: any | null, score: { __typename?: 'ExtractScore', norm0_100: number } }> } | null, b?: { __typename?: 'ExtractSajuDoc', schemaVer: string, dayMaster: number, input: { __typename?: 'ExtractSajuInputDisplay', dtLocal: string, tz: string, calendar?: string | null, leapMonth?: boolean | null, sex?: string | null, timePrec?: ExtractTimePrecision | null, solarDt?: string | null, adjustedDt?: string | null, fortuneBaseDt?: string | null, seunFromYear?: number | null, seunToYear?: number | null, wolunYear?: number | null, ilunYear?: number | null, ilunMonth?: number | null, loc?: { __typename?: 'ExtractGeo', lat: number, lon: number } | null, engine: { __typename?: 'ExtractEngine', name: string, ver: string, sys?: string | null } }, pillars: Array<{ __typename?: 'ExtractPillar', k: ExtractPillarKey, stem: number, branch: number }>, daeun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, seun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, wolun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, ilun?: { __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number } | null, daeunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, seunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, wolunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, ilunList?: Array<{ __typename?: 'ExtractDaeunPeriod', type: string, order: number, stem: number, branch: number, stemKo?: string | null, stemHanja?: string | null, branchKo?: string | null, branchHanja?: string | null, ganjiKo?: string | null, ganjiHanja?: string | null, stemEl?: ExtractFiveEl | null, stemYy?: ExtractYinYang | null, stemTenGod?: ExtractTenGod | null, branchEl?: ExtractFiveEl | null, branchYy?: ExtractYinYang | null, branchTenGod?: ExtractTenGod | null, branchTwelve?: ExtractTwelveFate | null, ageFrom: number, ageTo: number, startYear: number, year: number, month: number, day: number }> | null, elBalance?: { __typename?: 'ExtractElDistribution', wood: number, fire: number, earth: number, metal: number, water: number } | null, hourCtx?: { __typename?: 'ExtractHourContext', status: ExtractHourPillarStatus, missingReason?: string | null, candidates?: Array<{ __typename?: 'ExtractHourCandidate', order: number, timeWindow?: string | null, weight?: number | null }> | null } | null, facts: Array<{ __typename?: 'ExtractFactItem', k: string, n: string, v?: any | null, score?: { __typename?: 'ExtractScore', norm0_100: number } | null }>, evals: Array<{ __typename?: 'ExtractEvalItem', k: string, n: string, v?: any | null, score: { __typename?: 'ExtractScore', norm0_100: number } }> } | null } | null, facts?: Array<{ __typename?: 'ExtractPairFactItem', k: string, n: string, v?: any | null }> | null, edges?: Array<{ __typename?: 'ExtractPairEdge', t: string }> | null, evals: Array<{ __typename?: 'ExtractPairEvalItem', k: ExtractPairEvalKind, n: string, score: { __typename?: 'ExtractPairScore', norm0_100: number } }> }
+      | { __typename: 'ExtractSajuDoc' }
+      | { __typename: 'ItemNCard' }
+      | { __typename: 'LLMRequestResult' }
+      | { __typename: 'LocalLog' }
+      | { __typename: 'PhyIdealPartner' }
+      | { __typename: 'SajuChart' }
+      | { __typename: 'SajuPairChart' }
+      | { __typename: 'SajuProfile' }
+      | { __typename: 'SajuProfileLog' }
+      | { __typename: 'SelectedItemnCard' }
+      | { __typename: 'SystemStats' }
      | null } };
 
 export const SajuProfileBasicFragmentDoc = gql`
@@ -826,6 +1900,16 @@ export const AiExecutionBasicFragmentDoc = gql`
   runSajuProfileUid
 }
     `;
+export const AdminUserBasicFragmentDoc = gql`
+    fragment adminUserBasic on AdminUser {
+  uid
+  createdAt
+  updatedAt
+  username
+  email
+  isActive
+}
+    `;
 export const LocalLogBasicFragmentDoc = gql`
     fragment localLogBasic on LocalLog {
   uid
@@ -841,6 +1925,298 @@ export const SystemStatsBasicFragmentDoc = gql`
   cpuUsage
   memoryUsage
   memoryTotal
+}
+    `;
+export const ItemnCardBasicFragmentDoc = gql`
+    fragment itemnCardBasic on ItemNCard {
+  uid
+  cardId
+  version
+  status
+  ruleSet
+  scope
+  title
+  category
+  tags
+  domains
+  priority
+  triggerJson
+  scoreJson
+  contentJson
+  cooldownGroup
+  maxPerUser
+  debugJson
+  deletedAt
+  createdAt
+  updatedAt
+}
+    `;
+export const ExtractSajuStep1DocFieldsFragmentDoc = gql`
+    fragment extractSajuStep1DocFields on ExtractSajuDoc {
+  schemaVer
+  input {
+    dtLocal
+    tz
+    calendar
+    leapMonth
+    sex
+    timePrec
+    solarDt
+    adjustedDt
+    loc {
+      lat
+      lon
+    }
+    engine {
+      name
+      ver
+      sys
+    }
+    fortuneBaseDt
+    seunFromYear
+    seunToYear
+    wolunYear
+    ilunYear
+    ilunMonth
+  }
+  pillars {
+    k
+    stem
+    branch
+  }
+  dayMaster
+  daeun {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  seun {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  wolun {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  ilun {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  daeunList {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  seunList {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  wolunList {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  ilunList {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  elBalance {
+    wood
+    fire
+    earth
+    metal
+    water
+  }
+  hourCtx {
+    status
+    missingReason
+    candidates {
+      order
+      timeWindow
+      weight
+    }
+  }
+  facts {
+    k
+    n
+    v
+    score {
+      norm0_100
+    }
+  }
+  evals {
+    k
+    n
+    v
+    score {
+      norm0_100
+    }
+  }
 }
     `;
 export const SajuProfilesDocument = gql`
@@ -1611,6 +2987,58 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const AdminUsersDocument = gql`
+    query adminUsers {
+  adminUsers {
+    ok
+    err
+    msg
+    total
+    limit
+    offset
+    nodes {
+      ... on AdminUser {
+        ...adminUserBasic
+      }
+    }
+  }
+}
+    ${AdminUserBasicFragmentDoc}`;
+
+/**
+ * __useAdminUsersQuery__
+ *
+ * To run a query within a React component, call `useAdminUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useAdminUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAdminUsersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useAdminUsersQuery(baseOptions?: Apollo.QueryHookOptions<AdminUsersQuery, AdminUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<AdminUsersQuery, AdminUsersQueryVariables>(AdminUsersDocument, options);
+      }
+export function useAdminUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<AdminUsersQuery, AdminUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<AdminUsersQuery, AdminUsersQueryVariables>(AdminUsersDocument, options);
+        }
+// @ts-ignore
+export function useAdminUsersSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<AdminUsersQuery, AdminUsersQueryVariables>): Apollo.UseSuspenseQueryResult<AdminUsersQuery, AdminUsersQueryVariables>;
+export function useAdminUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<AdminUsersQuery, AdminUsersQueryVariables>): Apollo.UseSuspenseQueryResult<AdminUsersQuery | undefined, AdminUsersQueryVariables>;
+export function useAdminUsersSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<AdminUsersQuery, AdminUsersQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<AdminUsersQuery, AdminUsersQueryVariables>(AdminUsersDocument, options);
+        }
+export type AdminUsersQueryHookResult = ReturnType<typeof useAdminUsersQuery>;
+export type AdminUsersLazyQueryHookResult = ReturnType<typeof useAdminUsersLazyQuery>;
+export type AdminUsersSuspenseQueryHookResult = ReturnType<typeof useAdminUsersSuspenseQuery>;
+export type AdminUsersQueryResult = Apollo.QueryResult<AdminUsersQuery, AdminUsersQueryVariables>;
 export const CreateAdminUserDocument = gql`
     mutation createAdminUser($email: String!, $password: String!) {
   createAdminUser(email: $email, password: $password) {
@@ -1649,6 +3077,79 @@ export function useCreateAdminUserMutation(baseOptions?: Apollo.MutationHookOpti
 export type CreateAdminUserMutationHookResult = ReturnType<typeof useCreateAdminUserMutation>;
 export type CreateAdminUserMutationResult = Apollo.MutationResult<CreateAdminUserMutation>;
 export type CreateAdminUserMutationOptions = Apollo.BaseMutationOptions<CreateAdminUserMutation, CreateAdminUserMutationVariables>;
+export const SetAdminUserActiveDocument = gql`
+    mutation setAdminUserActive($uid: String!, $active: Boolean!) {
+  setAdminUserActive(uid: $uid, active: $active) {
+    ok
+    err
+    msg
+  }
+}
+    `;
+export type SetAdminUserActiveMutationFn = Apollo.MutationFunction<SetAdminUserActiveMutation, SetAdminUserActiveMutationVariables>;
+
+/**
+ * __useSetAdminUserActiveMutation__
+ *
+ * To run a mutation, you first call `useSetAdminUserActiveMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetAdminUserActiveMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setAdminUserActiveMutation, { data, loading, error }] = useSetAdminUserActiveMutation({
+ *   variables: {
+ *      uid: // value for 'uid'
+ *      active: // value for 'active'
+ *   },
+ * });
+ */
+export function useSetAdminUserActiveMutation(baseOptions?: Apollo.MutationHookOptions<SetAdminUserActiveMutation, SetAdminUserActiveMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SetAdminUserActiveMutation, SetAdminUserActiveMutationVariables>(SetAdminUserActiveDocument, options);
+      }
+export type SetAdminUserActiveMutationHookResult = ReturnType<typeof useSetAdminUserActiveMutation>;
+export type SetAdminUserActiveMutationResult = Apollo.MutationResult<SetAdminUserActiveMutation>;
+export type SetAdminUserActiveMutationOptions = Apollo.BaseMutationOptions<SetAdminUserActiveMutation, SetAdminUserActiveMutationVariables>;
+export const UpdateAdminUserDocument = gql`
+    mutation updateAdminUser($uid: String!, $email: String!, $password: String!) {
+  updateAdminUser(uid: $uid, email: $email, password: $password) {
+    ok
+    err
+    msg
+  }
+}
+    `;
+export type UpdateAdminUserMutationFn = Apollo.MutationFunction<UpdateAdminUserMutation, UpdateAdminUserMutationVariables>;
+
+/**
+ * __useUpdateAdminUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateAdminUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateAdminUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateAdminUserMutation, { data, loading, error }] = useUpdateAdminUserMutation({
+ *   variables: {
+ *      uid: // value for 'uid'
+ *      email: // value for 'email'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useUpdateAdminUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateAdminUserMutation, UpdateAdminUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateAdminUserMutation, UpdateAdminUserMutationVariables>(UpdateAdminUserDocument, options);
+      }
+export type UpdateAdminUserMutationHookResult = ReturnType<typeof useUpdateAdminUserMutation>;
+export type UpdateAdminUserMutationResult = Apollo.MutationResult<UpdateAdminUserMutation>;
+export type UpdateAdminUserMutationOptions = Apollo.BaseMutationOptions<UpdateAdminUserMutation, UpdateAdminUserMutationVariables>;
 export const LocalLogsDocument = gql`
     query localLogs($input: LocalLogSearchInput!) {
   localLogs(input: $input) {
@@ -1748,3 +3249,412 @@ export type SystemStatsQueryHookResult = ReturnType<typeof useSystemStatsQuery>;
 export type SystemStatsLazyQueryHookResult = ReturnType<typeof useSystemStatsLazyQuery>;
 export type SystemStatsSuspenseQueryHookResult = ReturnType<typeof useSystemStatsSuspenseQuery>;
 export type SystemStatsQueryResult = Apollo.QueryResult<SystemStatsQuery, SystemStatsQueryVariables>;
+export const ItemnCardsDocument = gql`
+    query itemnCards($input: ItemNCardSearchInput!) {
+  itemnCards(input: $input) {
+    ok
+    msg
+    total
+    limit
+    offset
+    nodes {
+      ... on ItemNCard {
+        ...itemnCardBasic
+      }
+    }
+  }
+}
+    ${ItemnCardBasicFragmentDoc}`;
+
+/**
+ * __useItemnCardsQuery__
+ *
+ * To run a query within a React component, call `useItemnCardsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useItemnCardsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useItemnCardsQuery({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useItemnCardsQuery(baseOptions: Apollo.QueryHookOptions<ItemnCardsQuery, ItemnCardsQueryVariables> & ({ variables: ItemnCardsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ItemnCardsQuery, ItemnCardsQueryVariables>(ItemnCardsDocument, options);
+      }
+export function useItemnCardsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ItemnCardsQuery, ItemnCardsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ItemnCardsQuery, ItemnCardsQueryVariables>(ItemnCardsDocument, options);
+        }
+// @ts-ignore
+export function useItemnCardsSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ItemnCardsQuery, ItemnCardsQueryVariables>): Apollo.UseSuspenseQueryResult<ItemnCardsQuery, ItemnCardsQueryVariables>;
+export function useItemnCardsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ItemnCardsQuery, ItemnCardsQueryVariables>): Apollo.UseSuspenseQueryResult<ItemnCardsQuery | undefined, ItemnCardsQueryVariables>;
+export function useItemnCardsSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ItemnCardsQuery, ItemnCardsQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ItemnCardsQuery, ItemnCardsQueryVariables>(ItemnCardsDocument, options);
+        }
+export type ItemnCardsQueryHookResult = ReturnType<typeof useItemnCardsQuery>;
+export type ItemnCardsLazyQueryHookResult = ReturnType<typeof useItemnCardsLazyQuery>;
+export type ItemnCardsSuspenseQueryHookResult = ReturnType<typeof useItemnCardsSuspenseQuery>;
+export type ItemnCardsQueryResult = Apollo.QueryResult<ItemnCardsQuery, ItemnCardsQueryVariables>;
+export const ItemnCardDocument = gql`
+    query itemnCard($uid: String) {
+  itemnCard(uid: $uid) {
+    ok
+    msg
+    node {
+      ... on ItemNCard {
+        ...itemnCardBasic
+      }
+    }
+  }
+}
+    ${ItemnCardBasicFragmentDoc}`;
+
+/**
+ * __useItemnCardQuery__
+ *
+ * To run a query within a React component, call `useItemnCardQuery` and pass it any options that fit your needs.
+ * When your component renders, `useItemnCardQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useItemnCardQuery({
+ *   variables: {
+ *      uid: // value for 'uid'
+ *   },
+ * });
+ */
+export function useItemnCardQuery(baseOptions?: Apollo.QueryHookOptions<ItemnCardQuery, ItemnCardQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ItemnCardQuery, ItemnCardQueryVariables>(ItemnCardDocument, options);
+      }
+export function useItemnCardLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ItemnCardQuery, ItemnCardQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ItemnCardQuery, ItemnCardQueryVariables>(ItemnCardDocument, options);
+        }
+// @ts-ignore
+export function useItemnCardSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ItemnCardQuery, ItemnCardQueryVariables>): Apollo.UseSuspenseQueryResult<ItemnCardQuery, ItemnCardQueryVariables>;
+export function useItemnCardSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ItemnCardQuery, ItemnCardQueryVariables>): Apollo.UseSuspenseQueryResult<ItemnCardQuery | undefined, ItemnCardQueryVariables>;
+export function useItemnCardSuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ItemnCardQuery, ItemnCardQueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ItemnCardQuery, ItemnCardQueryVariables>(ItemnCardDocument, options);
+        }
+export type ItemnCardQueryHookResult = ReturnType<typeof useItemnCardQuery>;
+export type ItemnCardLazyQueryHookResult = ReturnType<typeof useItemnCardLazyQuery>;
+export type ItemnCardSuspenseQueryHookResult = ReturnType<typeof useItemnCardSuspenseQuery>;
+export type ItemnCardQueryResult = Apollo.QueryResult<ItemnCardQuery, ItemnCardQueryVariables>;
+export const CreateItemnCardDocument = gql`
+    mutation createItemnCard($input: ItemNCardInput!) {
+  createItemnCard(input: $input) {
+    ok
+    uid
+    msg
+  }
+}
+    `;
+export type CreateItemnCardMutationFn = Apollo.MutationFunction<CreateItemnCardMutation, CreateItemnCardMutationVariables>;
+
+/**
+ * __useCreateItemnCardMutation__
+ *
+ * To run a mutation, you first call `useCreateItemnCardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateItemnCardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createItemnCardMutation, { data, loading, error }] = useCreateItemnCardMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateItemnCardMutation(baseOptions?: Apollo.MutationHookOptions<CreateItemnCardMutation, CreateItemnCardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateItemnCardMutation, CreateItemnCardMutationVariables>(CreateItemnCardDocument, options);
+      }
+export type CreateItemnCardMutationHookResult = ReturnType<typeof useCreateItemnCardMutation>;
+export type CreateItemnCardMutationResult = Apollo.MutationResult<CreateItemnCardMutation>;
+export type CreateItemnCardMutationOptions = Apollo.BaseMutationOptions<CreateItemnCardMutation, CreateItemnCardMutationVariables>;
+export const UpdateItemnCardDocument = gql`
+    mutation updateItemnCard($uid: String!, $input: ItemNCardInput!) {
+  updateItemnCard(uid: $uid, input: $input) {
+    ok
+    msg
+  }
+}
+    `;
+export type UpdateItemnCardMutationFn = Apollo.MutationFunction<UpdateItemnCardMutation, UpdateItemnCardMutationVariables>;
+
+/**
+ * __useUpdateItemnCardMutation__
+ *
+ * To run a mutation, you first call `useUpdateItemnCardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateItemnCardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateItemnCardMutation, { data, loading, error }] = useUpdateItemnCardMutation({
+ *   variables: {
+ *      uid: // value for 'uid'
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useUpdateItemnCardMutation(baseOptions?: Apollo.MutationHookOptions<UpdateItemnCardMutation, UpdateItemnCardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateItemnCardMutation, UpdateItemnCardMutationVariables>(UpdateItemnCardDocument, options);
+      }
+export type UpdateItemnCardMutationHookResult = ReturnType<typeof useUpdateItemnCardMutation>;
+export type UpdateItemnCardMutationResult = Apollo.MutationResult<UpdateItemnCardMutation>;
+export type UpdateItemnCardMutationOptions = Apollo.BaseMutationOptions<UpdateItemnCardMutation, UpdateItemnCardMutationVariables>;
+export const DeleteItemnCardDocument = gql`
+    mutation deleteItemnCard($uid: String!) {
+  deleteItemnCard(uid: $uid) {
+    ok
+    msg
+  }
+}
+    `;
+export type DeleteItemnCardMutationFn = Apollo.MutationFunction<DeleteItemnCardMutation, DeleteItemnCardMutationVariables>;
+
+/**
+ * __useDeleteItemnCardMutation__
+ *
+ * To run a mutation, you first call `useDeleteItemnCardMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteItemnCardMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteItemnCardMutation, { data, loading, error }] = useDeleteItemnCardMutation({
+ *   variables: {
+ *      uid: // value for 'uid'
+ *   },
+ * });
+ */
+export function useDeleteItemnCardMutation(baseOptions?: Apollo.MutationHookOptions<DeleteItemnCardMutation, DeleteItemnCardMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteItemnCardMutation, DeleteItemnCardMutationVariables>(DeleteItemnCardDocument, options);
+      }
+export type DeleteItemnCardMutationHookResult = ReturnType<typeof useDeleteItemnCardMutation>;
+export type DeleteItemnCardMutationResult = Apollo.MutationResult<DeleteItemnCardMutation>;
+export type DeleteItemnCardMutationOptions = Apollo.BaseMutationOptions<DeleteItemnCardMutation, DeleteItemnCardMutationVariables>;
+export const RunSajuGenerationDocument = gql`
+    mutation runSajuGeneration($input: SajuGenerationRequest!) {
+  runSajuGeneration(input: $input) {
+    targets {
+      kind
+      period
+      max_chars
+      result
+    }
+  }
+}
+    `;
+export type RunSajuGenerationMutationFn = Apollo.MutationFunction<RunSajuGenerationMutation, RunSajuGenerationMutationVariables>;
+
+/**
+ * __useRunSajuGenerationMutation__
+ *
+ * To run a mutation, you first call `useRunSajuGenerationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRunSajuGenerationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [runSajuGenerationMutation, { data, loading, error }] = useRunSajuGenerationMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRunSajuGenerationMutation(baseOptions?: Apollo.MutationHookOptions<RunSajuGenerationMutation, RunSajuGenerationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RunSajuGenerationMutation, RunSajuGenerationMutationVariables>(RunSajuGenerationDocument, options);
+      }
+export type RunSajuGenerationMutationHookResult = ReturnType<typeof useRunSajuGenerationMutation>;
+export type RunSajuGenerationMutationResult = Apollo.MutationResult<RunSajuGenerationMutation>;
+export type RunSajuGenerationMutationOptions = Apollo.BaseMutationOptions<RunSajuGenerationMutation, RunSajuGenerationMutationVariables>;
+export const RunChemiGenerationDocument = gql`
+    mutation runChemiGeneration($input: ChemiGenerationRequest!) {
+  runChemiGeneration(input: $input) {
+    targets {
+      perspective
+      max_chars
+      result
+    }
+  }
+}
+    `;
+export type RunChemiGenerationMutationFn = Apollo.MutationFunction<RunChemiGenerationMutation, RunChemiGenerationMutationVariables>;
+
+/**
+ * __useRunChemiGenerationMutation__
+ *
+ * To run a mutation, you first call `useRunChemiGenerationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRunChemiGenerationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [runChemiGenerationMutation, { data, loading, error }] = useRunChemiGenerationMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useRunChemiGenerationMutation(baseOptions?: Apollo.MutationHookOptions<RunChemiGenerationMutation, RunChemiGenerationMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RunChemiGenerationMutation, RunChemiGenerationMutationVariables>(RunChemiGenerationDocument, options);
+      }
+export type RunChemiGenerationMutationHookResult = ReturnType<typeof useRunChemiGenerationMutation>;
+export type RunChemiGenerationMutationResult = Apollo.MutationResult<RunChemiGenerationMutation>;
+export type RunChemiGenerationMutationOptions = Apollo.BaseMutationOptions<RunChemiGenerationMutation, RunChemiGenerationMutationVariables>;
+export const ExtractSajuStep1Document = gql`
+    query extractSajuStep1($input: ExtractSajuInput!) {
+  extract_saju(input: $input) {
+    ok
+    msg
+    node {
+      __typename
+      ... on ExtractSajuDoc {
+        ...extractSajuStep1DocFields
+      }
+    }
+  }
+}
+    ${ExtractSajuStep1DocFieldsFragmentDoc}`;
+
+/**
+ * __useExtractSajuStep1Query__
+ *
+ * To run a query within a React component, call `useExtractSajuStep1Query` and pass it any options that fit your needs.
+ * When your component renders, `useExtractSajuStep1Query` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useExtractSajuStep1Query({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useExtractSajuStep1Query(baseOptions: Apollo.QueryHookOptions<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables> & ({ variables: ExtractSajuStep1QueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables>(ExtractSajuStep1Document, options);
+      }
+export function useExtractSajuStep1LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables>(ExtractSajuStep1Document, options);
+        }
+// @ts-ignore
+export function useExtractSajuStep1SuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables>): Apollo.UseSuspenseQueryResult<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables>;
+export function useExtractSajuStep1SuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables>): Apollo.UseSuspenseQueryResult<ExtractSajuStep1Query | undefined, ExtractSajuStep1QueryVariables>;
+export function useExtractSajuStep1SuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables>(ExtractSajuStep1Document, options);
+        }
+export type ExtractSajuStep1QueryHookResult = ReturnType<typeof useExtractSajuStep1Query>;
+export type ExtractSajuStep1LazyQueryHookResult = ReturnType<typeof useExtractSajuStep1LazyQuery>;
+export type ExtractSajuStep1SuspenseQueryHookResult = ReturnType<typeof useExtractSajuStep1SuspenseQuery>;
+export type ExtractSajuStep1QueryResult = Apollo.QueryResult<ExtractSajuStep1Query, ExtractSajuStep1QueryVariables>;
+export const ExtractPairStep1Document = gql`
+    query extractPairStep1($input: ExtractPairInput!) {
+  extract_pair(input: $input) {
+    ok
+    msg
+    node {
+      __typename
+      ... on ExtractPairDoc {
+        schemaVer
+        input {
+          engine {
+            name
+            ver
+          }
+        }
+        charts {
+          a {
+            ...extractSajuStep1DocFields
+          }
+          b {
+            ...extractSajuStep1DocFields
+          }
+        }
+        facts {
+          k
+          n
+          v
+        }
+        edges {
+          t
+        }
+        evals {
+          k
+          n
+          score {
+            norm0_100
+          }
+        }
+      }
+    }
+  }
+}
+    ${ExtractSajuStep1DocFieldsFragmentDoc}`;
+
+/**
+ * __useExtractPairStep1Query__
+ *
+ * To run a query within a React component, call `useExtractPairStep1Query` and pass it any options that fit your needs.
+ * When your component renders, `useExtractPairStep1Query` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useExtractPairStep1Query({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useExtractPairStep1Query(baseOptions: Apollo.QueryHookOptions<ExtractPairStep1Query, ExtractPairStep1QueryVariables> & ({ variables: ExtractPairStep1QueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ExtractPairStep1Query, ExtractPairStep1QueryVariables>(ExtractPairStep1Document, options);
+      }
+export function useExtractPairStep1LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ExtractPairStep1Query, ExtractPairStep1QueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ExtractPairStep1Query, ExtractPairStep1QueryVariables>(ExtractPairStep1Document, options);
+        }
+// @ts-ignore
+export function useExtractPairStep1SuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<ExtractPairStep1Query, ExtractPairStep1QueryVariables>): Apollo.UseSuspenseQueryResult<ExtractPairStep1Query, ExtractPairStep1QueryVariables>;
+export function useExtractPairStep1SuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ExtractPairStep1Query, ExtractPairStep1QueryVariables>): Apollo.UseSuspenseQueryResult<ExtractPairStep1Query | undefined, ExtractPairStep1QueryVariables>;
+export function useExtractPairStep1SuspenseQuery(baseOptions?: Apollo.SkipToken | Apollo.SuspenseQueryHookOptions<ExtractPairStep1Query, ExtractPairStep1QueryVariables>) {
+          const options = baseOptions === Apollo.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<ExtractPairStep1Query, ExtractPairStep1QueryVariables>(ExtractPairStep1Document, options);
+        }
+export type ExtractPairStep1QueryHookResult = ReturnType<typeof useExtractPairStep1Query>;
+export type ExtractPairStep1LazyQueryHookResult = ReturnType<typeof useExtractPairStep1LazyQuery>;
+export type ExtractPairStep1SuspenseQueryHookResult = ReturnType<typeof useExtractPairStep1SuspenseQuery>;
+export type ExtractPairStep1QueryResult = Apollo.QueryResult<ExtractPairStep1Query, ExtractPairStep1QueryVariables>;

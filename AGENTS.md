@@ -1,5 +1,7 @@
 # Repository Guidelines
 
+**기본 참조**: 이 문서와 함께 [`.cursor/rules/`](.cursor/rules/)의 룰을 기본으로 참조한다.
+
 ## Project Structure
 
 - `api/`: Go backend (GraphQL via `gqlgen`) plus `python_tool/` helper scripts used by the container image.
@@ -14,7 +16,8 @@ Backend (`api/`):
 
 - `cd api && make run`: runs the API locally (`go run server.go`) on `SERVER_PORT` (default `8080`).
 - `cd api && make gqlgen`: regenerates GraphQL types/resolvers from `api/gqlgen.yml`.
-- `cd api && go test ./...`: runs Go tests (add `*_test.go` files alongside the code under test).
+- `cd api && go test ./...`: runs Go tests (add `*_test.go` files alongside the code under test). From repo root: `cd api && go test ./...` or `(cd api && go test ./...)`.
+- **SajuAssemble (itemNcard) verification** (from repo root): run `cd api && make test-itemncard` to run itemncard + service tests, MCP card tools tests (./mcplocal/...), and full build (see api/Makefile). Before release, if you changed SajuAssemble/itemNcard code, run: `cd api && make test-itemncard`. MCP card tools are covered by go test ./mcplocal/... (no MongoDB required).
 
 Frontend (`admweb/`):
 

@@ -55,6 +55,7 @@ func main() {
 	// init user api route
 	routes.InitRoutes()
 	r.Route("/api/saju_profile", routes.RouteSajuProfile)
+	r.Route("/api/adm", routes.RouteAdm)
 
 	port := config.AppConfig.Server.Port
 	log.Fatal(http.ListenAndServe(":"+port, r))

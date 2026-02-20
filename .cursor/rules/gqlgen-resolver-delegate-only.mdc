@@ -1,0 +1,60 @@
+---
+description: gqlgen 리졸버는 서비스 위임만 하며, 비즈니스 로직은 api/service에 둔다.
+globs: api/admgql/*.resolvers.go
+alwaysApply: false
+---
+
+# gqlgen Resolver: 위임 전용(Delegate-Only)
+
+`*.resolvers.go`는 gqlgen이 생성/유지하는 파일로, **내부 로직을 이 파일에 두지 않는다.**  
+이 파일의 역할은 **GraphQL 필드와 `api/service` 레이어를 연결하는 것만**이다.
+
+## 규칙
+
+1. **리졸버 메소드 본문은 반드시 1줄**로만 작성한다.
+2. 그 1줄은 **서비스 호출을 반환하는 형태**여야 한다:  
+   `return getXxxService().MethodName(ctx, arg1, arg2, ...)`
+3. **다음은 리졸버 파일에 두지 않는다:**
+   - 입력 검증(예: `if input == nil { return nil, fmt.Errorf(...) }`)
+   - GraphQL input → DTO 변환
+   - 서비스 반환값 → GraphQL model 변환
+   - 분기/루프/할당 등 비즈니스 로직
+4. **실제 로직은 모두 `api/service/`** 에서 구현한다.  
+   - 입력 검증, DTO 변환, 서비스 호출, 응답 매핑은 해당 도메인의 Admin*Service 등에서 처리한다.
+
+## 올바른 예
+
+```go
+// RunSajuGeneration is the resolver for the runSajuGeneration field.
+func (r *mutationResolver) RunSajuGeneration(ctx context.Context, input model.SajuGenerationRequest) (*model.SajuGenerationResponse, error) {
+	return getAdminSajuProfileService().RunSajuGenerationGql(ctx, input)
+}
+```
+
+```go
+// CreateItemnCard is the resolver for the createItemnCard field.
+func (r *mutationResolver) CreateItemnCard(ctx context.Context, input model.ItemNCardInput) (*model.SimpleResult, error) {
+	return getAdminItemNCardService().CreateItemnCard(ctx, input)
+}
+```
+
+## 잘못된 예
+
+```go
+// BAD: 검증·변환·매핑이 리졸버에 있음
+func (r *mutationResolver) RunSajuGeneration(ctx context.Context, input model.SajuGenerationRequest) (*model.SajuGenerationResponse, error) {
+	if input.UserInput == nil || input.UserInput.Birth == nil {
+		return nil, fmt.Errorf("user_input.birth is required")
+	}
+	req := dto.SajuGenerationRequest{ ... }
+	// ... 변환 및 service 호출, 응답 매핑
+	return out, nil
+}
+```
+
+위와 같은 검증·DTO 변환·응답 매핑은 `api/service/` 의 `RunSajuGenerationGql(ctx, model.SajuGenerationRequest)` (또는 동일 역할 메소드) 안으로 옮긴다.
+
+## 요약
+
+- **리졸버**: `return getXxxService().Yyy(ctx, ...)` 한 줄만.
+- **비즈니스 로직**: `api/service/` 에만 작성.

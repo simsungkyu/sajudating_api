@@ -1,10 +1,15 @@
-.PHONY: run build clean dev gqlgen gqlgen-watch
+.PHONY: run build clean dev gqlgen gqlgen-watch test-itemncard
 
 run:
 	go run server.go
 
+# itemNcard: run itemncard + service tests and full build (CI / runLoopForSaju).
+test-itemncard:
+	go test ./types/itemncard/... ./service/itemncard/... ./service/... ./mcplocal/... -count=1
+	go build .
+
 dev:
-	@which air > /dev/null || go install github.com/cosmtrek/air@latest
+	@which air > /dev/null || go install github.com/air-verse/air@latest
 	air
 
 clean:
@@ -33,7 +38,8 @@ gqlgen:
 	go get github.com/99designs/gqlgen
 	go run github.com/99designs/gqlgen generate
 
+# Watch only schema/config files; generated .go under admgql/ would retrigger and loop.
 gqlgen-watch:
 	@command -v fswatch >/dev/null 2>&1 || (echo "Install fswatch: brew install fswatch" && exit 1)
 	$(MAKE) gqlgen
-	fswatch -o admgql gqlgen.yml | xargs -n1 -I{} $(MAKE) gqlgen
+	fswatch -o admgql/*.graphql gqlgen.yml | xargs -n1 -I{} $(MAKE) gqlgen

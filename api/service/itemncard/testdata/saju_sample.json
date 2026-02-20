@@ -1,0 +1,18 @@
+{
+  "card_id": "오행_금_강함_v1",
+  "version": 1,
+  "status": "published",
+  "rule_set": "korean_standard_v1",
+  "scope": "saju",
+  "title": "오행 금(金)이 강하게 드러남",
+  "category": "오행",
+  "tags": ["principle", "clarity"],
+  "domains": ["personality", "work"],
+  "priority": 54,
+  "cooldown_group": "five_element",
+  "max_per_user": 1,
+  "trigger": { "all": [{ "token": "오행:금" }], "any": [], "not": [] },
+  "score": { "base": 50, "bonus_if": [], "penalty_if": [] },
+  "content": { "summary": "금 기운이 강함.", "points": [], "questions": [], "guardrails": [] },
+  "debug": { "description": "test saju" }
+}

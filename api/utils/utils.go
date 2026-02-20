@@ -30,6 +30,14 @@ func StrPtr(s string) *string {
 	return &s
 }
 
+// PtrToStr returns the string pointed to by s, or "" if s is nil.
+func PtrToStr(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
 func ConvertFloat32ToFloat64(input []float32) []float64 {
 	output := make([]float64, len(input))
 	for i, v := range input {

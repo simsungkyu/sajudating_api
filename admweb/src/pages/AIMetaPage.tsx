@@ -2,7 +2,6 @@
 
 import SmartToyRoundedIcon from '@mui/icons-material/SmartToyRounded';
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
-import StarRoundedIcon from '@mui/icons-material/StarRounded';
 import DeleteRoundedIcon from '@mui/icons-material/DeleteRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import RadioButtonUncheckedRoundedIcon from '@mui/icons-material/RadioButtonUncheckedRounded';
@@ -95,11 +94,11 @@ const AIMetaPage: React.FC<AIMetaPageProps> = () => {
         variables: { uid: deleteMeta.uid },
       });
 
-      if (deleteData?.delAiMeta.ok) {
+      if (deleteData?.delAiMeta?.ok) {
         handleCloseDelete();
         refetch();
       } else {
-        alert(deleteData?.delAiMeta.msg || '삭제에 실패했습니다.');
+        alert(deleteData?.delAiMeta?.msg || '삭제에 실패했습니다.');
       }
     } catch (err) {
       alert(err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.');

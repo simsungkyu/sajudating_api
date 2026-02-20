@@ -1,7 +1,6 @@
 // Page component for displaying and managing saju profiles list
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import {
   Alert,
   Box,

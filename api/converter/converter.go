@@ -116,6 +116,19 @@ func AiExecutionToModel(aiExecution *entity.AiExecution) *model.AiExecution {
 	return ret
 }
 
+func AdminUserToModel(user *entity.AdminUser) *model.AdminUser {
+	id := user.Uid
+	return &model.AdminUser{
+		ID:        &id,
+		UID:       user.Uid,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		Username:  user.Username,
+		Email:     user.Email,
+		IsActive:  user.IsActive,
+	}
+}
+
 func PhyIdealPartnerToModel(partner *entity.PhyIdealPartner) *model.PhyIdealPartner {
 	return &model.PhyIdealPartner{
 		UID:              partner.Uid,
@@ -143,5 +156,32 @@ func LocalLogToModel(log *entity.LocalLog) *model.LocalLog {
 		ExpiresAt: log.ExpiresAt,
 		Status:    log.Status,
 		Text:      log.Text,
+	}
+}
+
+func ItemNCardToModel(card *entity.ItemNCard) *model.ItemNCard {
+	id := card.Uid
+	return &model.ItemNCard{
+		ID:            &id,
+		UID:           card.Uid,
+		CardID:        card.CardID,
+		Version:       card.Version,
+		Status:        card.Status,
+		RuleSet:       card.RuleSet,
+		Scope:         card.Scope,
+		Title:         card.Title,
+		Category:      card.Category,
+		Tags:          card.Tags,
+		Domains:       card.Domains,
+		Priority:      card.Priority,
+		TriggerJSON:   card.TriggerJSON,
+		ScoreJSON:     card.ScoreJSON,
+		ContentJSON:   card.ContentJSON,
+		CooldownGroup: card.CooldownGroup,
+		MaxPerUser:    card.MaxPerUser,
+		DebugJSON:     card.DebugJSON,
+		DeletedAt:     card.DeletedAt,
+		CreatedAt:     card.CreatedAt,
+		UpdatedAt:     card.UpdatedAt,
 	}
 }

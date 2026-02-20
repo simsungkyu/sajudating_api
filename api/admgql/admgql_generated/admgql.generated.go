@@ -9,7 +9,6 @@ import (
 	"sajudating_api/api/admgql/model"
 	"sajudating_api/api/config"
 	"strconv"
-	"sync"
 	"sync/atomic"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -33,17 +32,24 @@ type MutationResolver interface {
 	DelAiMeta(ctx context.Context, uid string) (*model.SimpleResult, error)
 	SetAiMetaDefault(ctx context.Context, uid string) (*model.SimpleResult, error)
 	RunAiExecution(ctx context.Context, input model.AiExcutionInput) (*model.SimpleResult, error)
+	CreateItemnCard(ctx context.Context, input model.ItemNCardInput) (*model.SimpleResult, error)
+	UpdateItemnCard(ctx context.Context, uid string, input model.ItemNCardInput) (*model.SimpleResult, error)
+	DeleteItemnCard(ctx context.Context, uid string) (*model.SimpleResult, error)
+	RunSajuGeneration(ctx context.Context, input model.SajuGenerationRequest) (*model.SajuGenerationResponse, error)
+	RunChemiGeneration(ctx context.Context, input model.ChemiGenerationRequest) (*model.ChemiGenerationResponse, error)
+	SendLLMRequest(ctx context.Context, input model.SendLLMRequestInput) (*model.SimpleResult, error)
 }
 type PhyIdealPartnerResolver interface {
 	Image(ctx context.Context, obj *model.PhyIdealPartner) (string, error)
 }
 type QueryResolver interface {
+	AdminUsers(ctx context.Context) (*model.SimpleResult, error)
 	SajuProfiles(ctx context.Context, input model.SajuProfileSearchInput) (*model.SimpleResult, error)
 	SajuProfile(ctx context.Context, uid string) (*model.SimpleResult, error)
 	SajuProfileSimilarPartners(ctx context.Context, uid string, limit int, offset int) (*model.SimpleResult, error)
+	SajuProfileLogs(ctx context.Context, input model.SajuProfileLogSearchInput) (*model.SimpleResult, error)
 	PhyIdealPartners(ctx context.Context, input model.PhyIdealPartnerSearchInput) (*model.SimpleResult, error)
 	PhyIdealPartner(ctx context.Context, uid string) (*model.SimpleResult, error)
-	SajuProfileLogs(ctx context.Context, input model.SajuProfileLogSearchInput) (*model.SimpleResult, error)
 	AiMetas(ctx context.Context, input model.AiMetaSearchInput) (*model.SimpleResult, error)
 	AiMeta(ctx context.Context, uid string) (*model.SimpleResult, error)
 	AiMetaTypes(ctx context.Context) (*model.SimpleResult, error)
@@ -51,6 +57,15 @@ type QueryResolver interface {
 	AiExecutions(ctx context.Context, input model.AiExecutionSearchInput) (*model.SimpleResult, error)
 	AiExecution(ctx context.Context, uid string) (*model.SimpleResult, error)
 	Palja(ctx context.Context, birthdate string, timezone string) (*model.SimpleResult, error)
+	ItemnCards(ctx context.Context, input model.ItemNCardSearchInput) (*model.SimpleResult, error)
+	ItemnCard(ctx context.Context, uid *string) (*model.SimpleResult, error)
+	ItemnCardByCardID(ctx context.Context, cardID string, scope *string) (*model.SimpleResult, error)
+	SajuChart(ctx context.Context, input model.SajuChartInput) (*model.SimpleResult, error)
+	ItemnCardsByTokens(ctx context.Context, input model.ItemnCardsByTokensInput) (*model.SimpleResult, error)
+	ExtractSaju(ctx context.Context, input model.ExtractSajuInput) (*model.SimpleResult, error)
+	SajuPairChart(ctx context.Context, input model.SajuPairChartInput) (*model.SimpleResult, error)
+	PairCardsByTokens(ctx context.Context, input model.PairCardsByTokensInput) (*model.SimpleResult, error)
+	ExtractPair(ctx context.Context, input model.ExtractPairInput) (*model.SimpleResult, error)
 	LocalLogs(ctx context.Context, input model.LocalLogSearchInput) (*model.SimpleResult, error)
 	SystemStats(ctx context.Context) (*model.SimpleResult, error)
 }
@@ -78,6 +93,17 @@ func (ec *executionContext) field_Mutation_createAdminUser_args(ctx context.Cont
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createItemnCard_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNItemNCardInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐItemNCardInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createPhyIdealPartner_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -101,6 +127,17 @@ func (ec *executionContext) field_Mutation_createSajuProfile_args(ctx context.Co
 }
 
 func (ec *executionContext) field_Mutation_delAiMeta_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "uid", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["uid"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteItemnCard_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "uid", ec.unmarshalNString2string)
@@ -176,6 +213,39 @@ func (ec *executionContext) field_Mutation_runAiExecution_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_runChemiGeneration_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNChemiGenerationRequest2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationRequest)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_runSajuGeneration_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNSajuGenerationRequest2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationRequest)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_sendLLMRequest_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNSendLLMRequestInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSendLLMRequestInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_setAdminUserActive_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -232,6 +302,22 @@ func (ec *executionContext) field_Mutation_updateAdminUser_args(ctx context.Cont
 		return nil, err
 	}
 	args["password"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateItemnCard_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "uid", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["uid"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNItemNCardInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐItemNCardInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -301,10 +387,92 @@ func (ec *executionContext) field_Query_aiMetas_args(ctx context.Context, rawArg
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_extract_pair_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNExtractPairInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐExtractPairInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_extract_saju_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNExtractSajuInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐExtractSajuInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_itemnCardByCardId_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "cardId", ec.unmarshalNString2string)
+	if err != nil {
+		return nil, err
+	}
+	args["cardId"] = arg0
+	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "scope", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["scope"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_itemnCard_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "uid", ec.unmarshalOString2ᚖstring)
+	if err != nil {
+		return nil, err
+	}
+	args["uid"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_itemnCardsByTokens_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNItemnCardsByTokensInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐItemnCardsByTokensInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_itemnCards_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNItemNCardSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐItemNCardSearchInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_localLogs_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNLocalLogSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐLocalLogSearchInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_pairCardsByTokens_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNPairCardsByTokensInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐPairCardsByTokensInput)
 	if err != nil {
 		return nil, err
 	}
@@ -343,6 +511,28 @@ func (ec *executionContext) field_Query_phyIdealPartners_args(ctx context.Contex
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNPhyIdealPartnerSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐPhyIdealPartnerSearchInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_sajuChart_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNSajuChartInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuChartInput)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_sajuPairChart_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNSajuPairChartInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuPairChartInput)
 	if err != nil {
 		return nil, err
 	}
@@ -411,6 +601,209 @@ func (ec *executionContext) field_Query_sajuProfiles_args(ctx context.Context, r
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _AdminUser_id(ctx context.Context, field graphql.CollectedField, obj *model.AdminUser) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AdminUser_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalOID2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_AdminUser_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUser",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUser_uid(ctx context.Context, field graphql.CollectedField, obj *model.AdminUser) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AdminUser_uid,
+		func(ctx context.Context) (any, error) {
+			return obj.UID, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AdminUser_uid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUser",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUser_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.AdminUser) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AdminUser_createdAt,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		ec.marshalNBigInt2int64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AdminUser_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUser",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BigInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUser_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.AdminUser) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AdminUser_updatedAt,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdatedAt, nil
+		},
+		nil,
+		ec.marshalNBigInt2int64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AdminUser_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUser",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BigInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUser_username(ctx context.Context, field graphql.CollectedField, obj *model.AdminUser) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AdminUser_username,
+		func(ctx context.Context) (any, error) {
+			return obj.Username, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AdminUser_username(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUser",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUser_email(ctx context.Context, field graphql.CollectedField, obj *model.AdminUser) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AdminUser_email,
+		func(ctx context.Context) (any, error) {
+			return obj.Email, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AdminUser_email(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUser",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AdminUser_isActive(ctx context.Context, field graphql.CollectedField, obj *model.AdminUser) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_AdminUser_isActive,
+		func(ctx context.Context) (any, error) {
+			return obj.IsActive, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_AdminUser_isActive(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AdminUser",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
 
 func (ec *executionContext) _AiExecution_id(ctx context.Context, field graphql.CollectedField, obj *model.AiExecution) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
@@ -1700,6 +2093,739 @@ func (ec *executionContext) fieldContext_AiMetaType_hasOutputImage(_ context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _ChemiGenerationResponse_targets(ctx context.Context, field graphql.CollectedField, obj *model.ChemiGenerationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ChemiGenerationResponse_targets,
+		func(ctx context.Context) (any, error) {
+			return obj.Targets, nil
+		},
+		nil,
+		ec.marshalNChemiGenerationTargetOutput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationTargetOutputᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ChemiGenerationResponse_targets(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChemiGenerationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "perspective":
+				return ec.fieldContext_ChemiGenerationTargetOutput_perspective(ctx, field)
+			case "max_chars":
+				return ec.fieldContext_ChemiGenerationTargetOutput_max_chars(ctx, field)
+			case "result":
+				return ec.fieldContext_ChemiGenerationTargetOutput_result(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChemiGenerationTargetOutput", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChemiGenerationTargetOutput_perspective(ctx context.Context, field graphql.CollectedField, obj *model.ChemiGenerationTargetOutput) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ChemiGenerationTargetOutput_perspective,
+		func(ctx context.Context) (any, error) {
+			return obj.Perspective, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ChemiGenerationTargetOutput_perspective(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChemiGenerationTargetOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChemiGenerationTargetOutput_max_chars(ctx context.Context, field graphql.CollectedField, obj *model.ChemiGenerationTargetOutput) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ChemiGenerationTargetOutput_max_chars,
+		func(ctx context.Context) (any, error) {
+			return obj.MaxChars, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ChemiGenerationTargetOutput_max_chars(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChemiGenerationTargetOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ChemiGenerationTargetOutput_result(ctx context.Context, field graphql.CollectedField, obj *model.ChemiGenerationTargetOutput) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ChemiGenerationTargetOutput_result,
+		func(ctx context.Context) (any, error) {
+			return obj.Result, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ChemiGenerationTargetOutput_result(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ChemiGenerationTargetOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_id(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalOID2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_uid(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_uid,
+		func(ctx context.Context) (any, error) {
+			return obj.UID, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_uid(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_cardId(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_cardId,
+		func(ctx context.Context) (any, error) {
+			return obj.CardID, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_cardId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_version(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_version,
+		func(ctx context.Context) (any, error) {
+			return obj.Version, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_version(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_status(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_status,
+		func(ctx context.Context) (any, error) {
+			return obj.Status, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_ruleSet(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_ruleSet,
+		func(ctx context.Context) (any, error) {
+			return obj.RuleSet, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_ruleSet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_scope(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_scope,
+		func(ctx context.Context) (any, error) {
+			return obj.Scope, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_scope(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_title(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_title,
+		func(ctx context.Context) (any, error) {
+			return obj.Title, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_category(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_category,
+		func(ctx context.Context) (any, error) {
+			return obj.Category, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_category(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_tags(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_tags,
+		func(ctx context.Context) (any, error) {
+			return obj.Tags, nil
+		},
+		nil,
+		ec.marshalNString2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_tags(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_domains(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_domains,
+		func(ctx context.Context) (any, error) {
+			return obj.Domains, nil
+		},
+		nil,
+		ec.marshalNString2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_domains(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_priority(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_priority,
+		func(ctx context.Context) (any, error) {
+			return obj.Priority, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_priority(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_triggerJson(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_triggerJson,
+		func(ctx context.Context) (any, error) {
+			return obj.TriggerJSON, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_triggerJson(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_scoreJson(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_scoreJson,
+		func(ctx context.Context) (any, error) {
+			return obj.ScoreJSON, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_scoreJson(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_contentJson(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_contentJson,
+		func(ctx context.Context) (any, error) {
+			return obj.ContentJSON, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_contentJson(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_cooldownGroup(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_cooldownGroup,
+		func(ctx context.Context) (any, error) {
+			return obj.CooldownGroup, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_cooldownGroup(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_maxPerUser(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_maxPerUser,
+		func(ctx context.Context) (any, error) {
+			return obj.MaxPerUser, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_maxPerUser(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_debugJson(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_debugJson,
+		func(ctx context.Context) (any, error) {
+			return obj.DebugJSON, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_debugJson(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_deletedAt(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_deletedAt,
+		func(ctx context.Context) (any, error) {
+			return obj.DeletedAt, nil
+		},
+		nil,
+		ec.marshalNBigInt2int64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_deletedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BigInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_createdAt,
+		func(ctx context.Context) (any, error) {
+			return obj.CreatedAt, nil
+		},
+		nil,
+		ec.marshalNBigInt2int64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_createdAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BigInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ItemNCard_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.ItemNCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ItemNCard_updatedAt,
+		func(ctx context.Context) (any, error) {
+			return obj.UpdatedAt, nil
+		},
+		nil,
+		ec.marshalNBigInt2int64,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ItemNCard_updatedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ItemNCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BigInt does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _KV_k(ctx context.Context, field graphql.CollectedField, obj *model.Kv) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -1748,6 +2874,180 @@ func (ec *executionContext) _KV_v(ctx context.Context, field graphql.CollectedFi
 func (ec *executionContext) fieldContext_KV_v(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "KV",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LLMRequestResult_id(ctx context.Context, field graphql.CollectedField, obj *model.LLMRequestResult) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LLMRequestResult_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalOID2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LLMRequestResult_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LLMRequestResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LLMRequestResult_responseText(ctx context.Context, field graphql.CollectedField, obj *model.LLMRequestResult) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LLMRequestResult_responseText,
+		func(ctx context.Context) (any, error) {
+			return obj.ResponseText, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LLMRequestResult_responseText(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LLMRequestResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LLMRequestResult_inputTokens(ctx context.Context, field graphql.CollectedField, obj *model.LLMRequestResult) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LLMRequestResult_inputTokens,
+		func(ctx context.Context) (any, error) {
+			return obj.InputTokens, nil
+		},
+		nil,
+		ec.marshalOInt2ᚖint,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LLMRequestResult_inputTokens(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LLMRequestResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LLMRequestResult_outputTokens(ctx context.Context, field graphql.CollectedField, obj *model.LLMRequestResult) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LLMRequestResult_outputTokens,
+		func(ctx context.Context) (any, error) {
+			return obj.OutputTokens, nil
+		},
+		nil,
+		ec.marshalOInt2ᚖint,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LLMRequestResult_outputTokens(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LLMRequestResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LLMRequestResult_totalTokens(ctx context.Context, field graphql.CollectedField, obj *model.LLMRequestResult) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LLMRequestResult_totalTokens,
+		func(ctx context.Context) (any, error) {
+			return obj.TotalTokens, nil
+		},
+		nil,
+		ec.marshalOInt2ᚖint,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LLMRequestResult_totalTokens(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LLMRequestResult",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LLMRequestResult_errorMessage(ctx context.Context, field graphql.CollectedField, obj *model.LLMRequestResult) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_LLMRequestResult_errorMessage,
+		func(ctx context.Context) (any, error) {
+			return obj.ErrorMessage, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_LLMRequestResult_errorMessage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LLMRequestResult",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1940,7 +3240,7 @@ func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.C
 		ec.fieldContext_Mutation_login,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().Login(ctx, fc.Args["email"].(string), fc.Args["password"].(string), fc.Args["otp"].(string))
+			return ec.Resolvers.Mutation().Login(ctx, fc.Args["email"].(string), fc.Args["password"].(string), fc.Args["otp"].(string))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2006,7 +3306,7 @@ func (ec *executionContext) _Mutation_logout(ctx context.Context, field graphql.
 		field,
 		ec.fieldContext_Mutation_logout,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Mutation().Logout(ctx)
+			return ec.Resolvers.Mutation().Logout(ctx)
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2062,7 +3362,7 @@ func (ec *executionContext) _Mutation_createAdminUser(ctx context.Context, field
 		ec.fieldContext_Mutation_createAdminUser,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().CreateAdminUser(ctx, fc.Args["email"].(string), fc.Args["password"].(string))
+			return ec.Resolvers.Mutation().CreateAdminUser(ctx, fc.Args["email"].(string), fc.Args["password"].(string))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2129,7 +3429,7 @@ func (ec *executionContext) _Mutation_setAdminUserActive(ctx context.Context, fi
 		ec.fieldContext_Mutation_setAdminUserActive,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().SetAdminUserActive(ctx, fc.Args["uid"].(string), fc.Args["active"].(bool))
+			return ec.Resolvers.Mutation().SetAdminUserActive(ctx, fc.Args["uid"].(string), fc.Args["active"].(bool))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2196,7 +3496,7 @@ func (ec *executionContext) _Mutation_updateAdminUser(ctx context.Context, field
 		ec.fieldContext_Mutation_updateAdminUser,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().UpdateAdminUser(ctx, fc.Args["uid"].(string), fc.Args["email"].(string), fc.Args["password"].(string))
+			return ec.Resolvers.Mutation().UpdateAdminUser(ctx, fc.Args["uid"].(string), fc.Args["email"].(string), fc.Args["password"].(string))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2263,7 +3563,7 @@ func (ec *executionContext) _Mutation_createSajuProfile(ctx context.Context, fie
 		ec.fieldContext_Mutation_createSajuProfile,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().CreateSajuProfile(ctx, fc.Args["input"].(model.SajuProfileCreateInput))
+			return ec.Resolvers.Mutation().CreateSajuProfile(ctx, fc.Args["input"].(model.SajuProfileCreateInput))
 		},
 		nil,
 		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2330,7 +3630,7 @@ func (ec *executionContext) _Mutation_deleteSajuProfile(ctx context.Context, fie
 		ec.fieldContext_Mutation_deleteSajuProfile,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().DeleteSajuProfile(ctx, fc.Args["uid"].(string))
+			return ec.Resolvers.Mutation().DeleteSajuProfile(ctx, fc.Args["uid"].(string))
 		},
 		nil,
 		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2397,7 +3697,7 @@ func (ec *executionContext) _Mutation_createPhyIdealPartner(ctx context.Context,
 		ec.fieldContext_Mutation_createPhyIdealPartner,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().CreatePhyIdealPartner(ctx, fc.Args["input"].(model.PhyIdealPartnerCreateInput))
+			return ec.Resolvers.Mutation().CreatePhyIdealPartner(ctx, fc.Args["input"].(model.PhyIdealPartnerCreateInput))
 		},
 		nil,
 		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2464,7 +3764,7 @@ func (ec *executionContext) _Mutation_deletePhyIdealPartner(ctx context.Context,
 		ec.fieldContext_Mutation_deletePhyIdealPartner,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().DeletePhyIdealPartner(ctx, fc.Args["uid"].(string))
+			return ec.Resolvers.Mutation().DeletePhyIdealPartner(ctx, fc.Args["uid"].(string))
 		},
 		nil,
 		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2531,7 +3831,7 @@ func (ec *executionContext) _Mutation_putAiMeta(ctx context.Context, field graph
 		ec.fieldContext_Mutation_putAiMeta,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().PutAiMeta(ctx, fc.Args["input"].(model.AiMetaInput))
+			return ec.Resolvers.Mutation().PutAiMeta(ctx, fc.Args["input"].(model.AiMetaInput))
 		},
 		nil,
 		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2598,7 +3898,7 @@ func (ec *executionContext) _Mutation_setAiMetaInUse(ctx context.Context, field 
 		ec.fieldContext_Mutation_setAiMetaInUse,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().SetAiMetaInUse(ctx, fc.Args["uid"].(string))
+			return ec.Resolvers.Mutation().SetAiMetaInUse(ctx, fc.Args["uid"].(string))
 		},
 		nil,
 		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2665,7 +3965,7 @@ func (ec *executionContext) _Mutation_delAiMeta(ctx context.Context, field graph
 		ec.fieldContext_Mutation_delAiMeta,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().DelAiMeta(ctx, fc.Args["uid"].(string))
+			return ec.Resolvers.Mutation().DelAiMeta(ctx, fc.Args["uid"].(string))
 		},
 		nil,
 		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2732,7 +4032,7 @@ func (ec *executionContext) _Mutation_setAiMetaDefault(ctx context.Context, fiel
 		ec.fieldContext_Mutation_setAiMetaDefault,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().SetAiMetaDefault(ctx, fc.Args["uid"].(string))
+			return ec.Resolvers.Mutation().SetAiMetaDefault(ctx, fc.Args["uid"].(string))
 		},
 		nil,
 		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2799,7 +4099,7 @@ func (ec *executionContext) _Mutation_runAiExecution(ctx context.Context, field 
 		ec.fieldContext_Mutation_runAiExecution,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().RunAiExecution(ctx, fc.Args["input"].(model.AiExcutionInput))
+			return ec.Resolvers.Mutation().RunAiExecution(ctx, fc.Args["input"].(model.AiExcutionInput))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -2852,6 +4152,364 @@ func (ec *executionContext) fieldContext_Mutation_runAiExecution(ctx context.Con
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_runAiExecution_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createItemnCard(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_createItemnCard,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().CreateItemnCard(ctx, fc.Args["input"].(model.ItemNCardInput))
+		},
+		nil,
+		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createItemnCard(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createItemnCard_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateItemnCard(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_updateItemnCard,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().UpdateItemnCard(ctx, fc.Args["uid"].(string), fc.Args["input"].(model.ItemNCardInput))
+		},
+		nil,
+		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateItemnCard(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateItemnCard_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteItemnCard(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_deleteItemnCard,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().DeleteItemnCard(ctx, fc.Args["uid"].(string))
+		},
+		nil,
+		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteItemnCard(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteItemnCard_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_runSajuGeneration(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_runSajuGeneration,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().RunSajuGeneration(ctx, fc.Args["input"].(model.SajuGenerationRequest))
+		},
+		nil,
+		ec.marshalNSajuGenerationResponse2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationResponse,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_runSajuGeneration(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "targets":
+				return ec.fieldContext_SajuGenerationResponse_targets(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SajuGenerationResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_runSajuGeneration_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_runChemiGeneration(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_runChemiGeneration,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().RunChemiGeneration(ctx, fc.Args["input"].(model.ChemiGenerationRequest))
+		},
+		nil,
+		ec.marshalNChemiGenerationResponse2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationResponse,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_runChemiGeneration(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "targets":
+				return ec.fieldContext_ChemiGenerationResponse_targets(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ChemiGenerationResponse", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_runChemiGeneration_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_sendLLMRequest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Mutation_sendLLMRequest,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Mutation().SendLLMRequest(ctx, fc.Args["input"].(model.SendLLMRequestInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Mutation_sendLLMRequest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_sendLLMRequest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -3213,7 +4871,7 @@ func (ec *executionContext) _PhyIdealPartner_image(ctx context.Context, field gr
 		field,
 		ec.fieldContext_PhyIdealPartner_image,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.PhyIdealPartner().Image(ctx, obj)
+			return ec.Resolvers.PhyIdealPartner().Image(ctx, obj)
 		},
 		nil,
 		ec.marshalNString2string,
@@ -3351,6 +5009,61 @@ func (ec *executionContext) fieldContext_PhyIdealPartner_hasImage(_ context.Cont
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_adminUsers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_adminUsers,
+		func(ctx context.Context) (any, error) {
+			return ec.Resolvers.Query().AdminUsers(ctx)
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_adminUsers(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_sajuProfiles(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -3359,7 +5072,7 @@ func (ec *executionContext) _Query_sajuProfiles(ctx context.Context, field graph
 		ec.fieldContext_Query_sajuProfiles,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().SajuProfiles(ctx, fc.Args["input"].(model.SajuProfileSearchInput))
+			return ec.Resolvers.Query().SajuProfiles(ctx, fc.Args["input"].(model.SajuProfileSearchInput))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -3426,7 +5139,7 @@ func (ec *executionContext) _Query_sajuProfile(ctx context.Context, field graphq
 		ec.fieldContext_Query_sajuProfile,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().SajuProfile(ctx, fc.Args["uid"].(string))
+			return ec.Resolvers.Query().SajuProfile(ctx, fc.Args["uid"].(string))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -3493,7 +5206,7 @@ func (ec *executionContext) _Query_sajuProfileSimilarPartners(ctx context.Contex
 		ec.fieldContext_Query_sajuProfileSimilarPartners,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().SajuProfileSimilarPartners(ctx, fc.Args["uid"].(string), fc.Args["limit"].(int), fc.Args["offset"].(int))
+			return ec.Resolvers.Query().SajuProfileSimilarPartners(ctx, fc.Args["uid"].(string), fc.Args["limit"].(int), fc.Args["offset"].(int))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -3552,6 +5265,73 @@ func (ec *executionContext) fieldContext_Query_sajuProfileSimilarPartners(ctx co
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_sajuProfileLogs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_sajuProfileLogs,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SajuProfileLogs(ctx, fc.Args["input"].(model.SajuProfileLogSearchInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_sajuProfileLogs(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_sajuProfileLogs_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_phyIdealPartners(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -3560,7 +5340,7 @@ func (ec *executionContext) _Query_phyIdealPartners(ctx context.Context, field g
 		ec.fieldContext_Query_phyIdealPartners,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().PhyIdealPartners(ctx, fc.Args["input"].(model.PhyIdealPartnerSearchInput))
+			return ec.Resolvers.Query().PhyIdealPartners(ctx, fc.Args["input"].(model.PhyIdealPartnerSearchInput))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -3627,7 +5407,7 @@ func (ec *executionContext) _Query_phyIdealPartner(ctx context.Context, field gr
 		ec.fieldContext_Query_phyIdealPartner,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().PhyIdealPartner(ctx, fc.Args["uid"].(string))
+			return ec.Resolvers.Query().PhyIdealPartner(ctx, fc.Args["uid"].(string))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -3686,73 +5466,6 @@ func (ec *executionContext) fieldContext_Query_phyIdealPartner(ctx context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_sajuProfileLogs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Query_sajuProfileLogs,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().SajuProfileLogs(ctx, fc.Args["input"].(model.SajuProfileLogSearchInput))
-		},
-		nil,
-		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Query_sajuProfileLogs(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "ok":
-				return ec.fieldContext_SimpleResult_ok(ctx, field)
-			case "uid":
-				return ec.fieldContext_SimpleResult_uid(ctx, field)
-			case "err":
-				return ec.fieldContext_SimpleResult_err(ctx, field)
-			case "msg":
-				return ec.fieldContext_SimpleResult_msg(ctx, field)
-			case "value":
-				return ec.fieldContext_SimpleResult_value(ctx, field)
-			case "base64Value":
-				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
-			case "node":
-				return ec.fieldContext_SimpleResult_node(ctx, field)
-			case "nodes":
-				return ec.fieldContext_SimpleResult_nodes(ctx, field)
-			case "kvs":
-				return ec.fieldContext_SimpleResult_kvs(ctx, field)
-			case "total":
-				return ec.fieldContext_SimpleResult_total(ctx, field)
-			case "limit":
-				return ec.fieldContext_SimpleResult_limit(ctx, field)
-			case "offset":
-				return ec.fieldContext_SimpleResult_offset(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_sajuProfileLogs_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Query_aiMetas(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -3761,7 +5474,7 @@ func (ec *executionContext) _Query_aiMetas(ctx context.Context, field graphql.Co
 		ec.fieldContext_Query_aiMetas,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().AiMetas(ctx, fc.Args["input"].(model.AiMetaSearchInput))
+			return ec.Resolvers.Query().AiMetas(ctx, fc.Args["input"].(model.AiMetaSearchInput))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -3828,7 +5541,7 @@ func (ec *executionContext) _Query_aiMeta(ctx context.Context, field graphql.Col
 		ec.fieldContext_Query_aiMeta,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().AiMeta(ctx, fc.Args["uid"].(string))
+			return ec.Resolvers.Query().AiMeta(ctx, fc.Args["uid"].(string))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -3894,7 +5607,7 @@ func (ec *executionContext) _Query_aiMetaTypes(ctx context.Context, field graphq
 		field,
 		ec.fieldContext_Query_aiMetaTypes,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Query().AiMetaTypes(ctx)
+			return ec.Resolvers.Query().AiMetaTypes(ctx)
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -3950,7 +5663,7 @@ func (ec *executionContext) _Query_aiMetaKVs(ctx context.Context, field graphql.
 		ec.fieldContext_Query_aiMetaKVs,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().AiMetaKVs(ctx, fc.Args["input"].(model.AiMetaKVsInput))
+			return ec.Resolvers.Query().AiMetaKVs(ctx, fc.Args["input"].(model.AiMetaKVsInput))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -4017,7 +5730,7 @@ func (ec *executionContext) _Query_aiExecutions(ctx context.Context, field graph
 		ec.fieldContext_Query_aiExecutions,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().AiExecutions(ctx, fc.Args["input"].(model.AiExecutionSearchInput))
+			return ec.Resolvers.Query().AiExecutions(ctx, fc.Args["input"].(model.AiExecutionSearchInput))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -4084,7 +5797,7 @@ func (ec *executionContext) _Query_aiExecution(ctx context.Context, field graphq
 		ec.fieldContext_Query_aiExecution,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().AiExecution(ctx, fc.Args["uid"].(string))
+			return ec.Resolvers.Query().AiExecution(ctx, fc.Args["uid"].(string))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -4151,7 +5864,7 @@ func (ec *executionContext) _Query_palja(ctx context.Context, field graphql.Coll
 		ec.fieldContext_Query_palja,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().Palja(ctx, fc.Args["birthdate"].(string), fc.Args["timezone"].(string))
+			return ec.Resolvers.Query().Palja(ctx, fc.Args["birthdate"].(string), fc.Args["timezone"].(string))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -4210,6 +5923,609 @@ func (ec *executionContext) fieldContext_Query_palja(ctx context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_itemnCards(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_itemnCards,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().ItemnCards(ctx, fc.Args["input"].(model.ItemNCardSearchInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_itemnCards(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_itemnCards_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_itemnCard(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_itemnCard,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().ItemnCard(ctx, fc.Args["uid"].(*string))
+		},
+		nil,
+		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_itemnCard(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_itemnCard_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_itemnCardByCardId(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_itemnCardByCardId,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().ItemnCardByCardID(ctx, fc.Args["cardId"].(string), fc.Args["scope"].(*string))
+		},
+		nil,
+		ec.marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_itemnCardByCardId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_itemnCardByCardId_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_sajuChart(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_sajuChart,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SajuChart(ctx, fc.Args["input"].(model.SajuChartInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_sajuChart(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_sajuChart_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_itemnCardsByTokens(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_itemnCardsByTokens,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().ItemnCardsByTokens(ctx, fc.Args["input"].(model.ItemnCardsByTokensInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_itemnCardsByTokens(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_itemnCardsByTokens_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_extract_saju(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_extract_saju,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().ExtractSaju(ctx, fc.Args["input"].(model.ExtractSajuInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_extract_saju(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_extract_saju_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_sajuPairChart(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_sajuPairChart,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().SajuPairChart(ctx, fc.Args["input"].(model.SajuPairChartInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_sajuPairChart(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_sajuPairChart_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_pairCardsByTokens(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_pairCardsByTokens,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().PairCardsByTokens(ctx, fc.Args["input"].(model.PairCardsByTokensInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_pairCardsByTokens(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_pairCardsByTokens_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_extract_pair(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Query_extract_pair,
+		func(ctx context.Context) (any, error) {
+			fc := graphql.GetFieldContext(ctx)
+			return ec.Resolvers.Query().ExtractPair(ctx, fc.Args["input"].(model.ExtractPairInput))
+		},
+		nil,
+		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Query_extract_pair(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "ok":
+				return ec.fieldContext_SimpleResult_ok(ctx, field)
+			case "uid":
+				return ec.fieldContext_SimpleResult_uid(ctx, field)
+			case "err":
+				return ec.fieldContext_SimpleResult_err(ctx, field)
+			case "msg":
+				return ec.fieldContext_SimpleResult_msg(ctx, field)
+			case "value":
+				return ec.fieldContext_SimpleResult_value(ctx, field)
+			case "base64Value":
+				return ec.fieldContext_SimpleResult_base64Value(ctx, field)
+			case "node":
+				return ec.fieldContext_SimpleResult_node(ctx, field)
+			case "nodes":
+				return ec.fieldContext_SimpleResult_nodes(ctx, field)
+			case "kvs":
+				return ec.fieldContext_SimpleResult_kvs(ctx, field)
+			case "total":
+				return ec.fieldContext_SimpleResult_total(ctx, field)
+			case "limit":
+				return ec.fieldContext_SimpleResult_limit(ctx, field)
+			case "offset":
+				return ec.fieldContext_SimpleResult_offset(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SimpleResult", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_extract_pair_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_localLogs(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -4218,7 +6534,7 @@ func (ec *executionContext) _Query_localLogs(ctx context.Context, field graphql.
 		ec.fieldContext_Query_localLogs,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Query().LocalLogs(ctx, fc.Args["input"].(model.LocalLogSearchInput))
+			return ec.Resolvers.Query().LocalLogs(ctx, fc.Args["input"].(model.LocalLogSearchInput))
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -4284,7 +6600,7 @@ func (ec *executionContext) _Query_systemStats(ctx context.Context, field graphq
 		field,
 		ec.fieldContext_Query_systemStats,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.Query().SystemStats(ctx)
+			return ec.Resolvers.Query().SystemStats(ctx)
 		},
 		nil,
 		ec.marshalNSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult,
@@ -4340,7 +6656,7 @@ func (ec *executionContext) _Query___type(ctx context.Context, field graphql.Col
 		ec.fieldContext_Query___type,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.introspectType(fc.Args["name"].(string))
+			return ec.IntrospectType(fc.Args["name"].(string))
 		},
 		nil,
 		ec.marshalO__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType,
@@ -4404,7 +6720,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 		field,
 		ec.fieldContext_Query___schema,
 		func(ctx context.Context) (any, error) {
-			return ec.introspectSchema()
+			return ec.IntrospectSchema()
 		},
 		nil,
 		ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema,
@@ -4435,6 +6751,1043 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_id(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalOID2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_pillars(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_pillars,
+		func(ctx context.Context) (any, error) {
+			return obj.Pillars, nil
+		},
+		nil,
+		ec.marshalNSajuChartPillars2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuChartPillars,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_pillars(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "y":
+				return ec.fieldContext_SajuChartPillars_y(ctx, field)
+			case "m":
+				return ec.fieldContext_SajuChartPillars_m(ctx, field)
+			case "d":
+				return ec.fieldContext_SajuChartPillars_d(ctx, field)
+			case "h":
+				return ec.fieldContext_SajuChartPillars_h(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SajuChartPillars", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_dm(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_dm,
+		func(ctx context.Context) (any, error) {
+			return obj.Dm, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_dm(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_itemsSummary(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_itemsSummary,
+		func(ctx context.Context) (any, error) {
+			return obj.ItemsSummary, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_itemsSummary(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_items(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_items,
+		func(ctx context.Context) (any, error) {
+			return obj.Items, nil
+		},
+		nil,
+		ec.marshalOString2ᚕstringᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_ruleSet(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_ruleSet,
+		func(ctx context.Context) (any, error) {
+			return obj.RuleSet, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_ruleSet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_engineVersion(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_engineVersion,
+		func(ctx context.Context) (any, error) {
+			return obj.EngineVersion, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_engineVersion(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_mode(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_mode,
+		func(ctx context.Context) (any, error) {
+			return obj.Mode, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_mode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_period(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_period,
+		func(ctx context.Context) (any, error) {
+			return obj.Period, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_period(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_pillarSource(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_pillarSource,
+		func(ctx context.Context) (any, error) {
+			return obj.PillarSource, nil
+		},
+		nil,
+		ec.marshalOSajuPillarSource2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuPillarSource,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_pillarSource(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "baseDate":
+				return ec.fieldContext_SajuPillarSource_baseDate(ctx, field)
+			case "baseTimeUsed":
+				return ec.fieldContext_SajuPillarSource_baseTimeUsed(ctx, field)
+			case "mode":
+				return ec.fieldContext_SajuPillarSource_mode(ctx, field)
+			case "period":
+				return ec.fieldContext_SajuPillarSource_period(ctx, field)
+			case "description":
+				return ec.fieldContext_SajuPillarSource_description(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SajuPillarSource", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChart_tokens(ctx context.Context, field graphql.CollectedField, obj *model.SajuChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChart_tokens,
+		func(ctx context.Context) (any, error) {
+			return obj.Tokens, nil
+		},
+		nil,
+		ec.marshalOString2ᚕstringᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChart_tokens(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChartPillars_y(ctx context.Context, field graphql.CollectedField, obj *model.SajuChartPillars) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChartPillars_y,
+		func(ctx context.Context) (any, error) {
+			return obj.Y, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChartPillars_y(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChartPillars",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChartPillars_m(ctx context.Context, field graphql.CollectedField, obj *model.SajuChartPillars) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChartPillars_m,
+		func(ctx context.Context) (any, error) {
+			return obj.M, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChartPillars_m(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChartPillars",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChartPillars_d(ctx context.Context, field graphql.CollectedField, obj *model.SajuChartPillars) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChartPillars_d,
+		func(ctx context.Context) (any, error) {
+			return obj.D, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChartPillars_d(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChartPillars",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuChartPillars_h(ctx context.Context, field graphql.CollectedField, obj *model.SajuChartPillars) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuChartPillars_h,
+		func(ctx context.Context) (any, error) {
+			return obj.H, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuChartPillars_h(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuChartPillars",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuGenerationResponse_targets(ctx context.Context, field graphql.CollectedField, obj *model.SajuGenerationResponse) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuGenerationResponse_targets,
+		func(ctx context.Context) (any, error) {
+			return obj.Targets, nil
+		},
+		nil,
+		ec.marshalNSajuGenerationTargetOutput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationTargetOutputᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuGenerationResponse_targets(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuGenerationResponse",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "kind":
+				return ec.fieldContext_SajuGenerationTargetOutput_kind(ctx, field)
+			case "period":
+				return ec.fieldContext_SajuGenerationTargetOutput_period(ctx, field)
+			case "max_chars":
+				return ec.fieldContext_SajuGenerationTargetOutput_max_chars(ctx, field)
+			case "result":
+				return ec.fieldContext_SajuGenerationTargetOutput_result(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SajuGenerationTargetOutput", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuGenerationTargetOutput_kind(ctx context.Context, field graphql.CollectedField, obj *model.SajuGenerationTargetOutput) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuGenerationTargetOutput_kind,
+		func(ctx context.Context) (any, error) {
+			return obj.Kind, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuGenerationTargetOutput_kind(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuGenerationTargetOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuGenerationTargetOutput_period(ctx context.Context, field graphql.CollectedField, obj *model.SajuGenerationTargetOutput) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuGenerationTargetOutput_period,
+		func(ctx context.Context) (any, error) {
+			return obj.Period, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuGenerationTargetOutput_period(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuGenerationTargetOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuGenerationTargetOutput_max_chars(ctx context.Context, field graphql.CollectedField, obj *model.SajuGenerationTargetOutput) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuGenerationTargetOutput_max_chars,
+		func(ctx context.Context) (any, error) {
+			return obj.MaxChars, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuGenerationTargetOutput_max_chars(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuGenerationTargetOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuGenerationTargetOutput_result(ctx context.Context, field graphql.CollectedField, obj *model.SajuGenerationTargetOutput) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuGenerationTargetOutput_result,
+		func(ctx context.Context) (any, error) {
+			return obj.Result, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuGenerationTargetOutput_result(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuGenerationTargetOutput",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPairChart_id(ctx context.Context, field graphql.CollectedField, obj *model.SajuPairChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPairChart_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalOID2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPairChart_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPairChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPairChart_chartA(ctx context.Context, field graphql.CollectedField, obj *model.SajuPairChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPairChart_chartA,
+		func(ctx context.Context) (any, error) {
+			return obj.ChartA, nil
+		},
+		nil,
+		ec.marshalNSajuChart2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuChart,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPairChart_chartA(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPairChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SajuChart_id(ctx, field)
+			case "pillars":
+				return ec.fieldContext_SajuChart_pillars(ctx, field)
+			case "dm":
+				return ec.fieldContext_SajuChart_dm(ctx, field)
+			case "itemsSummary":
+				return ec.fieldContext_SajuChart_itemsSummary(ctx, field)
+			case "items":
+				return ec.fieldContext_SajuChart_items(ctx, field)
+			case "ruleSet":
+				return ec.fieldContext_SajuChart_ruleSet(ctx, field)
+			case "engineVersion":
+				return ec.fieldContext_SajuChart_engineVersion(ctx, field)
+			case "mode":
+				return ec.fieldContext_SajuChart_mode(ctx, field)
+			case "period":
+				return ec.fieldContext_SajuChart_period(ctx, field)
+			case "pillarSource":
+				return ec.fieldContext_SajuChart_pillarSource(ctx, field)
+			case "tokens":
+				return ec.fieldContext_SajuChart_tokens(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SajuChart", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPairChart_chartB(ctx context.Context, field graphql.CollectedField, obj *model.SajuPairChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPairChart_chartB,
+		func(ctx context.Context) (any, error) {
+			return obj.ChartB, nil
+		},
+		nil,
+		ec.marshalNSajuChart2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuChart,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPairChart_chartB(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPairChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_SajuChart_id(ctx, field)
+			case "pillars":
+				return ec.fieldContext_SajuChart_pillars(ctx, field)
+			case "dm":
+				return ec.fieldContext_SajuChart_dm(ctx, field)
+			case "itemsSummary":
+				return ec.fieldContext_SajuChart_itemsSummary(ctx, field)
+			case "items":
+				return ec.fieldContext_SajuChart_items(ctx, field)
+			case "ruleSet":
+				return ec.fieldContext_SajuChart_ruleSet(ctx, field)
+			case "engineVersion":
+				return ec.fieldContext_SajuChart_engineVersion(ctx, field)
+			case "mode":
+				return ec.fieldContext_SajuChart_mode(ctx, field)
+			case "period":
+				return ec.fieldContext_SajuChart_period(ctx, field)
+			case "pillarSource":
+				return ec.fieldContext_SajuChart_pillarSource(ctx, field)
+			case "tokens":
+				return ec.fieldContext_SajuChart_tokens(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type SajuChart", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPairChart_pTokens(ctx context.Context, field graphql.CollectedField, obj *model.SajuPairChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPairChart_pTokens,
+		func(ctx context.Context) (any, error) {
+			return obj.PTokens, nil
+		},
+		nil,
+		ec.marshalNString2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPairChart_pTokens(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPairChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPairChart_pItemsSummary(ctx context.Context, field graphql.CollectedField, obj *model.SajuPairChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPairChart_pItemsSummary,
+		func(ctx context.Context) (any, error) {
+			return obj.PItemsSummary, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPairChart_pItemsSummary(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPairChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPairChart_pItems(ctx context.Context, field graphql.CollectedField, obj *model.SajuPairChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPairChart_pItems,
+		func(ctx context.Context) (any, error) {
+			return obj.PItems, nil
+		},
+		nil,
+		ec.marshalOString2ᚕstringᚄ,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPairChart_pItems(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPairChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPairChart_ruleSet(ctx context.Context, field graphql.CollectedField, obj *model.SajuPairChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPairChart_ruleSet,
+		func(ctx context.Context) (any, error) {
+			return obj.RuleSet, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPairChart_ruleSet(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPairChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPairChart_engineVersion(ctx context.Context, field graphql.CollectedField, obj *model.SajuPairChart) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPairChart_engineVersion,
+		func(ctx context.Context) (any, error) {
+			return obj.EngineVersion, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPairChart_engineVersion(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPairChart",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPillarSource_baseDate(ctx context.Context, field graphql.CollectedField, obj *model.SajuPillarSource) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPillarSource_baseDate,
+		func(ctx context.Context) (any, error) {
+			return obj.BaseDate, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPillarSource_baseDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPillarSource",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPillarSource_baseTimeUsed(ctx context.Context, field graphql.CollectedField, obj *model.SajuPillarSource) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPillarSource_baseTimeUsed,
+		func(ctx context.Context) (any, error) {
+			return obj.BaseTimeUsed, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPillarSource_baseTimeUsed(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPillarSource",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPillarSource_mode(ctx context.Context, field graphql.CollectedField, obj *model.SajuPillarSource) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPillarSource_mode,
+		func(ctx context.Context) (any, error) {
+			return obj.Mode, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPillarSource_mode(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPillarSource",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPillarSource_period(ctx context.Context, field graphql.CollectedField, obj *model.SajuPillarSource) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPillarSource_period,
+		func(ctx context.Context) (any, error) {
+			return obj.Period, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPillarSource_period(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPillarSource",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SajuPillarSource_description(ctx context.Context, field graphql.CollectedField, obj *model.SajuPillarSource) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SajuPillarSource_description,
+		func(ctx context.Context) (any, error) {
+			return obj.Description, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SajuPillarSource_description(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SajuPillarSource",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4679,7 +8032,7 @@ func (ec *executionContext) _SajuProfile_image(ctx context.Context, field graphq
 		field,
 		ec.fieldContext_SajuProfile_image,
 		func(ctx context.Context) (any, error) {
-			return ec.resolvers.SajuProfile().Image(ctx, obj)
+			return ec.Resolvers.SajuProfile().Image(ctx, obj)
 		},
 		nil,
 		ec.marshalNString2string,
@@ -5571,6 +8924,180 @@ func (ec *executionContext) fieldContext_SajuProfileLog_text(_ context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _SelectedItemnCard_id(ctx context.Context, field graphql.CollectedField, obj *model.SelectedItemnCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SelectedItemnCard_id,
+		func(ctx context.Context) (any, error) {
+			return obj.ID, nil
+		},
+		nil,
+		ec.marshalOID2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SelectedItemnCard_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SelectedItemnCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SelectedItemnCard_cardId(ctx context.Context, field graphql.CollectedField, obj *model.SelectedItemnCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SelectedItemnCard_cardId,
+		func(ctx context.Context) (any, error) {
+			return obj.CardID, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SelectedItemnCard_cardId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SelectedItemnCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SelectedItemnCard_title(ctx context.Context, field graphql.CollectedField, obj *model.SelectedItemnCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SelectedItemnCard_title,
+		func(ctx context.Context) (any, error) {
+			return obj.Title, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SelectedItemnCard_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SelectedItemnCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SelectedItemnCard_evidence(ctx context.Context, field graphql.CollectedField, obj *model.SelectedItemnCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SelectedItemnCard_evidence,
+		func(ctx context.Context) (any, error) {
+			return obj.Evidence, nil
+		},
+		nil,
+		ec.marshalNString2ᚕstringᚄ,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SelectedItemnCard_evidence(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SelectedItemnCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SelectedItemnCard_score(ctx context.Context, field graphql.CollectedField, obj *model.SelectedItemnCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SelectedItemnCard_score,
+		func(ctx context.Context) (any, error) {
+			return obj.Score, nil
+		},
+		nil,
+		ec.marshalNInt2int,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_SelectedItemnCard_score(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SelectedItemnCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _SelectedItemnCard_contentSummary(ctx context.Context, field graphql.CollectedField, obj *model.SelectedItemnCard) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_SelectedItemnCard_contentSummary,
+		func(ctx context.Context) (any, error) {
+			return obj.ContentSummary, nil
+		},
+		nil,
+		ec.marshalOString2ᚖstring,
+		true,
+		false,
+	)
+}
+
+func (ec *executionContext) fieldContext_SelectedItemnCard_contentSummary(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "SelectedItemnCard",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _SimpleResult_ok(ctx context.Context, field graphql.CollectedField, obj *model.SimpleResult) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -6174,7 +9701,6 @@ func (ec *executionContext) unmarshalInputAiExcutionInput(ctx context.Context, o
 			it.InputImageBase64 = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -6236,7 +9762,6 @@ func (ec *executionContext) unmarshalInputAiExecutionSearchInput(ctx context.Con
 			it.RunSajuProfileUID = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -6319,7 +9844,6 @@ func (ec *executionContext) unmarshalInputAiMetaInput(ctx context.Context, obj a
 			it.Size = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -6353,7 +9877,6 @@ func (ec *executionContext) unmarshalInputAiMetaKVsInput(ctx context.Context, ob
 			it.Kvs = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -6401,7 +9924,386 @@ func (ec *executionContext) unmarshalInputAiMetaSearchInput(ctx context.Context,
 			it.InUse = data
 		}
 	}
+	return it, nil
+}
 
+func (ec *executionContext) unmarshalInputChemiGenerationPairInput(ctx context.Context, obj any) (model.ChemiGenerationPairInput, error) {
+	var it model.ChemiGenerationPairInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"birthA", "birthB", "timezone"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "birthA":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthA"))
+			data, err := ec.unmarshalNSajuBirthInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuBirthInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BirthA = data
+		case "birthB":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthB"))
+			data, err := ec.unmarshalNSajuBirthInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuBirthInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BirthB = data
+		case "timezone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("timezone"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Timezone = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputChemiGenerationRequest(ctx context.Context, obj any) (model.ChemiGenerationRequest, error) {
+	var it model.ChemiGenerationRequest
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"pair_input", "targets"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "pair_input":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pair_input"))
+			data, err := ec.unmarshalNChemiGenerationPairInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationPairInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PairInput = data
+		case "targets":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targets"))
+			data, err := ec.unmarshalNChemiGenerationTargetInput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationTargetInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Targets = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputChemiGenerationTargetInput(ctx context.Context, obj any) (model.ChemiGenerationTargetInput, error) {
+	var it model.ChemiGenerationTargetInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"perspective", "max_chars"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "perspective":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("perspective"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Perspective = data
+		case "max_chars":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max_chars"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MaxChars = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputItemNCardInput(ctx context.Context, obj any) (model.ItemNCardInput, error) {
+	var it model.ItemNCardInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"cardId", "version", "status", "ruleSet", "scope", "title", "category", "tags", "domains", "priority", "triggerJson", "scoreJson", "contentJson", "cooldownGroup", "maxPerUser", "debugJson"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "cardId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cardId"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CardID = data
+		case "version":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("version"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Version = data
+		case "status":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
+		case "ruleSet":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ruleSet"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RuleSet = data
+		case "scope":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scope"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Scope = data
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "category":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Category = data
+		case "tags":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tags"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Tags = data
+		case "domains":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("domains"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Domains = data
+		case "priority":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priority"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Priority = data
+		case "triggerJson":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("triggerJson"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TriggerJSON = data
+		case "scoreJson":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scoreJson"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ScoreJSON = data
+		case "contentJson":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contentJson"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ContentJSON = data
+		case "cooldownGroup":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cooldownGroup"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CooldownGroup = data
+		case "maxPerUser":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxPerUser"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MaxPerUser = data
+		case "debugJson":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("debugJson"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DebugJSON = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputItemNCardSearchInput(ctx context.Context, obj any) (model.ItemNCardSearchInput, error) {
+	var it model.ItemNCardSearchInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"limit", "offset", "scope", "status", "category", "tags", "ruleSet", "domain", "cooldownGroup", "orderBy", "orderDirection", "includeDeleted"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "limit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
+		case "offset":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Offset = data
+		case "scope":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scope"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Scope = data
+		case "status":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
+		case "category":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("category"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Category = data
+		case "tags":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tags"))
+			data, err := ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Tags = data
+		case "ruleSet":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ruleSet"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RuleSet = data
+		case "domain":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("domain"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Domain = data
+		case "cooldownGroup":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cooldownGroup"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.CooldownGroup = data
+		case "orderBy":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OrderBy = data
+		case "orderDirection":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderDirection"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.OrderDirection = data
+		case "includeDeleted":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeDeleted"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IncludeDeleted = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputItemnCardsByTokensInput(ctx context.Context, obj any) (model.ItemnCardsByTokensInput, error) {
+	var it model.ItemnCardsByTokensInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"tokens", "limit", "ruleSet"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "tokens":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokens"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Tokens = data
+		case "limit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
+		case "ruleSet":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ruleSet"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RuleSet = data
+		}
+	}
 	return it, nil
 }
 
@@ -6435,7 +10337,6 @@ func (ec *executionContext) unmarshalInputKVInput(ctx context.Context, obj any) 
 			it.V = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -6476,7 +10377,60 @@ func (ec *executionContext) unmarshalInputLocalLogSearchInput(ctx context.Contex
 			it.Status = data
 		}
 	}
+	return it, nil
+}
 
+func (ec *executionContext) unmarshalInputPairCardsByTokensInput(ctx context.Context, obj any) (model.PairCardsByTokensInput, error) {
+	var it model.PairCardsByTokensInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"tokensA", "tokensB", "pTokens", "limit", "ruleSet"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "tokensA":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokensA"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TokensA = data
+		case "tokensB":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tokensB"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TokensB = data
+		case "pTokens":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pTokens"))
+			data, err := ec.unmarshalNString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PTokens = data
+		case "limit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
+		case "ruleSet":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ruleSet"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RuleSet = data
+		}
+	}
 	return it, nil
 }
 
@@ -6559,7 +10513,6 @@ func (ec *executionContext) unmarshalInputPhyIdealPartnerCreateInput(ctx context
 			it.Image = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -6607,7 +10560,309 @@ func (ec *executionContext) unmarshalInputPhyIdealPartnerSearchInput(ctx context
 			it.HasImage = data
 		}
 	}
+	return it, nil
+}
 
+func (ec *executionContext) unmarshalInputSajuBirthInput(ctx context.Context, obj any) (model.SajuBirthInput, error) {
+	var it model.SajuBirthInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"date", "time", "time_precision"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "date":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("date"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Date = data
+		case "time":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Time = data
+		case "time_precision":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time_precision"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TimePrecision = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSajuChartInput(ctx context.Context, obj any) (model.SajuChartInput, error) {
+	var it model.SajuChartInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"birth", "timezone", "calendar", "mode", "targetYear", "targetMonth", "targetDay", "targetDaesoonIndex", "gender", "includeTokens"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "birth":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birth"))
+			data, err := ec.unmarshalNSajuBirthInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuBirthInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Birth = data
+		case "timezone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("timezone"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Timezone = data
+		case "calendar":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("calendar"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Calendar = data
+		case "mode":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mode"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Mode = data
+		case "targetYear":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetYear"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TargetYear = data
+		case "targetMonth":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetMonth"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TargetMonth = data
+		case "targetDay":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetDay"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TargetDay = data
+		case "targetDaesoonIndex":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targetDaesoonIndex"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TargetDaesoonIndex = data
+		case "gender":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Gender = data
+		case "includeTokens":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeTokens"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IncludeTokens = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSajuGenerationRequest(ctx context.Context, obj any) (model.SajuGenerationRequest, error) {
+	var it model.SajuGenerationRequest
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"user_input", "targets"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "user_input":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("user_input"))
+			data, err := ec.unmarshalNSajuGenerationUserInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationUserInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserInput = data
+		case "targets":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("targets"))
+			data, err := ec.unmarshalNSajuGenerationTargetInput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationTargetInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Targets = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSajuGenerationTargetInput(ctx context.Context, obj any) (model.SajuGenerationTargetInput, error) {
+	var it model.SajuGenerationTargetInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"kind", "period", "max_chars"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "kind":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("kind"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Kind = data
+		case "period":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("period"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Period = data
+		case "max_chars":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("max_chars"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MaxChars = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSajuGenerationUserInput(ctx context.Context, obj any) (model.SajuGenerationUserInput, error) {
+	var it model.SajuGenerationUserInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"birth", "timezone", "rule_set", "gender"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "birth":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birth"))
+			data, err := ec.unmarshalNSajuBirthInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuBirthInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Birth = data
+		case "timezone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("timezone"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Timezone = data
+		case "rule_set":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rule_set"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RuleSet = data
+		case "gender":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gender"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Gender = data
+		}
+	}
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputSajuPairChartInput(ctx context.Context, obj any) (model.SajuPairChartInput, error) {
+	var it model.SajuPairChartInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"birthA", "birthB", "timezone", "calendar", "includeTokens"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "birthA":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthA"))
+			data, err := ec.unmarshalNSajuBirthInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuBirthInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BirthA = data
+		case "birthB":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("birthB"))
+			data, err := ec.unmarshalNSajuBirthInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuBirthInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.BirthB = data
+		case "timezone":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("timezone"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Timezone = data
+		case "calendar":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("calendar"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Calendar = data
+		case "includeTokens":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("includeTokens"))
+			data, err := ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IncludeTokens = data
+		}
+	}
 	return it, nil
 }
 
@@ -6648,7 +10903,6 @@ func (ec *executionContext) unmarshalInputSajuProfileCreateInput(ctx context.Con
 			it.Sex = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -6696,7 +10950,6 @@ func (ec *executionContext) unmarshalInputSajuProfileLogSearchInput(ctx context.
 			it.Status = data
 		}
 	}
-
 	return it, nil
 }
 
@@ -6744,7 +10997,60 @@ func (ec *executionContext) unmarshalInputSajuProfileSearchInput(ctx context.Con
 			it.OrderDirection = data
 		}
 	}
+	return it, nil
+}
 
+func (ec *executionContext) unmarshalInputSendLLMRequestInput(ctx context.Context, obj any) (model.SendLLMRequestInput, error) {
+	var it model.SendLLMRequestInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"prompt", "systemPrompt", "maxTokens", "model", "temperature"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "prompt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("prompt"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Prompt = data
+		case "systemPrompt":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("systemPrompt"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SystemPrompt = data
+		case "maxTokens":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("maxTokens"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.MaxTokens = data
+		case "model":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("model"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Model = data
+		case "temperature":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("temperature"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Temperature = data
+		}
+	}
 	return it, nil
 }
 
@@ -6763,6 +11069,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._SystemStats(ctx, sel, obj)
+	case model.SelectedItemnCard:
+		return ec._SelectedItemnCard(ctx, sel, &obj)
+	case *model.SelectedItemnCard:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._SelectedItemnCard(ctx, sel, obj)
 	case model.SajuProfileLog:
 		return ec._SajuProfileLog(ctx, sel, &obj)
 	case *model.SajuProfileLog:
@@ -6777,6 +11090,20 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._SajuProfile(ctx, sel, obj)
+	case model.SajuPairChart:
+		return ec._SajuPairChart(ctx, sel, &obj)
+	case *model.SajuPairChart:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._SajuPairChart(ctx, sel, obj)
+	case model.SajuChart:
+		return ec._SajuChart(ctx, sel, &obj)
+	case *model.SajuChart:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._SajuChart(ctx, sel, obj)
 	case model.PhyIdealPartner:
 		return ec._PhyIdealPartner(ctx, sel, &obj)
 	case *model.PhyIdealPartner:
@@ -6791,6 +11118,34 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._LocalLog(ctx, sel, obj)
+	case model.LLMRequestResult:
+		return ec._LLMRequestResult(ctx, sel, &obj)
+	case *model.LLMRequestResult:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._LLMRequestResult(ctx, sel, obj)
+	case model.ItemNCard:
+		return ec._ItemNCard(ctx, sel, &obj)
+	case *model.ItemNCard:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ItemNCard(ctx, sel, obj)
+	case model.ExtractSajuDoc:
+		return ec._ExtractSajuDoc(ctx, sel, &obj)
+	case *model.ExtractSajuDoc:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ExtractSajuDoc(ctx, sel, obj)
+	case model.ExtractPairDoc:
+		return ec._ExtractPairDoc(ctx, sel, &obj)
+	case *model.ExtractPairDoc:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ExtractPairDoc(ctx, sel, obj)
 	case model.AiMetaType:
 		return ec._AiMetaType(ctx, sel, &obj)
 	case *model.AiMetaType:
@@ -6812,6 +11167,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._AiExecution(ctx, sel, obj)
+	case model.AdminUser:
+		return ec._AdminUser(ctx, sel, &obj)
+	case *model.AdminUser:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._AdminUser(ctx, sel, obj)
 	default:
 		if typedObj, ok := obj.(graphql.Marshaler); ok {
 			return typedObj
@@ -6824,6 +11186,72 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var adminUserImplementors = []string{"AdminUser", "Node"}
+
+func (ec *executionContext) _AdminUser(ctx context.Context, sel ast.SelectionSet, obj *model.AdminUser) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, adminUserImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("AdminUser")
+		case "id":
+			out.Values[i] = ec._AdminUser_id(ctx, field, obj)
+		case "uid":
+			out.Values[i] = ec._AdminUser_uid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._AdminUser_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._AdminUser_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "username":
+			out.Values[i] = ec._AdminUser_username(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "email":
+			out.Values[i] = ec._AdminUser_email(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "isActive":
+			out.Values[i] = ec._AdminUser_isActive(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
 
 var aiExecutionImplementors = []string{"AiExecution", "Node"}
 
@@ -6952,10 +11380,10 @@ func (ec *executionContext) _AiExecution(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -7048,10 +11476,10 @@ func (ec *executionContext) _AiMeta(ctx context.Context, sel ast.SelectionSet, o
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -7112,10 +11540,234 @@ func (ec *executionContext) _AiMetaType(ctx context.Context, sel ast.SelectionSe
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var chemiGenerationResponseImplementors = []string{"ChemiGenerationResponse"}
+
+func (ec *executionContext) _ChemiGenerationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.ChemiGenerationResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, chemiGenerationResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ChemiGenerationResponse")
+		case "targets":
+			out.Values[i] = ec._ChemiGenerationResponse_targets(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var chemiGenerationTargetOutputImplementors = []string{"ChemiGenerationTargetOutput"}
+
+func (ec *executionContext) _ChemiGenerationTargetOutput(ctx context.Context, sel ast.SelectionSet, obj *model.ChemiGenerationTargetOutput) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, chemiGenerationTargetOutputImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ChemiGenerationTargetOutput")
+		case "perspective":
+			out.Values[i] = ec._ChemiGenerationTargetOutput_perspective(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "max_chars":
+			out.Values[i] = ec._ChemiGenerationTargetOutput_max_chars(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "result":
+			out.Values[i] = ec._ChemiGenerationTargetOutput_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var itemNCardImplementors = []string{"ItemNCard", "Node"}
+
+func (ec *executionContext) _ItemNCard(ctx context.Context, sel ast.SelectionSet, obj *model.ItemNCard) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, itemNCardImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ItemNCard")
+		case "id":
+			out.Values[i] = ec._ItemNCard_id(ctx, field, obj)
+		case "uid":
+			out.Values[i] = ec._ItemNCard_uid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "cardId":
+			out.Values[i] = ec._ItemNCard_cardId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "version":
+			out.Values[i] = ec._ItemNCard_version(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "status":
+			out.Values[i] = ec._ItemNCard_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "ruleSet":
+			out.Values[i] = ec._ItemNCard_ruleSet(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "scope":
+			out.Values[i] = ec._ItemNCard_scope(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "title":
+			out.Values[i] = ec._ItemNCard_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "category":
+			out.Values[i] = ec._ItemNCard_category(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "tags":
+			out.Values[i] = ec._ItemNCard_tags(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "domains":
+			out.Values[i] = ec._ItemNCard_domains(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "priority":
+			out.Values[i] = ec._ItemNCard_priority(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "triggerJson":
+			out.Values[i] = ec._ItemNCard_triggerJson(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "scoreJson":
+			out.Values[i] = ec._ItemNCard_scoreJson(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "contentJson":
+			out.Values[i] = ec._ItemNCard_contentJson(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "cooldownGroup":
+			out.Values[i] = ec._ItemNCard_cooldownGroup(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "maxPerUser":
+			out.Values[i] = ec._ItemNCard_maxPerUser(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "debugJson":
+			out.Values[i] = ec._ItemNCard_debugJson(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deletedAt":
+			out.Values[i] = ec._ItemNCard_deletedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createdAt":
+			out.Values[i] = ec._ItemNCard_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updatedAt":
+			out.Values[i] = ec._ItemNCard_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -7156,10 +11808,56 @@ func (ec *executionContext) _KV(ctx context.Context, sel ast.SelectionSet, obj *
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var lLMRequestResultImplementors = []string{"LLMRequestResult", "Node"}
+
+func (ec *executionContext) _LLMRequestResult(ctx context.Context, sel ast.SelectionSet, obj *model.LLMRequestResult) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, lLMRequestResultImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LLMRequestResult")
+		case "id":
+			out.Values[i] = ec._LLMRequestResult_id(ctx, field, obj)
+		case "responseText":
+			out.Values[i] = ec._LLMRequestResult_responseText(ctx, field, obj)
+		case "inputTokens":
+			out.Values[i] = ec._LLMRequestResult_inputTokens(ctx, field, obj)
+		case "outputTokens":
+			out.Values[i] = ec._LLMRequestResult_outputTokens(ctx, field, obj)
+		case "totalTokens":
+			out.Values[i] = ec._LLMRequestResult_totalTokens(ctx, field, obj)
+		case "errorMessage":
+			out.Values[i] = ec._LLMRequestResult_errorMessage(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -7217,10 +11915,10 @@ func (ec *executionContext) _LocalLog(ctx context.Context, sel ast.SelectionSet,
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -7324,6 +12022,39 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createItemnCard":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createItemnCard(ctx, field)
+			})
+		case "updateItemnCard":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateItemnCard(ctx, field)
+			})
+		case "deleteItemnCard":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteItemnCard(ctx, field)
+			})
+		case "runSajuGeneration":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_runSajuGeneration(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "runChemiGeneration":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_runChemiGeneration(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "sendLLMRequest":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_sendLLMRequest(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7333,10 +12064,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -7480,10 +12211,10 @@ func (ec *executionContext) _PhyIdealPartner(ctx context.Context, sel ast.Select
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -7513,6 +12244,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "adminUsers":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_adminUsers(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "sajuProfiles":
 			field := field
 
@@ -7579,6 +12332,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "sajuProfileLogs":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_sajuProfileLogs(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "phyIdealPartners":
 			field := field
 
@@ -7611,28 +12386,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_phyIdealPartner(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&fs.Invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx,
-					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
-			}
-
-			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
-		case "sajuProfileLogs":
-			field := field
-
-			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_sajuProfileLogs(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -7799,6 +12552,198 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "itemnCards":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_itemnCards(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "itemnCard":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_itemnCard(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "itemnCardByCardId":
+			field := field
+
+			innerFunc := func(ctx context.Context, _ *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_itemnCardByCardId(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "sajuChart":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_sajuChart(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "itemnCardsByTokens":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_itemnCardsByTokens(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "extract_saju":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_extract_saju(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "sajuPairChart":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_sajuPairChart(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "pairCardsByTokens":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_pairCardsByTokens(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "extract_pair":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_extract_pair(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "localLogs":
 			field := field
 
@@ -7860,10 +12805,334 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var sajuChartImplementors = []string{"SajuChart", "Node"}
+
+func (ec *executionContext) _SajuChart(ctx context.Context, sel ast.SelectionSet, obj *model.SajuChart) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sajuChartImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SajuChart")
+		case "id":
+			out.Values[i] = ec._SajuChart_id(ctx, field, obj)
+		case "pillars":
+			out.Values[i] = ec._SajuChart_pillars(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dm":
+			out.Values[i] = ec._SajuChart_dm(ctx, field, obj)
+		case "itemsSummary":
+			out.Values[i] = ec._SajuChart_itemsSummary(ctx, field, obj)
+		case "items":
+			out.Values[i] = ec._SajuChart_items(ctx, field, obj)
+		case "ruleSet":
+			out.Values[i] = ec._SajuChart_ruleSet(ctx, field, obj)
+		case "engineVersion":
+			out.Values[i] = ec._SajuChart_engineVersion(ctx, field, obj)
+		case "mode":
+			out.Values[i] = ec._SajuChart_mode(ctx, field, obj)
+		case "period":
+			out.Values[i] = ec._SajuChart_period(ctx, field, obj)
+		case "pillarSource":
+			out.Values[i] = ec._SajuChart_pillarSource(ctx, field, obj)
+		case "tokens":
+			out.Values[i] = ec._SajuChart_tokens(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var sajuChartPillarsImplementors = []string{"SajuChartPillars"}
+
+func (ec *executionContext) _SajuChartPillars(ctx context.Context, sel ast.SelectionSet, obj *model.SajuChartPillars) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sajuChartPillarsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SajuChartPillars")
+		case "y":
+			out.Values[i] = ec._SajuChartPillars_y(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "m":
+			out.Values[i] = ec._SajuChartPillars_m(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "d":
+			out.Values[i] = ec._SajuChartPillars_d(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "h":
+			out.Values[i] = ec._SajuChartPillars_h(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var sajuGenerationResponseImplementors = []string{"SajuGenerationResponse"}
+
+func (ec *executionContext) _SajuGenerationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.SajuGenerationResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sajuGenerationResponseImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SajuGenerationResponse")
+		case "targets":
+			out.Values[i] = ec._SajuGenerationResponse_targets(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var sajuGenerationTargetOutputImplementors = []string{"SajuGenerationTargetOutput"}
+
+func (ec *executionContext) _SajuGenerationTargetOutput(ctx context.Context, sel ast.SelectionSet, obj *model.SajuGenerationTargetOutput) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sajuGenerationTargetOutputImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SajuGenerationTargetOutput")
+		case "kind":
+			out.Values[i] = ec._SajuGenerationTargetOutput_kind(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "period":
+			out.Values[i] = ec._SajuGenerationTargetOutput_period(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "max_chars":
+			out.Values[i] = ec._SajuGenerationTargetOutput_max_chars(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "result":
+			out.Values[i] = ec._SajuGenerationTargetOutput_result(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var sajuPairChartImplementors = []string{"SajuPairChart", "Node"}
+
+func (ec *executionContext) _SajuPairChart(ctx context.Context, sel ast.SelectionSet, obj *model.SajuPairChart) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sajuPairChartImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SajuPairChart")
+		case "id":
+			out.Values[i] = ec._SajuPairChart_id(ctx, field, obj)
+		case "chartA":
+			out.Values[i] = ec._SajuPairChart_chartA(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "chartB":
+			out.Values[i] = ec._SajuPairChart_chartB(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pTokens":
+			out.Values[i] = ec._SajuPairChart_pTokens(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pItemsSummary":
+			out.Values[i] = ec._SajuPairChart_pItemsSummary(ctx, field, obj)
+		case "pItems":
+			out.Values[i] = ec._SajuPairChart_pItems(ctx, field, obj)
+		case "ruleSet":
+			out.Values[i] = ec._SajuPairChart_ruleSet(ctx, field, obj)
+		case "engineVersion":
+			out.Values[i] = ec._SajuPairChart_engineVersion(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var sajuPillarSourceImplementors = []string{"SajuPillarSource"}
+
+func (ec *executionContext) _SajuPillarSource(ctx context.Context, sel ast.SelectionSet, obj *model.SajuPillarSource) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sajuPillarSourceImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SajuPillarSource")
+		case "baseDate":
+			out.Values[i] = ec._SajuPillarSource_baseDate(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "baseTimeUsed":
+			out.Values[i] = ec._SajuPillarSource_baseTimeUsed(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "mode":
+			out.Values[i] = ec._SajuPillarSource_mode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "period":
+			out.Values[i] = ec._SajuPillarSource_period(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "description":
+			out.Values[i] = ec._SajuPillarSource_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -8082,10 +13351,10 @@ func (ec *executionContext) _SajuProfile(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -8148,10 +13417,68 @@ func (ec *executionContext) _SajuProfileLog(ctx context.Context, sel ast.Selecti
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var selectedItemnCardImplementors = []string{"SelectedItemnCard", "Node"}
+
+func (ec *executionContext) _SelectedItemnCard(ctx context.Context, sel ast.SelectionSet, obj *model.SelectedItemnCard) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, selectedItemnCardImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SelectedItemnCard")
+		case "id":
+			out.Values[i] = ec._SelectedItemnCard_id(ctx, field, obj)
+		case "cardId":
+			out.Values[i] = ec._SelectedItemnCard_cardId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "title":
+			out.Values[i] = ec._SelectedItemnCard_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "evidence":
+			out.Values[i] = ec._SelectedItemnCard_evidence(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "score":
+			out.Values[i] = ec._SelectedItemnCard_score(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "contentSummary":
+			out.Values[i] = ec._SelectedItemnCard_contentSummary(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -8209,10 +13536,10 @@ func (ec *executionContext) _SimpleResult(ctx context.Context, sel ast.Selection
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -8265,10 +13592,10 @@ func (ec *executionContext) _SystemStats(ctx context.Context, sel ast.SelectionS
 		return graphql.Null
 	}
 
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+	atomic.AddInt32(&ec.Deferred, int32(len(deferred)))
 
 	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
+		ec.ProcessDeferredGroup(graphql.DeferredGroup{
 			Label:    label,
 			Path:     graphql.GetPath(ctx),
 			FieldSet: dfs,
@@ -8324,40 +13651,97 @@ func (ec *executionContext) marshalNBigInt2int64(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNKV2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKvᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Kv) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNKV2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKv(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
+func (ec *executionContext) unmarshalNChemiGenerationPairInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationPairInput(ctx context.Context, v any) (*model.ChemiGenerationPairInput, error) {
+	res, err := ec.unmarshalInputChemiGenerationPairInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
 
+func (ec *executionContext) unmarshalNChemiGenerationRequest2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationRequest(ctx context.Context, v any) (model.ChemiGenerationRequest, error) {
+	res, err := ec.unmarshalInputChemiGenerationRequest(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNChemiGenerationResponse2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationResponse(ctx context.Context, sel ast.SelectionSet, v model.ChemiGenerationResponse) graphql.Marshaler {
+	return ec._ChemiGenerationResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNChemiGenerationResponse2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationResponse(ctx context.Context, sel ast.SelectionSet, v *model.ChemiGenerationResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
 	}
-	wg.Wait()
+	return ec._ChemiGenerationResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNChemiGenerationTargetInput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationTargetInputᚄ(ctx context.Context, v any) ([]*model.ChemiGenerationTargetInput, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.ChemiGenerationTargetInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNChemiGenerationTargetInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationTargetInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNChemiGenerationTargetInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationTargetInput(ctx context.Context, v any) (*model.ChemiGenerationTargetInput, error) {
+	res, err := ec.unmarshalInputChemiGenerationTargetInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNChemiGenerationTargetOutput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationTargetOutputᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ChemiGenerationTargetOutput) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNChemiGenerationTargetOutput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationTargetOutput(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNChemiGenerationTargetOutput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐChemiGenerationTargetOutput(ctx context.Context, sel ast.SelectionSet, v *model.ChemiGenerationTargetOutput) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ChemiGenerationTargetOutput(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNItemNCardInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐItemNCardInput(ctx context.Context, v any) (model.ItemNCardInput, error) {
+	res, err := ec.unmarshalInputItemNCardInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNItemNCardSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐItemNCardSearchInput(ctx context.Context, v any) (model.ItemNCardSearchInput, error) {
+	res, err := ec.unmarshalInputItemNCardSearchInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNItemnCardsByTokensInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐItemnCardsByTokensInput(ctx context.Context, v any) (model.ItemnCardsByTokensInput, error) {
+	res, err := ec.unmarshalInputItemnCardsByTokensInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNKV2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKvᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Kv) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNKV2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKv(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -8413,6 +13797,11 @@ func (ec *executionContext) marshalNNode2sajudating_apiᚋapiᚋadmgqlᚋmodel�
 	return ec._Node(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNPairCardsByTokensInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐPairCardsByTokensInput(ctx context.Context, v any) (model.PairCardsByTokensInput, error) {
+	res, err := ec.unmarshalInputPairCardsByTokensInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNPhyIdealPartnerCreateInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐPhyIdealPartnerCreateInput(ctx context.Context, v any) (model.PhyIdealPartnerCreateInput, error) {
 	res, err := ec.unmarshalInputPhyIdealPartnerCreateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -8420,6 +13809,111 @@ func (ec *executionContext) unmarshalNPhyIdealPartnerCreateInput2sajudating_api�
 
 func (ec *executionContext) unmarshalNPhyIdealPartnerSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐPhyIdealPartnerSearchInput(ctx context.Context, v any) (model.PhyIdealPartnerSearchInput, error) {
 	res, err := ec.unmarshalInputPhyIdealPartnerSearchInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSajuBirthInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuBirthInput(ctx context.Context, v any) (*model.SajuBirthInput, error) {
+	res, err := ec.unmarshalInputSajuBirthInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSajuChart2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuChart(ctx context.Context, sel ast.SelectionSet, v *model.SajuChart) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SajuChart(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSajuChartInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuChartInput(ctx context.Context, v any) (model.SajuChartInput, error) {
+	res, err := ec.unmarshalInputSajuChartInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSajuChartPillars2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuChartPillars(ctx context.Context, sel ast.SelectionSet, v *model.SajuChartPillars) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SajuChartPillars(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSajuGenerationRequest2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationRequest(ctx context.Context, v any) (model.SajuGenerationRequest, error) {
+	res, err := ec.unmarshalInputSajuGenerationRequest(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSajuGenerationResponse2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationResponse(ctx context.Context, sel ast.SelectionSet, v model.SajuGenerationResponse) graphql.Marshaler {
+	return ec._SajuGenerationResponse(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNSajuGenerationResponse2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationResponse(ctx context.Context, sel ast.SelectionSet, v *model.SajuGenerationResponse) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SajuGenerationResponse(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSajuGenerationTargetInput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationTargetInputᚄ(ctx context.Context, v any) ([]*model.SajuGenerationTargetInput, error) {
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]*model.SajuGenerationTargetInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSajuGenerationTargetInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationTargetInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNSajuGenerationTargetInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationTargetInput(ctx context.Context, v any) (*model.SajuGenerationTargetInput, error) {
+	res, err := ec.unmarshalInputSajuGenerationTargetInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSajuGenerationTargetOutput2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationTargetOutputᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.SajuGenerationTargetOutput) graphql.Marshaler {
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNSajuGenerationTargetOutput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationTargetOutput(ctx, sel, v[i])
+	})
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNSajuGenerationTargetOutput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationTargetOutput(ctx context.Context, sel ast.SelectionSet, v *model.SajuGenerationTargetOutput) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._SajuGenerationTargetOutput(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNSajuGenerationUserInput2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuGenerationUserInput(ctx context.Context, v any) (*model.SajuGenerationUserInput, error) {
+	res, err := ec.unmarshalInputSajuGenerationUserInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSajuPairChartInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuPairChartInput(ctx context.Context, v any) (model.SajuPairChartInput, error) {
+	res, err := ec.unmarshalInputSajuPairChartInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -8435,6 +13929,11 @@ func (ec *executionContext) unmarshalNSajuProfileLogSearchInput2sajudating_api�
 
 func (ec *executionContext) unmarshalNSajuProfileSearchInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuProfileSearchInput(ctx context.Context, v any) (model.SajuProfileSearchInput, error) {
 	res, err := ec.unmarshalInputSajuProfileSearchInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNSendLLMRequestInput2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐSendLLMRequestInput(ctx context.Context, v any) (model.SendLLMRequestInput, error) {
+	res, err := ec.unmarshalInputSendLLMRequestInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -8456,39 +13955,11 @@ func (ec *executionContext) marshalOKV2ᚕᚖsajudating_apiᚋapiᚋadmgqlᚋmod
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNKV2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKv(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNKV2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐKv(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -8510,39 +13981,11 @@ func (ec *executionContext) marshalONode2ᚕsajudating_apiᚋapiᚋadmgqlᚋmode
 	if v == nil {
 		return graphql.Null
 	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNNode2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐNode(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
+	ret := graphql.MarshalSliceConcurrently(ctx, len(v), 0, false, func(ctx context.Context, i int) graphql.Marshaler {
+		fc := graphql.GetFieldContext(ctx)
+		fc.Result = &v[i]
+		return ec.marshalNNode2sajudating_apiᚋapiᚋadmgqlᚋmodelᚐNode(ctx, sel, v[i])
+	})
 
 	for _, e := range ret {
 		if e == graphql.Null {
@@ -8551,6 +13994,13 @@ func (ec *executionContext) marshalONode2ᚕsajudating_apiᚋapiᚋadmgqlᚋmode
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalOSajuPillarSource2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSajuPillarSource(ctx context.Context, sel ast.SelectionSet, v *model.SajuPillarSource) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._SajuPillarSource(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOSimpleResult2ᚖsajudating_apiᚋapiᚋadmgqlᚋmodelᚐSimpleResult(ctx context.Context, sel ast.SelectionSet, v *model.SimpleResult) graphql.Marshaler {

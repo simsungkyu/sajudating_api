@@ -160,7 +160,8 @@ mutation putAiMeta($input: AiMetaInput!) {
 mutation setAiMetaInUse($uid: String!) {
   setAiMetaInUse(uid: $uid) {
     ok
-    err msg
+    err
+    msg
   }
 }
 
@@ -285,11 +286,52 @@ mutation login($email: String!, $password: String!, $otp: String!) {
   }
 }
 
+fragment adminUserBasic on AdminUser {
+  uid
+  createdAt
+  updatedAt
+  username
+  email
+  isActive
+}
+
+query adminUsers {
+  adminUsers {
+    ok
+    err
+    msg
+    total
+    limit
+    offset
+    nodes {
+      ... on AdminUser {
+        ...adminUserBasic
+      }
+    }
+  }
+}
+
 mutation createAdminUser($email: String!, $password: String!) {
   createAdminUser(email: $email, password: $password) {
     ok
     uid
     value
+    err
+    msg
+  }
+}
+
+mutation setAdminUserActive($uid: String!, $active: Boolean!) {
+  setAdminUserActive(uid: $uid, active: $active) {
+    ok
+    err
+    msg
+  }
+}
+
+mutation updateAdminUser($uid: String!, $email: String!, $password: String!) {
+  updateAdminUser(uid: $uid, email: $email, password: $password) {
+    ok
     err
     msg
   }
@@ -332,6 +374,99 @@ query systemStats {
       ... on SystemStats {
         ...systemStatsBasic
       }
+    }
+  }
+}
+
+fragment itemnCardBasic on ItemNCard {
+  uid
+  cardId
+  version
+  status
+  ruleSet
+  scope
+  title
+  category
+  tags
+  domains
+  priority
+  triggerJson
+  scoreJson
+  contentJson
+  cooldownGroup
+  maxPerUser
+  debugJson
+  deletedAt
+  createdAt
+  updatedAt
+}
+
+query itemnCards($input: ItemNCardSearchInput!) {
+  itemnCards(input: $input) {
+    ok
+    msg
+    total
+    limit
+    offset
+    nodes {
+      ... on ItemNCard {
+        ...itemnCardBasic
+      }
+    }
+  }
+}
+
+query itemnCard($uid: String) {
+  itemnCard(uid: $uid) {
+    ok
+    msg
+    node {
+      ... on ItemNCard {
+        ...itemnCardBasic
+      }
+    }
+  }
+}
+
+mutation createItemnCard($input: ItemNCardInput!) {
+  createItemnCard(input: $input) {
+    ok
+    uid
+    msg
+  }
+}
+
+mutation updateItemnCard($uid: String!, $input: ItemNCardInput!) {
+  updateItemnCard(uid: $uid, input: $input) {
+    ok
+    msg
+  }
+}
+
+mutation deleteItemnCard($uid: String!) {
+  deleteItemnCard(uid: $uid) {
+    ok
+    msg
+  }
+}
+
+mutation runSajuGeneration($input: SajuGenerationRequest!) {
+  runSajuGeneration(input: $input) {
+    targets {
+      kind
+      period
+      max_chars
+      result
+    }
+  }
+}
+
+mutation runChemiGeneration($input: ChemiGenerationRequest!) {
+  runChemiGeneration(input: $input) {
+    targets {
+      perspective
+      max_chars
+      result
     }
   }
 }

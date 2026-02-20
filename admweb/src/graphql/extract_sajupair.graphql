@@ -1,0 +1,321 @@
+fragment extractSajuStep1DocFields on ExtractSajuDoc {
+  schemaVer
+  input {
+    dtLocal
+    tz
+    calendar
+    leapMonth
+    sex
+    timePrec
+    solarDt
+    adjustedDt
+    loc {
+      lat
+      lon
+    }
+    engine {
+      name
+      ver
+      sys
+    }
+    fortuneBaseDt
+    seunFromYear
+    seunToYear
+    wolunYear
+    ilunYear
+    ilunMonth
+  }
+  pillars {
+    k
+    stem
+    branch
+  }
+  dayMaster
+  daeun {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  seun {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  wolun {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  ilun {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  daeunList {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  seunList {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  wolunList {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  ilunList {
+    type
+    order
+    stem
+    branch
+    stemKo
+    stemHanja
+    branchKo
+    branchHanja
+    ganjiKo
+    ganjiHanja
+    stemEl
+    stemYy
+    stemTenGod
+    branchEl
+    branchYy
+    branchTenGod
+    branchTwelve
+    ageFrom
+    ageTo
+    startYear
+    year
+    month
+    day
+  }
+  elBalance {
+    wood
+    fire
+    earth
+    metal
+    water
+  }
+  hourCtx {
+    status
+    missingReason
+    candidates {
+      order
+      timeWindow
+      weight
+    }
+  }
+  facts {
+    k
+    n
+    v
+    score {
+      norm0_100
+    }
+  }
+  evals {
+    k
+    n
+    v
+    score {
+      norm0_100
+    }
+  }
+}
+
+query extractSajuStep1($input: ExtractSajuInput!) {
+  extract_saju(input: $input) {
+    ok
+    msg
+    node {
+      __typename
+      ... on ExtractSajuDoc {
+        ...extractSajuStep1DocFields
+      }
+    }
+  }
+}
+
+query extractPairStep1($input: ExtractPairInput!) {
+  extract_pair(input: $input) {
+    ok
+    msg
+    node {
+      __typename
+      ... on ExtractPairDoc {
+        schemaVer
+        input {
+          engine {
+            name
+            ver
+          }
+        }
+        charts {
+          a {
+            ...extractSajuStep1DocFields
+          }
+          b {
+            ...extractSajuStep1DocFields
+          }
+        }
+        facts {
+          k
+          n
+          v
+        }
+        edges {
+          t
+        }
+        evals {
+          k
+          n
+          score {
+            norm0_100
+          }
+        }
+      }
+    }
+  }
+}

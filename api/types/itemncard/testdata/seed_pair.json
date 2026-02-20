@@ -1,0 +1,12 @@
+{
+  "card_id": "궁합_충_일지_v1",
+  "scope": "pair",
+  "title": "A·B 일지 충",
+  "trigger": {
+    "all": [],
+    "any": [{"src": "P", "token": "궁합:충@A.일지-B.일지"}],
+    "not": []
+  },
+  "score": {"base": 50, "bonus_if": [], "penalty_if": []},
+  "content": {"summary": "요약", "points": [], "questions": [], "guardrails": []}
+}

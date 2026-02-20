@@ -22,6 +22,12 @@ var (
 	adminUserServiceOnce        sync.Once
 	localLogService             *service.LocalLogService
 	localLogServiceOnce         sync.Once
+	adminItemNCardService       *service.AdminItemNCardService
+	adminItemNCardServiceOnce   sync.Once
+	adminExtractService         *service.AdminExtractService
+	adminExtractServiceOnce     sync.Once
+	extractSajuPairService      *service.ExtractSajuPairService
+	extractSajuPairServiceOnce  sync.Once
 )
 
 func getAdminAiMetaService() *service.AdminAIMetaService {
@@ -71,4 +77,25 @@ func getLocalLogService() *service.LocalLogService {
 		localLogService = service.NewLocalLogService()
 	})
 	return localLogService
+}
+
+func getAdminItemNCardService() *service.AdminItemNCardService {
+	adminItemNCardServiceOnce.Do(func() {
+		adminItemNCardService = service.NewAdminItemNCardService()
+	})
+	return adminItemNCardService
+}
+
+func getAdminExtractService() *service.AdminExtractService {
+	adminExtractServiceOnce.Do(func() {
+		adminExtractService = service.NewAdminExtractService()
+	})
+	return adminExtractService
+}
+
+func getExtractSajuPairService() *service.ExtractSajuPairService {
+	extractSajuPairServiceOnce.Do(func() {
+		extractSajuPairService = service.NewExtractSajuPairService()
+	})
+	return extractSajuPairService
 }

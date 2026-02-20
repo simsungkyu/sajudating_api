@@ -1,0 +1,24 @@
+---
+description: 시스템 전체에서 용어는 docs/TERMS.md를 따른다. 혼용 방지.
+alwaysApply: true
+---
+
+# 용어 정의 준수 (docs/TERMS.md)
+
+코드, 주석, 문서, API·GraphQL 필드명, 변수명, UI 문구 등 **시스템 전체**에서 용어를 쓸 때는 반드시 [docs/TERMS.md](docs/TERMS.md)에 정의된 용어를 사용한다.
+
+## 규칙
+
+- **단일 출처**: 용어의 기준은 `docs/TERMS.md`만 사용한다. 동의어·비공식 표기는 사용하지 않는다.
+- **추가/변경**: 새 용어를 쓰거나 기존 용어를 바꿀 때는 먼저 TERMS.md를 갱신한 뒤 코드·문서에 반영한다.
+- **혼용 금지**: 같은 개념에 대해 TERMS.md에 없는 별칭(예: 다른 한글 표기, 다른 영문 약어)을 섞어 쓰지 않는다.
+
+## 적용 범위
+
+- Go/TypeScript 코드 및 주석
+- GraphQL 스키마·필드·타입명
+- REST API 경로·파라미터·응답 필드
+- admweb UI 라벨·메시지
+- docs/ 내 문서 및 PRD
+
+TERMS.md에 정의가 없으면, 필요 시 TERMS.md에 항목을 추가한 뒤 일관되게 사용한다.

@@ -1,8 +1,12 @@
+# admgql.graphql: 관리자용 GraphQL 스키마 (쿼리/뮤테이션, 공통·사주·AI·카드·로그 등)
+
 scalar BigInt
 
 interface Node {
   id: ID
 }
+
+# 키-값 공통 타입
 type KV {
   k: String!
   v: String!
@@ -12,6 +16,7 @@ input KVInput {
   v: String!
 }
 
+# 공통 응답 래퍼 (목록/단건/에러/페이징 등)
 type SimpleResult {
   ok: Boolean!
   uid: String
@@ -28,54 +33,96 @@ type SimpleResult {
 }
 
 type Query {
+  # 관리자 계정
+  adminUsers: SimpleResult!
+
+  # 사주 프로필
   sajuProfiles(input: SajuProfileSearchInput!): SimpleResult!
   sajuProfile(uid: String!): SimpleResult!
-  sajuProfileSimilarPartners(
-    uid: String!
-    limit: Int!
-    offset: Int!
-  ): SimpleResult!
-  phyIdealPartners(input: PhyIdealPartnerSearchInput!): SimpleResult!
-  phyIdealPartner(uid: String!): SimpleResult!
+  sajuProfileSimilarPartners(uid: String!, limit: Int!, offset: Int!): SimpleResult!
   sajuProfileLogs(input: SajuProfileLogSearchInput!): SimpleResult!
 
+  # 이상형 파트너(물리)
+  phyIdealPartners(input: PhyIdealPartnerSearchInput!): SimpleResult!
+  phyIdealPartner(uid: String!): SimpleResult!
+
+  # AI 메타/실행
   aiMetas(input: AiMetaSearchInput!): SimpleResult!
   aiMeta(uid: String!): SimpleResult!
   aiMetaTypes: SimpleResult!
-  aiMetaKVs(input: AiMetaKVsInput!): SimpleResult! #kvs는 출력되는값
+  aiMetaKVs(input: AiMetaKVsInput!): SimpleResult!
   aiExecutions(input: AiExecutionSearchInput!): SimpleResult!
   aiExecution(uid: String!): SimpleResult!
   palja(birthdate: String!, timezone: String!): SimpleResult!
 
+  # 사주어셈블-ItemNCard (사주/궁합 카드)
+  itemnCards(input: ItemNCardSearchInput!): SimpleResult!
+  itemnCard(uid: String): SimpleResult
+  itemnCardByCardId(cardId: String!, scope: String): SimpleResult
+
+  # 사주어셈블-SajuAssemble: 명식/차트·토큰 추출 및 카드 조회 (설계: docs/SajuAssemble/GraphQL_Extract_Design.md)
+  # 사주
+  sajuChart(input: SajuChartInput!): SimpleResult!
+  itemnCardsByTokens(input: ItemnCardsByTokensInput!): SimpleResult!
+  extract_saju(input: ExtractSajuInput!): SimpleResult!
+  # 궁합
+  sajuPairChart(input: SajuPairChartInput!): SimpleResult!
+  pairCardsByTokens(input: PairCardsByTokensInput!): SimpleResult!
+  extract_pair(input: ExtractPairInput!): SimpleResult!
+
+  # 로그/시스템
   localLogs(input: LocalLogSearchInput!): SimpleResult!
   systemStats: SimpleResult!
 }
 
 type Mutation {
-  # AdminUser
-  login(email: String!, password: String!, otp: String!): SimpleResult! # 로그인 - 권한없이 가능
-  logout: SimpleResult! # 로그아웃 - 로그인 권한 필요
-  createAdminUser(email: String!, password: String!): SimpleResult! # 관리자 생성 join - 권한없이 가능
-  setAdminUserActive(uid: String!, active: Boolean!): SimpleResult! # 관리자 활성화 비활성화 - 로그인 권한 필요
-  updateAdminUser(
-    uid: String!
-    email: String!
-    password: String!
-  ): SimpleResult! # 관리자 정보 수정 - 로그인 권한 필요
-  # SajuProfile
+  # 관리자 계정
+  login(email: String!, password: String!, otp: String!): SimpleResult!
+  logout: SimpleResult!
+  createAdminUser(email: String!, password: String!): SimpleResult!
+  setAdminUserActive(uid: String!, active: Boolean!): SimpleResult!
+  updateAdminUser(uid: String!, email: String!, password: String!): SimpleResult!
+
+  # 사주 프로필
   createSajuProfile(input: SajuProfileCreateInput!): SimpleResult
   deleteSajuProfile(uid: String!): SimpleResult
 
+  # 이상형 파트너
   createPhyIdealPartner(input: PhyIdealPartnerCreateInput!): SimpleResult
   deletePhyIdealPartner(uid: String!): SimpleResult
 
-  putAiMeta(input: AiMetaInput!): SimpleResult # AI Meta 생성 및 수정
-  setAiMetaInUse(uid: String!): SimpleResult # AI Meta 사용 여부 설정
-  delAiMeta(uid: String!): SimpleResult # AI Meta 삭제
-  setAiMetaDefault(uid: String!): SimpleResult # AI Meta 기본 설정
+  # AI 메타
+  putAiMeta(input: AiMetaInput!): SimpleResult
+  setAiMetaInUse(uid: String!): SimpleResult
+  delAiMeta(uid: String!): SimpleResult
+  setAiMetaDefault(uid: String!): SimpleResult
   runAiExecution(input: AiExcutionInput!): SimpleResult!
+
+  # 사주어셈블-ItemNCard
+  createItemnCard(input: ItemNCardInput!): SimpleResult
+  updateItemnCard(uid: String!, input: ItemNCardInput!): SimpleResult
+  deleteItemnCard(uid: String!): SimpleResult
+
+  # 사주어셈블-사주/궁합 생성 (실행) (추후 수정 혹은 삭제 예정)
+  runSajuGeneration(input: SajuGenerationRequest!): SajuGenerationResponse!
+  runChemiGeneration(input: ChemiGenerationRequest!): ChemiGenerationResponse!
+
+  # 사주어셈블-공통 LLM 요청 (프롬프트만 전달, 카드 UID 없음)
+  sendLLMRequest(input: SendLLMRequestInput!): SimpleResult!
 }
 
+# 관리자 계정 (목록 노드용)
+type AdminUser implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  username: String!
+  email: String!
+  isActive: Boolean!
+}
+
+# 사주 프로필
 type SajuProfile implements Node {
   id: ID
   uid: String!
@@ -85,25 +132,20 @@ type SajuProfile implements Node {
   birthdate: String!
   palja: String!
   email: String!
-  image: String! # base64 encoded image
+  image: String!
   imageMimeType: String!
   nickname: String!
-  #
   sajuSummary: String!
   sajuContent: String!
-  #
   phySummary: String!
   phyContent: String!
-  #
   myFeatureEyes: String!
   myFeatureNose: String!
   myFeatureMouth: String!
   myFeatureFaceShape: String!
   myFeatureNotes: String!
-  #
   partnerEmbeddingText: String!
   partnerMatchTips: String!
-  #
   partnerSummary: String!
   partnerFeatureEyes: String!
   partnerFeatureNose: String!
@@ -112,8 +154,6 @@ type SajuProfile implements Node {
   partnerPersonalityMatch: String!
   partnerSex: String!
   partnerAge: Int!
-
-  #
   phyPartnerUid: String!
   phyPartnerSimilarity: Float!
 }
@@ -126,57 +166,12 @@ input SajuProfileSearchInput {
 }
 
 input SajuProfileCreateInput {
-  image: String! # base64 encoded image
-  birthdate: String! # yyyymmddhhmm format (hhmm optional)
-  sex: String!
-}
-
-# phy ideal partner
-type PhyIdealPartner implements Node {
-  id: ID
-  uid: String!
-  createdAt: BigInt!
-  updatedAt: BigInt!
-  # input
-  summary: String!
-  featureEyes: String!
-  featureNose: String!
-  featureMouth: String!
-  featureFaceShape: String!
-  personalityMatch: String!
-  sex: String!
-  age: Int!
-  # Image Data (Generated or Uploaded)
   image: String!
-  # Embedding
-  embeddingModel: String!
-  embeddingText: String!
-
-  # 유사도
-  similarityScore: Float!
-  hasImage: Boolean!
-}
-
-input PhyIdealPartnerCreateInput {
-  summary: String!
-  featureEyes: String!
-  featureNose: String!
-  featureMouth: String!
-  featureFaceShape: String!
-  personalityMatch: String!
+  birthdate: String!
   sex: String!
-  age: Int!
-  image: String # base64 encoded image (optional)
 }
 
-input PhyIdealPartnerSearchInput {
-  limit: Int!
-  offset: Int!
-  sex: String
-  hasImage: Boolean
-}
-
-# Saju Profile Log
+# 사주 프로필 로그
 type SajuProfileLog implements Node {
   id: ID
   uid: String!
@@ -193,105 +188,85 @@ input SajuProfileLogSearchInput {
   status: String
 }
 
-# ai meta
+# 이상형 파트너(물리)
+type PhyIdealPartner implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  summary: String!
+  featureEyes: String!
+  featureNose: String!
+  featureMouth: String!
+  featureFaceShape: String!
+  personalityMatch: String!
+  sex: String!
+  age: Int!
+  image: String!
+  embeddingModel: String!
+  embeddingText: String!
+  similarityScore: Float!
+  hasImage: Boolean!
+}
+
+input PhyIdealPartnerCreateInput {
+  summary: String!
+  featureEyes: String!
+  featureNose: String!
+  featureMouth: String!
+  featureFaceShape: String!
+  personalityMatch: String!
+  sex: String!
+  age: Int!
+  image: String
+}
+
+input PhyIdealPartnerSearchInput {
+  limit: Int!
+  offset: Int!
+  sex: String
+  hasImage: Boolean
+}
+
+# AI 메타 (프롬프트/모델 설정)
 type AiMeta implements Node {
   id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
   metaType: String!
-
   name: String!
   desc: String!
   prompt: String!
   model: String!
   temperature: Float!
   maxTokens: Int!
-  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
-  inUse: Boolean! # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
+  size: String!
+  inUse: Boolean!
 }
 
 input AiMetaInput {
-  uid: String # optional
+  uid: String
   name: String!
   desc: String!
   prompt: String!
-  metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
+  metaType: String
   model: String!
   temperature: Float!
   maxTokens: Int!
-  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
+  size: String!
 }
 
 input AiMetaSearchInput {
   limit: Int!
   offset: Int!
-  metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
-  inUse: Boolean # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
-}
-
-# AI Excution
-type AiExecution implements Node {
-  id: ID
-  uid: String!
-  createdAt: BigInt!
-  updatedAt: BigInt!
-  metaUid: String!
-  metaType: String!
-  status: String!
-  errorMessage: String!
-  # real Request
-  prompt: String!
-  valued_prompt: String!
-  inputkvs: [KV!]!
-  outputkvs: [KV!]!
-  model: String!
-  temperature: Float!
-  maxTokens: Int!
-  size: String!
-  inputImageBase64: String
-  # result
-  elapsedTime: Int!
-  outputText: String
-  outputImageBase64: String # if exists return base64 encoded image
-  # usage
-  inputTokens: Int!
-  outputTokens: Int!
-  totalTokens: Int!
-  #
-  runBy: String # admin, system
-  runSajuProfileUid: String # saju profile uid
-}
-
-input AiExcutionInput {
-  metaUid: String!
-  metaType: String!
-  promptType: String! # text, vision, image
-  prompt: String! # 프롬프트
-  valued_prompt: String! # params가 적용된 프롬프트
-  inputkvs: [KVInput!]! # 입력값들
-  outputkvs: [KVInput!]! # 출력값들
-  model: String!
-  temperature: Float!
-  maxTokens: Int!
-  size: String!
-
-  inputImageBase64: String
-}
-
-input AiExecutionSearchInput {
-  limit: Int!
-  offset: Int!
   metaType: String
-  metaUid: String
-  runBy: String # admin, system
-  runSajuProfileUid: String # saju profile uid
+  inUse: Boolean
 }
 
-#
 input AiMetaKVsInput {
-  type: String! # Meta type
-  kvs: [KVInput!]! # 메타에 따른 입력값들 - 사전정의됨
+  type: String!
+  kvs: [KVInput!]!
 }
 
 type AiMetaType implements Node {
@@ -303,7 +278,228 @@ type AiMetaType implements Node {
   hasOutputImage: Boolean!
 }
 
-# ! Local Log
+# AI 실행 이력
+type AiExecution implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  metaUid: String!
+  metaType: String!
+  status: String!
+  errorMessage: String!
+  prompt: String!
+  valued_prompt: String!
+  inputkvs: [KV!]!
+  outputkvs: [KV!]!
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String!
+  inputImageBase64: String
+  elapsedTime: Int!
+  outputText: String
+  outputImageBase64: String
+  inputTokens: Int!
+  outputTokens: Int!
+  totalTokens: Int!
+  runBy: String
+  runSajuProfileUid: String
+}
+
+input AiExcutionInput {
+  metaUid: String!
+  metaType: String!
+  promptType: String!
+  prompt: String!
+  valued_prompt: String!
+  inputkvs: [KVInput!]!
+  outputkvs: [KVInput!]!
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String!
+  inputImageBase64: String
+}
+
+input AiExecutionSearchInput {
+  limit: Int!
+  offset: Int!
+  metaType: String
+  metaUid: String
+  runBy: String
+  runSajuProfileUid: String
+}
+
+# ItemNCard (사주/궁합 카드)
+type ItemNCard implements Node {
+  id: ID
+  uid: String!
+  cardId: String!
+  version: Int!
+  status: String!
+  ruleSet: String!
+  scope: String!
+  title: String!
+  category: String!
+  tags: [String!]!
+  domains: [String!]!
+  priority: Int!
+  triggerJson: String!
+  scoreJson: String!
+  contentJson: String!
+  cooldownGroup: String!
+  maxPerUser: Int!
+  debugJson: String!
+  deletedAt: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+input ItemNCardSearchInput {
+  limit: Int!
+  offset: Int!
+  scope: String
+  status: String
+  category: String
+  tags: [String!]
+  ruleSet: String
+  domain: String
+  cooldownGroup: String
+  orderBy: String
+  orderDirection: String
+  includeDeleted: Boolean
+}
+
+input ItemNCardInput {
+  cardId: String!
+  version: Int!
+  status: String!
+  ruleSet: String!
+  scope: String!
+  title: String!
+  category: String!
+  tags: [String!]!
+  domains: [String!]!
+  priority: Int!
+  triggerJson: String!
+  scoreJson: String!
+  contentJson: String!
+  cooldownGroup: String!
+  maxPerUser: Int!
+  debugJson: String!
+}
+
+# ----- SajuAssemble: 명식/차트·토큰·카드 (GraphQL_Extract_Design.md) -----
+
+# 사주 차트 四柱 (년·월·일·시)
+type SajuChartPillars {
+  y: String!
+  m: String!
+  d: String!
+  h: String!
+}
+
+# 사주 차트 출처(기준일·모드·대운 등) 메타
+type SajuPillarSource {
+  baseDate: String!
+  baseTimeUsed: String!
+  mode: String!
+  period: String!
+  description: String!
+}
+
+# 단일 명식 차트: pillars 필수, 나머지 옵션 (items/tokens는 includeTokens 등으로 제어)
+type SajuChart implements Node {
+  id: ID
+  pillars: SajuChartPillars!
+  dm: String
+  itemsSummary: String
+  items: [String!]
+  ruleSet: String
+  engineVersion: String
+  mode: String
+  period: String
+  pillarSource: SajuPillarSource
+  tokens: [String!]
+}
+
+# 궁합 쌍 차트: A/B 차트 + P토큰
+type SajuPairChart implements Node {
+  id: ID
+  chartA: SajuChart!
+  chartB: SajuChart!
+  pTokens: [String!]!
+  pItemsSummary: String
+  pItems: [String!]
+  ruleSet: String
+  engineVersion: String
+}
+
+# 토큰 매칭으로 선별된 카드 한 건 (itemnCardsByTokens / pairCardsByTokens 공통)
+type SelectedItemnCard implements Node {
+  id: ID
+  cardId: String!
+  title: String!
+  evidence: [String!]!
+  score: Int!
+  contentSummary: String
+}
+
+# sendLLMRequest 응답 (node 또는 value/kvs로 전달)
+type LLMRequestResult implements Node {
+  id: ID
+  responseText: String
+  inputTokens: Int
+  outputTokens: Int
+  totalTokens: Int
+  errorMessage: String
+}
+
+input SajuChartInput {
+  birth: SajuBirthInput!
+  timezone: String
+  calendar: String
+  mode: String!
+  targetYear: Int
+  targetMonth: Int
+  targetDay: Int
+  targetDaesoonIndex: Int
+  gender: String
+  includeTokens: Boolean
+}
+
+input SajuPairChartInput {
+  birthA: SajuBirthInput!
+  birthB: SajuBirthInput!
+  timezone: String
+  calendar: String
+  includeTokens: Boolean
+}
+
+input ItemnCardsByTokensInput {
+  tokens: [String!]!
+  limit: Int
+  ruleSet: String
+}
+
+input PairCardsByTokensInput {
+  tokensA: [String!]!
+  tokensB: [String!]!
+  pTokens: [String!]!
+  limit: Int
+  ruleSet: String
+}
+
+input SendLLMRequestInput {
+  prompt: String!
+  systemPrompt: String
+  maxTokens: Int
+  model: String
+  temperature: Float
+}
+
+# ----- 로컬 로그 -----
 type LocalLog implements Node {
   id: ID
   uid: String!
@@ -318,11 +514,65 @@ input LocalLogSearchInput {
   status: String
 }
 
-# ! System Stats
+# 시스템 상태
 type SystemStats implements Node {
   id: ID
   hostname: String!
-  cpuUsage: Float! # 0.0 ~ 100.00
-  memoryUsage: Int! # bytes
-  memoryTotal: Int! # bytes
+  cpuUsage: Float!
+  memoryUsage: Int!
+  memoryTotal: Int!
+}
+
+# 사주 생성: 사용자 정보 + 출력 대상 → 결과 포함 대상 목록
+input SajuBirthInput {
+  date: String!
+  time: String!
+  time_precision: String
+}
+input SajuGenerationUserInput {
+  birth: SajuBirthInput!
+  timezone: String
+  rule_set: String
+  gender: String
+}
+input SajuGenerationTargetInput {
+  kind: String!
+  period: String!
+  max_chars: Int!
+}
+type SajuGenerationTargetOutput {
+  kind: String!
+  period: String!
+  max_chars: Int!
+  result: String!
+}
+input SajuGenerationRequest {
+  user_input: SajuGenerationUserInput!
+  targets: [SajuGenerationTargetInput!]!
+}
+type SajuGenerationResponse {
+  targets: [SajuGenerationTargetOutput!]!
+}
+
+# 궁합(캐미) 생성: 쌍 입력 + 대상 → 결과 포함 대상 목록
+input ChemiGenerationPairInput {
+  birthA: SajuBirthInput!
+  birthB: SajuBirthInput!
+  timezone: String
+}
+input ChemiGenerationTargetInput {
+  perspective: String!
+  max_chars: Int!
+}
+type ChemiGenerationTargetOutput {
+  perspective: String!
+  max_chars: Int!
+  result: String!
+}
+input ChemiGenerationRequest {
+  pair_input: ChemiGenerationPairInput!
+  targets: [ChemiGenerationTargetInput!]!
+}
+type ChemiGenerationResponse {
+  targets: [ChemiGenerationTargetOutput!]!
 }

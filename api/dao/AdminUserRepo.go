@@ -9,6 +9,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type AdminUserRepo struct {
@@ -57,6 +58,29 @@ func (r *AdminUserRepo) FindByUID(uid string) (*entity.AdminUser, error) {
 	}
 
 	return &user, nil
+}
+
+// FindAll returns all admin users, sorted by created_at ascending.
+func (r *AdminUserRepo) FindAll() ([]*entity.AdminUser, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	opts := options.Find().SetSort(bson.D{{Key: "created_at", Value: 1}})
+	cursor, err := r.collection.Find(ctx, bson.M{}, opts)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	var list []entity.AdminUser
+	if err := cursor.All(ctx, &list); err != nil {
+		return nil, err
+	}
+	users := make([]*entity.AdminUser, len(list))
+	for i := range list {
+		users[i] = &list[i]
+	}
+	return users, nil
 }
 
 func (r *AdminUserRepo) Update(user *entity.AdminUser) error {

@@ -293,7 +293,7 @@ const AIExecutionRunModal: React.FC<AIExecutionRunModalProps> = ({
           size: executionData.size || undefined,
           inputImageBase64: executionData.inputImageBase64 || undefined,
           outputText: executionData.outputText || undefined,
-          errorText: executionData.errorText || undefined,
+          errorText: executionData.errorMessage || undefined,
           outputImageBase64: executionData.outputImageBase64 || undefined,
           createdAt: String(executionData.createdAt),
           updatedAt: String(executionData.updatedAt),

@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+**기본 참조**: 이 문서와 함께 [`.cursor/rules/`](.cursor/rules/)의 룰을 기본으로 참조한다.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview

@@ -5,32 +5,20 @@ package admgql_generated
 import (
 	"bytes"
 	"context"
-	"errors"
 	"sajudating_api/api/admgql/model"
 	"sync/atomic"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/99designs/gqlgen/graphql/introspection"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
 // NewExecutableSchema creates an ExecutableSchema from the ResolverRoot interface.
 func NewExecutableSchema(cfg Config) graphql.ExecutableSchema {
-	return &executableSchema{
-		schema:     cfg.Schema,
-		resolvers:  cfg.Resolvers,
-		directives: cfg.Directives,
-		complexity: cfg.Complexity,
-	}
+	return &executableSchema{SchemaData: cfg.Schema, Resolvers: cfg.Resolvers, Directives: cfg.Directives, ComplexityRoot: cfg.Complexity}
 }
 
-type Config struct {
-	Schema     *ast.Schema
-	Resolvers  ResolverRoot
-	Directives DirectiveRoot
-	Complexity ComplexityRoot
-}
+type Config = graphql.Config[ResolverRoot, DirectiveRoot, ComplexityRoot]
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
@@ -43,6 +31,16 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	AdminUser struct {
+		CreatedAt func(childComplexity int) int
+		Email     func(childComplexity int) int
+		ID        func(childComplexity int) int
+		IsActive  func(childComplexity int) int
+		UID       func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		Username  func(childComplexity int) int
+	}
+
 	AiExecution struct {
 		CreatedAt         func(childComplexity int) int
 		ElapsedTime       func(childComplexity int) int
@@ -96,9 +94,381 @@ type ComplexityRoot struct {
 		Type           func(childComplexity int) int
 	}
 
+	ChemiGenerationResponse struct {
+		Targets func(childComplexity int) int
+	}
+
+	ChemiGenerationTargetOutput struct {
+		MaxChars    func(childComplexity int) int
+		Perspective func(childComplexity int) int
+		Result      func(childComplexity int) int
+	}
+
+	ExtractDaeunPeriod struct {
+		AgeFrom      func(childComplexity int) int
+		AgeTo        func(childComplexity int) int
+		Branch       func(childComplexity int) int
+		BranchEl     func(childComplexity int) int
+		BranchHanja  func(childComplexity int) int
+		BranchKo     func(childComplexity int) int
+		BranchTenGod func(childComplexity int) int
+		BranchTwelve func(childComplexity int) int
+		BranchYy     func(childComplexity int) int
+		Day          func(childComplexity int) int
+		GanjiHanja   func(childComplexity int) int
+		GanjiKo      func(childComplexity int) int
+		Month        func(childComplexity int) int
+		Order        func(childComplexity int) int
+		StartYear    func(childComplexity int) int
+		Stem         func(childComplexity int) int
+		StemEl       func(childComplexity int) int
+		StemHanja    func(childComplexity int) int
+		StemKo       func(childComplexity int) int
+		StemTenGod   func(childComplexity int) int
+		StemYy       func(childComplexity int) int
+		Type         func(childComplexity int) int
+		Year         func(childComplexity int) int
+	}
+
+	ExtractElDistribution struct {
+		Earth func(childComplexity int) int
+		Fire  func(childComplexity int) int
+		Metal func(childComplexity int) int
+		Water func(childComplexity int) int
+		Wood  func(childComplexity int) int
+	}
+
+	ExtractEngine struct {
+		Name   func(childComplexity int) int
+		Params func(childComplexity int) int
+		Sys    func(childComplexity int) int
+		Ver    func(childComplexity int) int
+	}
+
+	ExtractEvalItem struct {
+		Evidence func(childComplexity int) int
+		ID       func(childComplexity int) int
+		K        func(childComplexity int) int
+		N        func(childComplexity int) int
+		Refs     func(childComplexity int) int
+		Score    func(childComplexity int) int
+		V        func(childComplexity int) int
+	}
+
+	ExtractEvidence struct {
+		Inputs  func(childComplexity int) int
+		Notes   func(childComplexity int) int
+		RuleID  func(childComplexity int) int
+		RuleVer func(childComplexity int) int
+		Sys     func(childComplexity int) int
+	}
+
+	ExtractEvidenceInputs struct {
+		Nodes  func(childComplexity int) int
+		Params func(childComplexity int) int
+	}
+
+	ExtractFactItem struct {
+		Evidence func(childComplexity int) int
+		ID       func(childComplexity int) int
+		K        func(childComplexity int) int
+		N        func(childComplexity int) int
+		Refs     func(childComplexity int) int
+		Score    func(childComplexity int) int
+		V        func(childComplexity int) int
+	}
+
+	ExtractGeo struct {
+		Lat func(childComplexity int) int
+		Lon func(childComplexity int) int
+	}
+
+	ExtractHourCandidate struct {
+		AddedEdges func(childComplexity int) int
+		AddedEvals func(childComplexity int) int
+		AddedFacts func(childComplexity int) int
+		AddedNodes func(childComplexity int) int
+		Order      func(childComplexity int) int
+		Pillar     func(childComplexity int) int
+		TimeWindow func(childComplexity int) int
+		Weight     func(childComplexity int) int
+	}
+
+	ExtractHourContext struct {
+		Candidates    func(childComplexity int) int
+		MissingReason func(childComplexity int) int
+		StableEdges   func(childComplexity int) int
+		StableEvals   func(childComplexity int) int
+		StableFacts   func(childComplexity int) int
+		StableNodes   func(childComplexity int) int
+		Status        func(childComplexity int) int
+	}
+
+	ExtractPairCharts struct {
+		A func(childComplexity int) int
+		B func(childComplexity int) int
+	}
+
+	ExtractPairDoc struct {
+		Charts    func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		Edges     func(childComplexity int) int
+		Evals     func(childComplexity int) int
+		Facts     func(childComplexity int) int
+		HourCtx   func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Input     func(childComplexity int) int
+		Metrics   func(childComplexity int) int
+		SchemaVer func(childComplexity int) int
+	}
+
+	ExtractPairEdge struct {
+		A        func(childComplexity int) int
+		Active   func(childComplexity int) int
+		B        func(childComplexity int) int
+		Evidence func(childComplexity int) int
+		ID       func(childComplexity int) int
+		RefsA    func(childComplexity int) int
+		RefsB    func(childComplexity int) int
+		Result   func(childComplexity int) int
+		T        func(childComplexity int) int
+		W        func(childComplexity int) int
+	}
+
+	ExtractPairEvalItem struct {
+		Evidence func(childComplexity int) int
+		ID       func(childComplexity int) int
+		K        func(childComplexity int) int
+		N        func(childComplexity int) int
+		RefsA    func(childComplexity int) int
+		RefsB    func(childComplexity int) int
+		Score    func(childComplexity int) int
+		V        func(childComplexity int) int
+	}
+
+	ExtractPairEvidence struct {
+		Inputs  func(childComplexity int) int
+		Notes   func(childComplexity int) int
+		RuleID  func(childComplexity int) int
+		RuleVer func(childComplexity int) int
+		Sys     func(childComplexity int) int
+	}
+
+	ExtractPairEvidenceInputs struct {
+		NodesA func(childComplexity int) int
+		NodesB func(childComplexity int) int
+		Params func(childComplexity int) int
+	}
+
+	ExtractPairFactItem struct {
+		Evidence func(childComplexity int) int
+		ID       func(childComplexity int) int
+		K        func(childComplexity int) int
+		N        func(childComplexity int) int
+		RefsA    func(childComplexity int) int
+		RefsB    func(childComplexity int) int
+		Score    func(childComplexity int) int
+		V        func(childComplexity int) int
+	}
+
+	ExtractPairHourCandidate struct {
+		A            func(childComplexity int) int
+		AddedEdges   func(childComplexity int) int
+		AddedEvals   func(childComplexity int) int
+		AddedFacts   func(childComplexity int) int
+		B            func(childComplexity int) int
+		MetricsDelta func(childComplexity int) int
+		Note         func(childComplexity int) int
+		Order        func(childComplexity int) int
+		OverallScore func(childComplexity int) int
+		Weight       func(childComplexity int) int
+	}
+
+	ExtractPairHourChoice struct {
+		CandidateOrder func(childComplexity int) int
+		Pillar         func(childComplexity int) int
+		Status         func(childComplexity int) int
+		TimeWindow     func(childComplexity int) int
+		Weight         func(childComplexity int) int
+	}
+
+	ExtractPairHourContext struct {
+		Candidates     func(childComplexity int) int
+		MissingReasonA func(childComplexity int) int
+		MissingReasonB func(childComplexity int) int
+		StableEdges    func(childComplexity int) int
+		StableEvals    func(childComplexity int) int
+		StableFacts    func(childComplexity int) int
+		StatusA        func(childComplexity int) int
+		StatusB        func(childComplexity int) int
+	}
+
+	ExtractPairInputDisplay struct {
+		A       func(childComplexity int) int
+		B       func(childComplexity int) int
+		Engine  func(childComplexity int) int
+		RuleSet func(childComplexity int) int
+	}
+
+	ExtractPairMetrics struct {
+		Confidence        func(childComplexity int) int
+		ConflictIndex     func(childComplexity int) int
+		ElementComplement func(childComplexity int) int
+		HarmonyIndex      func(childComplexity int) int
+		NetIndex          func(childComplexity int) int
+		PressureRisk      func(childComplexity int) int
+		RoleFit           func(childComplexity int) int
+		Sensitivity       func(childComplexity int) int
+		TimingAlignment   func(childComplexity int) int
+		UsefulGodSupport  func(childComplexity int) int
+	}
+
+	ExtractPairScore struct {
+		Confidence func(childComplexity int) int
+		Max        func(childComplexity int) int
+		Min        func(childComplexity int) int
+		Norm0_100  func(childComplexity int) int
+		Parts      func(childComplexity int) int
+		Total      func(childComplexity int) int
+	}
+
+	ExtractPairScorePart struct {
+		Label func(childComplexity int) int
+		Note  func(childComplexity int) int
+		Raw   func(childComplexity int) int
+		RefsA func(childComplexity int) int
+		RefsB func(childComplexity int) int
+		W     func(childComplexity int) int
+	}
+
+	ExtractPillar struct {
+		Branch   func(childComplexity int) int
+		GongMang func(childComplexity int) int
+		Hidden   func(childComplexity int) int
+		K        func(childComplexity int) int
+		NaEum    func(childComplexity int) int
+		Stem     func(childComplexity int) int
+	}
+
+	ExtractSajuDoc struct {
+		Daeun     func(childComplexity int) int
+		DaeunList func(childComplexity int) int
+		DayMaster func(childComplexity int) int
+		Edges     func(childComplexity int) int
+		ElBalance func(childComplexity int) int
+		Evals     func(childComplexity int) int
+		Facts     func(childComplexity int) int
+		HourCtx   func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Ilun      func(childComplexity int) int
+		IlunList  func(childComplexity int) int
+		Input     func(childComplexity int) int
+		Nodes     func(childComplexity int) int
+		Pillars   func(childComplexity int) int
+		SchemaVer func(childComplexity int) int
+		Seun      func(childComplexity int) int
+		SeunList  func(childComplexity int) int
+		Wolun     func(childComplexity int) int
+		WolunList func(childComplexity int) int
+	}
+
+	ExtractSajuEdge struct {
+		A      func(childComplexity int) int
+		Active func(childComplexity int) int
+		B      func(childComplexity int) int
+		ID     func(childComplexity int) int
+		Refs   func(childComplexity int) int
+		Result func(childComplexity int) int
+		T      func(childComplexity int) int
+		W      func(childComplexity int) int
+	}
+
+	ExtractSajuInputDisplay struct {
+		AdjustedDt    func(childComplexity int) int
+		Calendar      func(childComplexity int) int
+		DtLocal       func(childComplexity int) int
+		Engine        func(childComplexity int) int
+		FortuneBaseDt func(childComplexity int) int
+		IlunMonth     func(childComplexity int) int
+		IlunYear      func(childComplexity int) int
+		LeapMonth     func(childComplexity int) int
+		Loc           func(childComplexity int) int
+		SeunFromYear  func(childComplexity int) int
+		SeunToYear    func(childComplexity int) int
+		Sex           func(childComplexity int) int
+		SolarDt       func(childComplexity int) int
+		TimePrec      func(childComplexity int) int
+		Tz            func(childComplexity int) int
+		WolunYear     func(childComplexity int) int
+	}
+
+	ExtractSajuNode struct {
+		Branch   func(childComplexity int) int
+		El       func(childComplexity int) int
+		ID       func(childComplexity int) int
+		Idx      func(childComplexity int) int
+		Kind     func(childComplexity int) int
+		Pillar   func(childComplexity int) int
+		Stem     func(childComplexity int) int
+		Strength func(childComplexity int) int
+		TenGod   func(childComplexity int) int
+		Twelve   func(childComplexity int) int
+		Yy       func(childComplexity int) int
+	}
+
+	ExtractScore struct {
+		Confidence func(childComplexity int) int
+		Max        func(childComplexity int) int
+		Min        func(childComplexity int) int
+		Norm0_100  func(childComplexity int) int
+		Parts      func(childComplexity int) int
+		Total      func(childComplexity int) int
+	}
+
+	ExtractScorePart struct {
+		Label func(childComplexity int) int
+		Note  func(childComplexity int) int
+		Raw   func(childComplexity int) int
+		Refs  func(childComplexity int) int
+		W     func(childComplexity int) int
+	}
+
+	ItemNCard struct {
+		CardID        func(childComplexity int) int
+		Category      func(childComplexity int) int
+		ContentJSON   func(childComplexity int) int
+		CooldownGroup func(childComplexity int) int
+		CreatedAt     func(childComplexity int) int
+		DebugJSON     func(childComplexity int) int
+		DeletedAt     func(childComplexity int) int
+		Domains       func(childComplexity int) int
+		ID            func(childComplexity int) int
+		MaxPerUser    func(childComplexity int) int
+		Priority      func(childComplexity int) int
+		RuleSet       func(childComplexity int) int
+		Scope         func(childComplexity int) int
+		ScoreJSON     func(childComplexity int) int
+		Status        func(childComplexity int) int
+		Tags          func(childComplexity int) int
+		Title         func(childComplexity int) int
+		TriggerJSON   func(childComplexity int) int
+		UID           func(childComplexity int) int
+		UpdatedAt     func(childComplexity int) int
+		Version       func(childComplexity int) int
+	}
+
 	KV struct {
 		K func(childComplexity int) int
 		V func(childComplexity int) int
+	}
+
+	LLMRequestResult struct {
+		ErrorMessage func(childComplexity int) int
+		ID           func(childComplexity int) int
+		InputTokens  func(childComplexity int) int
+		OutputTokens func(childComplexity int) int
+		ResponseText func(childComplexity int) int
+		TotalTokens  func(childComplexity int) int
 	}
 
 	LocalLog struct {
@@ -112,19 +482,25 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateAdminUser       func(childComplexity int, email string, password string) int
+		CreateItemnCard       func(childComplexity int, input model.ItemNCardInput) int
 		CreatePhyIdealPartner func(childComplexity int, input model.PhyIdealPartnerCreateInput) int
 		CreateSajuProfile     func(childComplexity int, input model.SajuProfileCreateInput) int
 		DelAiMeta             func(childComplexity int, uid string) int
+		DeleteItemnCard       func(childComplexity int, uid string) int
 		DeletePhyIdealPartner func(childComplexity int, uid string) int
 		DeleteSajuProfile     func(childComplexity int, uid string) int
 		Login                 func(childComplexity int, email string, password string, otp string) int
 		Logout                func(childComplexity int) int
 		PutAiMeta             func(childComplexity int, input model.AiMetaInput) int
 		RunAiExecution        func(childComplexity int, input model.AiExcutionInput) int
+		RunChemiGeneration    func(childComplexity int, input model.ChemiGenerationRequest) int
+		RunSajuGeneration     func(childComplexity int, input model.SajuGenerationRequest) int
+		SendLLMRequest        func(childComplexity int, input model.SendLLMRequestInput) int
 		SetAdminUserActive    func(childComplexity int, uid string, active bool) int
 		SetAiMetaDefault      func(childComplexity int, uid string) int
 		SetAiMetaInUse        func(childComplexity int, uid string) int
 		UpdateAdminUser       func(childComplexity int, uid string, email string, password string) int
+		UpdateItemnCard       func(childComplexity int, uid string, input model.ItemNCardInput) int
 	}
 
 	PhyIdealPartner struct {
@@ -148,21 +524,82 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		AdminUsers                 func(childComplexity int) int
 		AiExecution                func(childComplexity int, uid string) int
 		AiExecutions               func(childComplexity int, input model.AiExecutionSearchInput) int
 		AiMeta                     func(childComplexity int, uid string) int
 		AiMetaKVs                  func(childComplexity int, input model.AiMetaKVsInput) int
 		AiMetaTypes                func(childComplexity int) int
 		AiMetas                    func(childComplexity int, input model.AiMetaSearchInput) int
+		ExtractPair                func(childComplexity int, input model.ExtractPairInput) int
+		ExtractSaju                func(childComplexity int, input model.ExtractSajuInput) int
+		ItemnCard                  func(childComplexity int, uid *string) int
+		ItemnCardByCardID          func(childComplexity int, cardID string, scope *string) int
+		ItemnCards                 func(childComplexity int, input model.ItemNCardSearchInput) int
+		ItemnCardsByTokens         func(childComplexity int, input model.ItemnCardsByTokensInput) int
 		LocalLogs                  func(childComplexity int, input model.LocalLogSearchInput) int
+		PairCardsByTokens          func(childComplexity int, input model.PairCardsByTokensInput) int
 		Palja                      func(childComplexity int, birthdate string, timezone string) int
 		PhyIdealPartner            func(childComplexity int, uid string) int
 		PhyIdealPartners           func(childComplexity int, input model.PhyIdealPartnerSearchInput) int
+		SajuChart                  func(childComplexity int, input model.SajuChartInput) int
+		SajuPairChart              func(childComplexity int, input model.SajuPairChartInput) int
 		SajuProfile                func(childComplexity int, uid string) int
 		SajuProfileLogs            func(childComplexity int, input model.SajuProfileLogSearchInput) int
 		SajuProfileSimilarPartners func(childComplexity int, uid string, limit int, offset int) int
 		SajuProfiles               func(childComplexity int, input model.SajuProfileSearchInput) int
 		SystemStats                func(childComplexity int) int
+	}
+
+	SajuChart struct {
+		Dm            func(childComplexity int) int
+		EngineVersion func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Items         func(childComplexity int) int
+		ItemsSummary  func(childComplexity int) int
+		Mode          func(childComplexity int) int
+		Period        func(childComplexity int) int
+		PillarSource  func(childComplexity int) int
+		Pillars       func(childComplexity int) int
+		RuleSet       func(childComplexity int) int
+		Tokens        func(childComplexity int) int
+	}
+
+	SajuChartPillars struct {
+		D func(childComplexity int) int
+		H func(childComplexity int) int
+		M func(childComplexity int) int
+		Y func(childComplexity int) int
+	}
+
+	SajuGenerationResponse struct {
+		Targets func(childComplexity int) int
+	}
+
+	SajuGenerationTargetOutput struct {
+		Kind     func(childComplexity int) int
+		MaxChars func(childComplexity int) int
+		Period   func(childComplexity int) int
+		Result   func(childComplexity int) int
+	}
+
+	SajuPairChart struct {
+		ChartA        func(childComplexity int) int
+		ChartB        func(childComplexity int) int
+		EngineVersion func(childComplexity int) int
+		ID            func(childComplexity int) int
+		PItems        func(childComplexity int) int
+		PItemsSummary func(childComplexity int) int
+		PTokens       func(childComplexity int) int
+		RuleSet       func(childComplexity int) int
+	}
+
+	SajuPillarSource struct {
+		BaseDate     func(childComplexity int) int
+		BaseTimeUsed func(childComplexity int) int
+		Description  func(childComplexity int) int
+		Mode         func(childComplexity int) int
+		Period       func(childComplexity int) int
 	}
 
 	SajuProfile struct {
@@ -210,6 +647,15 @@ type ComplexityRoot struct {
 		UpdatedAt func(childComplexity int) int
 	}
 
+	SelectedItemnCard struct {
+		CardID         func(childComplexity int) int
+		ContentSummary func(childComplexity int) int
+		Evidence       func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Score          func(childComplexity int) int
+		Title          func(childComplexity int) int
+	}
+
 	SimpleResult struct {
 		Base64Value func(childComplexity int) int
 		Err         func(childComplexity int) int
@@ -234,391 +680,2304 @@ type ComplexityRoot struct {
 	}
 }
 
-type executableSchema struct {
-	schema     *ast.Schema
-	resolvers  ResolverRoot
-	directives DirectiveRoot
-	complexity ComplexityRoot
-}
+type executableSchema graphql.ExecutableSchemaState[ResolverRoot, DirectiveRoot, ComplexityRoot]
 
 func (e *executableSchema) Schema() *ast.Schema {
-	if e.schema != nil {
-		return e.schema
+	if e.SchemaData != nil {
+		return e.SchemaData
 	}
 	return parsedSchema
 }
 
 func (e *executableSchema) Complexity(ctx context.Context, typeName, field string, childComplexity int, rawArgs map[string]any) (int, bool) {
-	ec := executionContext{nil, e, 0, 0, nil}
+	ec := newExecutionContext(nil, e, nil)
 	_ = ec
 	switch typeName + "." + field {
 
-	case "AiExecution.createdAt":
-		if e.complexity.AiExecution.CreatedAt == nil {
+	case "AdminUser.createdAt":
+		if e.ComplexityRoot.AdminUser.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.CreatedAt(childComplexity), true
+		return e.ComplexityRoot.AdminUser.CreatedAt(childComplexity), true
+
+	case "AdminUser.email":
+		if e.ComplexityRoot.AdminUser.Email == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AdminUser.Email(childComplexity), true
+
+	case "AdminUser.id":
+		if e.ComplexityRoot.AdminUser.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AdminUser.ID(childComplexity), true
+
+	case "AdminUser.isActive":
+		if e.ComplexityRoot.AdminUser.IsActive == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AdminUser.IsActive(childComplexity), true
+
+	case "AdminUser.uid":
+		if e.ComplexityRoot.AdminUser.UID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AdminUser.UID(childComplexity), true
+
+	case "AdminUser.updatedAt":
+		if e.ComplexityRoot.AdminUser.UpdatedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AdminUser.UpdatedAt(childComplexity), true
+
+	case "AdminUser.username":
+		if e.ComplexityRoot.AdminUser.Username == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AdminUser.Username(childComplexity), true
+
+	case "AiExecution.createdAt":
+		if e.ComplexityRoot.AiExecution.CreatedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.AiExecution.CreatedAt(childComplexity), true
 
 	case "AiExecution.elapsedTime":
-		if e.complexity.AiExecution.ElapsedTime == nil {
+		if e.ComplexityRoot.AiExecution.ElapsedTime == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.ElapsedTime(childComplexity), true
+		return e.ComplexityRoot.AiExecution.ElapsedTime(childComplexity), true
 
 	case "AiExecution.errorMessage":
-		if e.complexity.AiExecution.ErrorMessage == nil {
+		if e.ComplexityRoot.AiExecution.ErrorMessage == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.ErrorMessage(childComplexity), true
+		return e.ComplexityRoot.AiExecution.ErrorMessage(childComplexity), true
 
 	case "AiExecution.id":
-		if e.complexity.AiExecution.ID == nil {
+		if e.ComplexityRoot.AiExecution.ID == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.ID(childComplexity), true
+		return e.ComplexityRoot.AiExecution.ID(childComplexity), true
 
 	case "AiExecution.inputImageBase64":
-		if e.complexity.AiExecution.InputImageBase64 == nil {
+		if e.ComplexityRoot.AiExecution.InputImageBase64 == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.InputImageBase64(childComplexity), true
+		return e.ComplexityRoot.AiExecution.InputImageBase64(childComplexity), true
 
 	case "AiExecution.inputTokens":
-		if e.complexity.AiExecution.InputTokens == nil {
+		if e.ComplexityRoot.AiExecution.InputTokens == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.InputTokens(childComplexity), true
+		return e.ComplexityRoot.AiExecution.InputTokens(childComplexity), true
 
 	case "AiExecution.inputkvs":
-		if e.complexity.AiExecution.Inputkvs == nil {
+		if e.ComplexityRoot.AiExecution.Inputkvs == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.Inputkvs(childComplexity), true
+		return e.ComplexityRoot.AiExecution.Inputkvs(childComplexity), true
 
 	case "AiExecution.maxTokens":
-		if e.complexity.AiExecution.MaxTokens == nil {
+		if e.ComplexityRoot.AiExecution.MaxTokens == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.MaxTokens(childComplexity), true
+		return e.ComplexityRoot.AiExecution.MaxTokens(childComplexity), true
 
 	case "AiExecution.metaType":
-		if e.complexity.AiExecution.MetaType == nil {
+		if e.ComplexityRoot.AiExecution.MetaType == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.MetaType(childComplexity), true
+		return e.ComplexityRoot.AiExecution.MetaType(childComplexity), true
 
 	case "AiExecution.metaUid":
-		if e.complexity.AiExecution.MetaUID == nil {
+		if e.ComplexityRoot.AiExecution.MetaUID == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.MetaUID(childComplexity), true
+		return e.ComplexityRoot.AiExecution.MetaUID(childComplexity), true
 
 	case "AiExecution.model":
-		if e.complexity.AiExecution.Model == nil {
+		if e.ComplexityRoot.AiExecution.Model == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.Model(childComplexity), true
+		return e.ComplexityRoot.AiExecution.Model(childComplexity), true
 
 	case "AiExecution.outputImageBase64":
-		if e.complexity.AiExecution.OutputImageBase64 == nil {
+		if e.ComplexityRoot.AiExecution.OutputImageBase64 == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.OutputImageBase64(childComplexity), true
+		return e.ComplexityRoot.AiExecution.OutputImageBase64(childComplexity), true
 
 	case "AiExecution.outputText":
-		if e.complexity.AiExecution.OutputText == nil {
+		if e.ComplexityRoot.AiExecution.OutputText == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.OutputText(childComplexity), true
+		return e.ComplexityRoot.AiExecution.OutputText(childComplexity), true
 
 	case "AiExecution.outputTokens":
-		if e.complexity.AiExecution.OutputTokens == nil {
+		if e.ComplexityRoot.AiExecution.OutputTokens == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.OutputTokens(childComplexity), true
+		return e.ComplexityRoot.AiExecution.OutputTokens(childComplexity), true
 
 	case "AiExecution.outputkvs":
-		if e.complexity.AiExecution.Outputkvs == nil {
+		if e.ComplexityRoot.AiExecution.Outputkvs == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.Outputkvs(childComplexity), true
+		return e.ComplexityRoot.AiExecution.Outputkvs(childComplexity), true
 
 	case "AiExecution.prompt":
-		if e.complexity.AiExecution.Prompt == nil {
+		if e.ComplexityRoot.AiExecution.Prompt == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.Prompt(childComplexity), true
+		return e.ComplexityRoot.AiExecution.Prompt(childComplexity), true
 
 	case "AiExecution.runBy":
-		if e.complexity.AiExecution.RunBy == nil {
+		if e.ComplexityRoot.AiExecution.RunBy == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.RunBy(childComplexity), true
+		return e.ComplexityRoot.AiExecution.RunBy(childComplexity), true
 
 	case "AiExecution.runSajuProfileUid":
-		if e.complexity.AiExecution.RunSajuProfileUID == nil {
+		if e.ComplexityRoot.AiExecution.RunSajuProfileUID == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.RunSajuProfileUID(childComplexity), true
+		return e.ComplexityRoot.AiExecution.RunSajuProfileUID(childComplexity), true
 
 	case "AiExecution.size":
-		if e.complexity.AiExecution.Size == nil {
+		if e.ComplexityRoot.AiExecution.Size == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.Size(childComplexity), true
+		return e.ComplexityRoot.AiExecution.Size(childComplexity), true
 
 	case "AiExecution.status":
-		if e.complexity.AiExecution.Status == nil {
+		if e.ComplexityRoot.AiExecution.Status == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.Status(childComplexity), true
+		return e.ComplexityRoot.AiExecution.Status(childComplexity), true
 
 	case "AiExecution.temperature":
-		if e.complexity.AiExecution.Temperature == nil {
+		if e.ComplexityRoot.AiExecution.Temperature == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.Temperature(childComplexity), true
+		return e.ComplexityRoot.AiExecution.Temperature(childComplexity), true
 
 	case "AiExecution.totalTokens":
-		if e.complexity.AiExecution.TotalTokens == nil {
+		if e.ComplexityRoot.AiExecution.TotalTokens == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.TotalTokens(childComplexity), true
+		return e.ComplexityRoot.AiExecution.TotalTokens(childComplexity), true
 
 	case "AiExecution.uid":
-		if e.complexity.AiExecution.UID == nil {
+		if e.ComplexityRoot.AiExecution.UID == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.UID(childComplexity), true
+		return e.ComplexityRoot.AiExecution.UID(childComplexity), true
 
 	case "AiExecution.updatedAt":
-		if e.complexity.AiExecution.UpdatedAt == nil {
+		if e.ComplexityRoot.AiExecution.UpdatedAt == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.UpdatedAt(childComplexity), true
+		return e.ComplexityRoot.AiExecution.UpdatedAt(childComplexity), true
 
 	case "AiExecution.valued_prompt":
-		if e.complexity.AiExecution.ValuedPrompt == nil {
+		if e.ComplexityRoot.AiExecution.ValuedPrompt == nil {
 			break
 		}
 
-		return e.complexity.AiExecution.ValuedPrompt(childComplexity), true
+		return e.ComplexityRoot.AiExecution.ValuedPrompt(childComplexity), true
 
 	case "AiMeta.createdAt":
-		if e.complexity.AiMeta.CreatedAt == nil {
+		if e.ComplexityRoot.AiMeta.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.CreatedAt(childComplexity), true
+		return e.ComplexityRoot.AiMeta.CreatedAt(childComplexity), true
 
 	case "AiMeta.desc":
-		if e.complexity.AiMeta.Desc == nil {
+		if e.ComplexityRoot.AiMeta.Desc == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.Desc(childComplexity), true
+		return e.ComplexityRoot.AiMeta.Desc(childComplexity), true
 
 	case "AiMeta.id":
-		if e.complexity.AiMeta.ID == nil {
+		if e.ComplexityRoot.AiMeta.ID == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.ID(childComplexity), true
+		return e.ComplexityRoot.AiMeta.ID(childComplexity), true
 
 	case "AiMeta.inUse":
-		if e.complexity.AiMeta.InUse == nil {
+		if e.ComplexityRoot.AiMeta.InUse == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.InUse(childComplexity), true
+		return e.ComplexityRoot.AiMeta.InUse(childComplexity), true
 
 	case "AiMeta.maxTokens":
-		if e.complexity.AiMeta.MaxTokens == nil {
+		if e.ComplexityRoot.AiMeta.MaxTokens == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.MaxTokens(childComplexity), true
+		return e.ComplexityRoot.AiMeta.MaxTokens(childComplexity), true
 
 	case "AiMeta.metaType":
-		if e.complexity.AiMeta.MetaType == nil {
+		if e.ComplexityRoot.AiMeta.MetaType == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.MetaType(childComplexity), true
+		return e.ComplexityRoot.AiMeta.MetaType(childComplexity), true
 
 	case "AiMeta.model":
-		if e.complexity.AiMeta.Model == nil {
+		if e.ComplexityRoot.AiMeta.Model == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.Model(childComplexity), true
+		return e.ComplexityRoot.AiMeta.Model(childComplexity), true
 
 	case "AiMeta.name":
-		if e.complexity.AiMeta.Name == nil {
+		if e.ComplexityRoot.AiMeta.Name == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.Name(childComplexity), true
+		return e.ComplexityRoot.AiMeta.Name(childComplexity), true
 
 	case "AiMeta.prompt":
-		if e.complexity.AiMeta.Prompt == nil {
+		if e.ComplexityRoot.AiMeta.Prompt == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.Prompt(childComplexity), true
+		return e.ComplexityRoot.AiMeta.Prompt(childComplexity), true
 
 	case "AiMeta.size":
-		if e.complexity.AiMeta.Size == nil {
+		if e.ComplexityRoot.AiMeta.Size == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.Size(childComplexity), true
+		return e.ComplexityRoot.AiMeta.Size(childComplexity), true
 
 	case "AiMeta.temperature":
-		if e.complexity.AiMeta.Temperature == nil {
+		if e.ComplexityRoot.AiMeta.Temperature == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.Temperature(childComplexity), true
+		return e.ComplexityRoot.AiMeta.Temperature(childComplexity), true
 
 	case "AiMeta.uid":
-		if e.complexity.AiMeta.UID == nil {
+		if e.ComplexityRoot.AiMeta.UID == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.UID(childComplexity), true
+		return e.ComplexityRoot.AiMeta.UID(childComplexity), true
 
 	case "AiMeta.updatedAt":
-		if e.complexity.AiMeta.UpdatedAt == nil {
+		if e.ComplexityRoot.AiMeta.UpdatedAt == nil {
 			break
 		}
 
-		return e.complexity.AiMeta.UpdatedAt(childComplexity), true
+		return e.ComplexityRoot.AiMeta.UpdatedAt(childComplexity), true
 
 	case "AiMetaType.hasInputImage":
-		if e.complexity.AiMetaType.HasInputImage == nil {
+		if e.ComplexityRoot.AiMetaType.HasInputImage == nil {
 			break
 		}
 
-		return e.complexity.AiMetaType.HasInputImage(childComplexity), true
+		return e.ComplexityRoot.AiMetaType.HasInputImage(childComplexity), true
 
 	case "AiMetaType.hasOutputImage":
-		if e.complexity.AiMetaType.HasOutputImage == nil {
+		if e.ComplexityRoot.AiMetaType.HasOutputImage == nil {
 			break
 		}
 
-		return e.complexity.AiMetaType.HasOutputImage(childComplexity), true
+		return e.ComplexityRoot.AiMetaType.HasOutputImage(childComplexity), true
 
 	case "AiMetaType.id":
-		if e.complexity.AiMetaType.ID == nil {
+		if e.ComplexityRoot.AiMetaType.ID == nil {
 			break
 		}
 
-		return e.complexity.AiMetaType.ID(childComplexity), true
+		return e.ComplexityRoot.AiMetaType.ID(childComplexity), true
 
 	case "AiMetaType.inputFields":
-		if e.complexity.AiMetaType.InputFields == nil {
+		if e.ComplexityRoot.AiMetaType.InputFields == nil {
 			break
 		}
 
-		return e.complexity.AiMetaType.InputFields(childComplexity), true
+		return e.ComplexityRoot.AiMetaType.InputFields(childComplexity), true
 
 	case "AiMetaType.outputFields":
-		if e.complexity.AiMetaType.OutputFields == nil {
+		if e.ComplexityRoot.AiMetaType.OutputFields == nil {
 			break
 		}
 
-		return e.complexity.AiMetaType.OutputFields(childComplexity), true
+		return e.ComplexityRoot.AiMetaType.OutputFields(childComplexity), true
 
 	case "AiMetaType.type":
-		if e.complexity.AiMetaType.Type == nil {
+		if e.ComplexityRoot.AiMetaType.Type == nil {
 			break
 		}
 
-		return e.complexity.AiMetaType.Type(childComplexity), true
+		return e.ComplexityRoot.AiMetaType.Type(childComplexity), true
+
+	case "ChemiGenerationResponse.targets":
+		if e.ComplexityRoot.ChemiGenerationResponse.Targets == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ChemiGenerationResponse.Targets(childComplexity), true
+
+	case "ChemiGenerationTargetOutput.max_chars":
+		if e.ComplexityRoot.ChemiGenerationTargetOutput.MaxChars == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ChemiGenerationTargetOutput.MaxChars(childComplexity), true
+
+	case "ChemiGenerationTargetOutput.perspective":
+		if e.ComplexityRoot.ChemiGenerationTargetOutput.Perspective == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ChemiGenerationTargetOutput.Perspective(childComplexity), true
+
+	case "ChemiGenerationTargetOutput.result":
+		if e.ComplexityRoot.ChemiGenerationTargetOutput.Result == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ChemiGenerationTargetOutput.Result(childComplexity), true
+
+	case "ExtractDaeunPeriod.ageFrom":
+		if e.ComplexityRoot.ExtractDaeunPeriod.AgeFrom == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.AgeFrom(childComplexity), true
+
+	case "ExtractDaeunPeriod.ageTo":
+		if e.ComplexityRoot.ExtractDaeunPeriod.AgeTo == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.AgeTo(childComplexity), true
+
+	case "ExtractDaeunPeriod.branch":
+		if e.ComplexityRoot.ExtractDaeunPeriod.Branch == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.Branch(childComplexity), true
+
+	case "ExtractDaeunPeriod.branchEl":
+		if e.ComplexityRoot.ExtractDaeunPeriod.BranchEl == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.BranchEl(childComplexity), true
+
+	case "ExtractDaeunPeriod.branchHanja":
+		if e.ComplexityRoot.ExtractDaeunPeriod.BranchHanja == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.BranchHanja(childComplexity), true
+
+	case "ExtractDaeunPeriod.branchKo":
+		if e.ComplexityRoot.ExtractDaeunPeriod.BranchKo == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.BranchKo(childComplexity), true
+
+	case "ExtractDaeunPeriod.branchTenGod":
+		if e.ComplexityRoot.ExtractDaeunPeriod.BranchTenGod == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.BranchTenGod(childComplexity), true
+
+	case "ExtractDaeunPeriod.branchTwelve":
+		if e.ComplexityRoot.ExtractDaeunPeriod.BranchTwelve == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.BranchTwelve(childComplexity), true
+
+	case "ExtractDaeunPeriod.branchYy":
+		if e.ComplexityRoot.ExtractDaeunPeriod.BranchYy == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.BranchYy(childComplexity), true
+
+	case "ExtractDaeunPeriod.day":
+		if e.ComplexityRoot.ExtractDaeunPeriod.Day == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.Day(childComplexity), true
+
+	case "ExtractDaeunPeriod.ganjiHanja":
+		if e.ComplexityRoot.ExtractDaeunPeriod.GanjiHanja == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.GanjiHanja(childComplexity), true
+
+	case "ExtractDaeunPeriod.ganjiKo":
+		if e.ComplexityRoot.ExtractDaeunPeriod.GanjiKo == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.GanjiKo(childComplexity), true
+
+	case "ExtractDaeunPeriod.month":
+		if e.ComplexityRoot.ExtractDaeunPeriod.Month == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.Month(childComplexity), true
+
+	case "ExtractDaeunPeriod.order":
+		if e.ComplexityRoot.ExtractDaeunPeriod.Order == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.Order(childComplexity), true
+
+	case "ExtractDaeunPeriod.startYear":
+		if e.ComplexityRoot.ExtractDaeunPeriod.StartYear == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.StartYear(childComplexity), true
+
+	case "ExtractDaeunPeriod.stem":
+		if e.ComplexityRoot.ExtractDaeunPeriod.Stem == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.Stem(childComplexity), true
+
+	case "ExtractDaeunPeriod.stemEl":
+		if e.ComplexityRoot.ExtractDaeunPeriod.StemEl == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.StemEl(childComplexity), true
+
+	case "ExtractDaeunPeriod.stemHanja":
+		if e.ComplexityRoot.ExtractDaeunPeriod.StemHanja == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.StemHanja(childComplexity), true
+
+	case "ExtractDaeunPeriod.stemKo":
+		if e.ComplexityRoot.ExtractDaeunPeriod.StemKo == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.StemKo(childComplexity), true
+
+	case "ExtractDaeunPeriod.stemTenGod":
+		if e.ComplexityRoot.ExtractDaeunPeriod.StemTenGod == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.StemTenGod(childComplexity), true
+
+	case "ExtractDaeunPeriod.stemYy":
+		if e.ComplexityRoot.ExtractDaeunPeriod.StemYy == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.StemYy(childComplexity), true
+
+	case "ExtractDaeunPeriod.type":
+		if e.ComplexityRoot.ExtractDaeunPeriod.Type == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.Type(childComplexity), true
+
+	case "ExtractDaeunPeriod.year":
+		if e.ComplexityRoot.ExtractDaeunPeriod.Year == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractDaeunPeriod.Year(childComplexity), true
+
+	case "ExtractElDistribution.earth":
+		if e.ComplexityRoot.ExtractElDistribution.Earth == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractElDistribution.Earth(childComplexity), true
+
+	case "ExtractElDistribution.fire":
+		if e.ComplexityRoot.ExtractElDistribution.Fire == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractElDistribution.Fire(childComplexity), true
+
+	case "ExtractElDistribution.metal":
+		if e.ComplexityRoot.ExtractElDistribution.Metal == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractElDistribution.Metal(childComplexity), true
+
+	case "ExtractElDistribution.water":
+		if e.ComplexityRoot.ExtractElDistribution.Water == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractElDistribution.Water(childComplexity), true
+
+	case "ExtractElDistribution.wood":
+		if e.ComplexityRoot.ExtractElDistribution.Wood == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractElDistribution.Wood(childComplexity), true
+
+	case "ExtractEngine.name":
+		if e.ComplexityRoot.ExtractEngine.Name == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEngine.Name(childComplexity), true
+
+	case "ExtractEngine.params":
+		if e.ComplexityRoot.ExtractEngine.Params == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEngine.Params(childComplexity), true
+
+	case "ExtractEngine.sys":
+		if e.ComplexityRoot.ExtractEngine.Sys == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEngine.Sys(childComplexity), true
+
+	case "ExtractEngine.ver":
+		if e.ComplexityRoot.ExtractEngine.Ver == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEngine.Ver(childComplexity), true
+
+	case "ExtractEvalItem.evidence":
+		if e.ComplexityRoot.ExtractEvalItem.Evidence == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvalItem.Evidence(childComplexity), true
+
+	case "ExtractEvalItem.id":
+		if e.ComplexityRoot.ExtractEvalItem.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvalItem.ID(childComplexity), true
+
+	case "ExtractEvalItem.k":
+		if e.ComplexityRoot.ExtractEvalItem.K == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvalItem.K(childComplexity), true
+
+	case "ExtractEvalItem.n":
+		if e.ComplexityRoot.ExtractEvalItem.N == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvalItem.N(childComplexity), true
+
+	case "ExtractEvalItem.refs":
+		if e.ComplexityRoot.ExtractEvalItem.Refs == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvalItem.Refs(childComplexity), true
+
+	case "ExtractEvalItem.score":
+		if e.ComplexityRoot.ExtractEvalItem.Score == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvalItem.Score(childComplexity), true
+
+	case "ExtractEvalItem.v":
+		if e.ComplexityRoot.ExtractEvalItem.V == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvalItem.V(childComplexity), true
+
+	case "ExtractEvidence.inputs":
+		if e.ComplexityRoot.ExtractEvidence.Inputs == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvidence.Inputs(childComplexity), true
+
+	case "ExtractEvidence.notes":
+		if e.ComplexityRoot.ExtractEvidence.Notes == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvidence.Notes(childComplexity), true
+
+	case "ExtractEvidence.ruleId":
+		if e.ComplexityRoot.ExtractEvidence.RuleID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvidence.RuleID(childComplexity), true
+
+	case "ExtractEvidence.ruleVer":
+		if e.ComplexityRoot.ExtractEvidence.RuleVer == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvidence.RuleVer(childComplexity), true
+
+	case "ExtractEvidence.sys":
+		if e.ComplexityRoot.ExtractEvidence.Sys == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvidence.Sys(childComplexity), true
+
+	case "ExtractEvidenceInputs.nodes":
+		if e.ComplexityRoot.ExtractEvidenceInputs.Nodes == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvidenceInputs.Nodes(childComplexity), true
+
+	case "ExtractEvidenceInputs.params":
+		if e.ComplexityRoot.ExtractEvidenceInputs.Params == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractEvidenceInputs.Params(childComplexity), true
+
+	case "ExtractFactItem.evidence":
+		if e.ComplexityRoot.ExtractFactItem.Evidence == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractFactItem.Evidence(childComplexity), true
+
+	case "ExtractFactItem.id":
+		if e.ComplexityRoot.ExtractFactItem.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractFactItem.ID(childComplexity), true
+
+	case "ExtractFactItem.k":
+		if e.ComplexityRoot.ExtractFactItem.K == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractFactItem.K(childComplexity), true
+
+	case "ExtractFactItem.n":
+		if e.ComplexityRoot.ExtractFactItem.N == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractFactItem.N(childComplexity), true
+
+	case "ExtractFactItem.refs":
+		if e.ComplexityRoot.ExtractFactItem.Refs == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractFactItem.Refs(childComplexity), true
+
+	case "ExtractFactItem.score":
+		if e.ComplexityRoot.ExtractFactItem.Score == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractFactItem.Score(childComplexity), true
+
+	case "ExtractFactItem.v":
+		if e.ComplexityRoot.ExtractFactItem.V == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractFactItem.V(childComplexity), true
+
+	case "ExtractGeo.lat":
+		if e.ComplexityRoot.ExtractGeo.Lat == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractGeo.Lat(childComplexity), true
+
+	case "ExtractGeo.lon":
+		if e.ComplexityRoot.ExtractGeo.Lon == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractGeo.Lon(childComplexity), true
+
+	case "ExtractHourCandidate.addedEdges":
+		if e.ComplexityRoot.ExtractHourCandidate.AddedEdges == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourCandidate.AddedEdges(childComplexity), true
+
+	case "ExtractHourCandidate.addedEvals":
+		if e.ComplexityRoot.ExtractHourCandidate.AddedEvals == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourCandidate.AddedEvals(childComplexity), true
+
+	case "ExtractHourCandidate.addedFacts":
+		if e.ComplexityRoot.ExtractHourCandidate.AddedFacts == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourCandidate.AddedFacts(childComplexity), true
+
+	case "ExtractHourCandidate.addedNodes":
+		if e.ComplexityRoot.ExtractHourCandidate.AddedNodes == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourCandidate.AddedNodes(childComplexity), true
+
+	case "ExtractHourCandidate.order":
+		if e.ComplexityRoot.ExtractHourCandidate.Order == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourCandidate.Order(childComplexity), true
+
+	case "ExtractHourCandidate.pillar":
+		if e.ComplexityRoot.ExtractHourCandidate.Pillar == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourCandidate.Pillar(childComplexity), true
+
+	case "ExtractHourCandidate.timeWindow":
+		if e.ComplexityRoot.ExtractHourCandidate.TimeWindow == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourCandidate.TimeWindow(childComplexity), true
+
+	case "ExtractHourCandidate.weight":
+		if e.ComplexityRoot.ExtractHourCandidate.Weight == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourCandidate.Weight(childComplexity), true
+
+	case "ExtractHourContext.candidates":
+		if e.ComplexityRoot.ExtractHourContext.Candidates == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourContext.Candidates(childComplexity), true
+
+	case "ExtractHourContext.missingReason":
+		if e.ComplexityRoot.ExtractHourContext.MissingReason == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourContext.MissingReason(childComplexity), true
+
+	case "ExtractHourContext.stableEdges":
+		if e.ComplexityRoot.ExtractHourContext.StableEdges == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourContext.StableEdges(childComplexity), true
+
+	case "ExtractHourContext.stableEvals":
+		if e.ComplexityRoot.ExtractHourContext.StableEvals == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourContext.StableEvals(childComplexity), true
+
+	case "ExtractHourContext.stableFacts":
+		if e.ComplexityRoot.ExtractHourContext.StableFacts == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourContext.StableFacts(childComplexity), true
+
+	case "ExtractHourContext.stableNodes":
+		if e.ComplexityRoot.ExtractHourContext.StableNodes == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourContext.StableNodes(childComplexity), true
+
+	case "ExtractHourContext.status":
+		if e.ComplexityRoot.ExtractHourContext.Status == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractHourContext.Status(childComplexity), true
+
+	case "ExtractPairCharts.a":
+		if e.ComplexityRoot.ExtractPairCharts.A == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairCharts.A(childComplexity), true
+
+	case "ExtractPairCharts.b":
+		if e.ComplexityRoot.ExtractPairCharts.B == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairCharts.B(childComplexity), true
+
+	case "ExtractPairDoc.charts":
+		if e.ComplexityRoot.ExtractPairDoc.Charts == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.Charts(childComplexity), true
+
+	case "ExtractPairDoc.createdAt":
+		if e.ComplexityRoot.ExtractPairDoc.CreatedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.CreatedAt(childComplexity), true
+
+	case "ExtractPairDoc.edges":
+		if e.ComplexityRoot.ExtractPairDoc.Edges == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.Edges(childComplexity), true
+
+	case "ExtractPairDoc.evals":
+		if e.ComplexityRoot.ExtractPairDoc.Evals == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.Evals(childComplexity), true
+
+	case "ExtractPairDoc.facts":
+		if e.ComplexityRoot.ExtractPairDoc.Facts == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.Facts(childComplexity), true
+
+	case "ExtractPairDoc.hourCtx":
+		if e.ComplexityRoot.ExtractPairDoc.HourCtx == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.HourCtx(childComplexity), true
+
+	case "ExtractPairDoc.id":
+		if e.ComplexityRoot.ExtractPairDoc.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.ID(childComplexity), true
+
+	case "ExtractPairDoc.input":
+		if e.ComplexityRoot.ExtractPairDoc.Input == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.Input(childComplexity), true
+
+	case "ExtractPairDoc.metrics":
+		if e.ComplexityRoot.ExtractPairDoc.Metrics == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.Metrics(childComplexity), true
+
+	case "ExtractPairDoc.schemaVer":
+		if e.ComplexityRoot.ExtractPairDoc.SchemaVer == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairDoc.SchemaVer(childComplexity), true
+
+	case "ExtractPairEdge.a":
+		if e.ComplexityRoot.ExtractPairEdge.A == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.A(childComplexity), true
+
+	case "ExtractPairEdge.active":
+		if e.ComplexityRoot.ExtractPairEdge.Active == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.Active(childComplexity), true
+
+	case "ExtractPairEdge.b":
+		if e.ComplexityRoot.ExtractPairEdge.B == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.B(childComplexity), true
+
+	case "ExtractPairEdge.evidence":
+		if e.ComplexityRoot.ExtractPairEdge.Evidence == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.Evidence(childComplexity), true
+
+	case "ExtractPairEdge.id":
+		if e.ComplexityRoot.ExtractPairEdge.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.ID(childComplexity), true
+
+	case "ExtractPairEdge.refsA":
+		if e.ComplexityRoot.ExtractPairEdge.RefsA == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.RefsA(childComplexity), true
+
+	case "ExtractPairEdge.refsB":
+		if e.ComplexityRoot.ExtractPairEdge.RefsB == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.RefsB(childComplexity), true
+
+	case "ExtractPairEdge.result":
+		if e.ComplexityRoot.ExtractPairEdge.Result == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.Result(childComplexity), true
+
+	case "ExtractPairEdge.t":
+		if e.ComplexityRoot.ExtractPairEdge.T == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.T(childComplexity), true
+
+	case "ExtractPairEdge.w":
+		if e.ComplexityRoot.ExtractPairEdge.W == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEdge.W(childComplexity), true
+
+	case "ExtractPairEvalItem.evidence":
+		if e.ComplexityRoot.ExtractPairEvalItem.Evidence == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvalItem.Evidence(childComplexity), true
+
+	case "ExtractPairEvalItem.id":
+		if e.ComplexityRoot.ExtractPairEvalItem.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvalItem.ID(childComplexity), true
+
+	case "ExtractPairEvalItem.k":
+		if e.ComplexityRoot.ExtractPairEvalItem.K == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvalItem.K(childComplexity), true
+
+	case "ExtractPairEvalItem.n":
+		if e.ComplexityRoot.ExtractPairEvalItem.N == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvalItem.N(childComplexity), true
+
+	case "ExtractPairEvalItem.refsA":
+		if e.ComplexityRoot.ExtractPairEvalItem.RefsA == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvalItem.RefsA(childComplexity), true
+
+	case "ExtractPairEvalItem.refsB":
+		if e.ComplexityRoot.ExtractPairEvalItem.RefsB == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvalItem.RefsB(childComplexity), true
+
+	case "ExtractPairEvalItem.score":
+		if e.ComplexityRoot.ExtractPairEvalItem.Score == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvalItem.Score(childComplexity), true
+
+	case "ExtractPairEvalItem.v":
+		if e.ComplexityRoot.ExtractPairEvalItem.V == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvalItem.V(childComplexity), true
+
+	case "ExtractPairEvidence.inputs":
+		if e.ComplexityRoot.ExtractPairEvidence.Inputs == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvidence.Inputs(childComplexity), true
+
+	case "ExtractPairEvidence.notes":
+		if e.ComplexityRoot.ExtractPairEvidence.Notes == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvidence.Notes(childComplexity), true
+
+	case "ExtractPairEvidence.ruleId":
+		if e.ComplexityRoot.ExtractPairEvidence.RuleID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvidence.RuleID(childComplexity), true
+
+	case "ExtractPairEvidence.ruleVer":
+		if e.ComplexityRoot.ExtractPairEvidence.RuleVer == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvidence.RuleVer(childComplexity), true
+
+	case "ExtractPairEvidence.sys":
+		if e.ComplexityRoot.ExtractPairEvidence.Sys == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvidence.Sys(childComplexity), true
+
+	case "ExtractPairEvidenceInputs.nodesA":
+		if e.ComplexityRoot.ExtractPairEvidenceInputs.NodesA == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvidenceInputs.NodesA(childComplexity), true
+
+	case "ExtractPairEvidenceInputs.nodesB":
+		if e.ComplexityRoot.ExtractPairEvidenceInputs.NodesB == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvidenceInputs.NodesB(childComplexity), true
+
+	case "ExtractPairEvidenceInputs.params":
+		if e.ComplexityRoot.ExtractPairEvidenceInputs.Params == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairEvidenceInputs.Params(childComplexity), true
+
+	case "ExtractPairFactItem.evidence":
+		if e.ComplexityRoot.ExtractPairFactItem.Evidence == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairFactItem.Evidence(childComplexity), true
+
+	case "ExtractPairFactItem.id":
+		if e.ComplexityRoot.ExtractPairFactItem.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairFactItem.ID(childComplexity), true
+
+	case "ExtractPairFactItem.k":
+		if e.ComplexityRoot.ExtractPairFactItem.K == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairFactItem.K(childComplexity), true
+
+	case "ExtractPairFactItem.n":
+		if e.ComplexityRoot.ExtractPairFactItem.N == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairFactItem.N(childComplexity), true
+
+	case "ExtractPairFactItem.refsA":
+		if e.ComplexityRoot.ExtractPairFactItem.RefsA == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairFactItem.RefsA(childComplexity), true
+
+	case "ExtractPairFactItem.refsB":
+		if e.ComplexityRoot.ExtractPairFactItem.RefsB == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairFactItem.RefsB(childComplexity), true
+
+	case "ExtractPairFactItem.score":
+		if e.ComplexityRoot.ExtractPairFactItem.Score == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairFactItem.Score(childComplexity), true
+
+	case "ExtractPairFactItem.v":
+		if e.ComplexityRoot.ExtractPairFactItem.V == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairFactItem.V(childComplexity), true
+
+	case "ExtractPairHourCandidate.a":
+		if e.ComplexityRoot.ExtractPairHourCandidate.A == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.A(childComplexity), true
+
+	case "ExtractPairHourCandidate.addedEdges":
+		if e.ComplexityRoot.ExtractPairHourCandidate.AddedEdges == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.AddedEdges(childComplexity), true
+
+	case "ExtractPairHourCandidate.addedEvals":
+		if e.ComplexityRoot.ExtractPairHourCandidate.AddedEvals == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.AddedEvals(childComplexity), true
+
+	case "ExtractPairHourCandidate.addedFacts":
+		if e.ComplexityRoot.ExtractPairHourCandidate.AddedFacts == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.AddedFacts(childComplexity), true
+
+	case "ExtractPairHourCandidate.b":
+		if e.ComplexityRoot.ExtractPairHourCandidate.B == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.B(childComplexity), true
+
+	case "ExtractPairHourCandidate.metricsDelta":
+		if e.ComplexityRoot.ExtractPairHourCandidate.MetricsDelta == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.MetricsDelta(childComplexity), true
+
+	case "ExtractPairHourCandidate.note":
+		if e.ComplexityRoot.ExtractPairHourCandidate.Note == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.Note(childComplexity), true
+
+	case "ExtractPairHourCandidate.order":
+		if e.ComplexityRoot.ExtractPairHourCandidate.Order == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.Order(childComplexity), true
+
+	case "ExtractPairHourCandidate.overallScore":
+		if e.ComplexityRoot.ExtractPairHourCandidate.OverallScore == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.OverallScore(childComplexity), true
+
+	case "ExtractPairHourCandidate.weight":
+		if e.ComplexityRoot.ExtractPairHourCandidate.Weight == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourCandidate.Weight(childComplexity), true
+
+	case "ExtractPairHourChoice.candidateOrder":
+		if e.ComplexityRoot.ExtractPairHourChoice.CandidateOrder == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourChoice.CandidateOrder(childComplexity), true
+
+	case "ExtractPairHourChoice.pillar":
+		if e.ComplexityRoot.ExtractPairHourChoice.Pillar == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourChoice.Pillar(childComplexity), true
+
+	case "ExtractPairHourChoice.status":
+		if e.ComplexityRoot.ExtractPairHourChoice.Status == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourChoice.Status(childComplexity), true
+
+	case "ExtractPairHourChoice.timeWindow":
+		if e.ComplexityRoot.ExtractPairHourChoice.TimeWindow == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourChoice.TimeWindow(childComplexity), true
+
+	case "ExtractPairHourChoice.weight":
+		if e.ComplexityRoot.ExtractPairHourChoice.Weight == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourChoice.Weight(childComplexity), true
+
+	case "ExtractPairHourContext.candidates":
+		if e.ComplexityRoot.ExtractPairHourContext.Candidates == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourContext.Candidates(childComplexity), true
+
+	case "ExtractPairHourContext.missingReasonA":
+		if e.ComplexityRoot.ExtractPairHourContext.MissingReasonA == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourContext.MissingReasonA(childComplexity), true
+
+	case "ExtractPairHourContext.missingReasonB":
+		if e.ComplexityRoot.ExtractPairHourContext.MissingReasonB == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourContext.MissingReasonB(childComplexity), true
+
+	case "ExtractPairHourContext.stableEdges":
+		if e.ComplexityRoot.ExtractPairHourContext.StableEdges == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourContext.StableEdges(childComplexity), true
+
+	case "ExtractPairHourContext.stableEvals":
+		if e.ComplexityRoot.ExtractPairHourContext.StableEvals == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourContext.StableEvals(childComplexity), true
+
+	case "ExtractPairHourContext.stableFacts":
+		if e.ComplexityRoot.ExtractPairHourContext.StableFacts == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourContext.StableFacts(childComplexity), true
+
+	case "ExtractPairHourContext.statusA":
+		if e.ComplexityRoot.ExtractPairHourContext.StatusA == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourContext.StatusA(childComplexity), true
+
+	case "ExtractPairHourContext.statusB":
+		if e.ComplexityRoot.ExtractPairHourContext.StatusB == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairHourContext.StatusB(childComplexity), true
+
+	case "ExtractPairInputDisplay.a":
+		if e.ComplexityRoot.ExtractPairInputDisplay.A == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairInputDisplay.A(childComplexity), true
+
+	case "ExtractPairInputDisplay.b":
+		if e.ComplexityRoot.ExtractPairInputDisplay.B == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairInputDisplay.B(childComplexity), true
+
+	case "ExtractPairInputDisplay.engine":
+		if e.ComplexityRoot.ExtractPairInputDisplay.Engine == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairInputDisplay.Engine(childComplexity), true
+
+	case "ExtractPairInputDisplay.ruleSet":
+		if e.ComplexityRoot.ExtractPairInputDisplay.RuleSet == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairInputDisplay.RuleSet(childComplexity), true
+
+	case "ExtractPairMetrics.confidence":
+		if e.ComplexityRoot.ExtractPairMetrics.Confidence == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.Confidence(childComplexity), true
+
+	case "ExtractPairMetrics.conflictIndex":
+		if e.ComplexityRoot.ExtractPairMetrics.ConflictIndex == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.ConflictIndex(childComplexity), true
+
+	case "ExtractPairMetrics.elementComplement":
+		if e.ComplexityRoot.ExtractPairMetrics.ElementComplement == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.ElementComplement(childComplexity), true
+
+	case "ExtractPairMetrics.harmonyIndex":
+		if e.ComplexityRoot.ExtractPairMetrics.HarmonyIndex == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.HarmonyIndex(childComplexity), true
+
+	case "ExtractPairMetrics.netIndex":
+		if e.ComplexityRoot.ExtractPairMetrics.NetIndex == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.NetIndex(childComplexity), true
+
+	case "ExtractPairMetrics.pressureRisk":
+		if e.ComplexityRoot.ExtractPairMetrics.PressureRisk == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.PressureRisk(childComplexity), true
+
+	case "ExtractPairMetrics.roleFit":
+		if e.ComplexityRoot.ExtractPairMetrics.RoleFit == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.RoleFit(childComplexity), true
+
+	case "ExtractPairMetrics.sensitivity":
+		if e.ComplexityRoot.ExtractPairMetrics.Sensitivity == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.Sensitivity(childComplexity), true
+
+	case "ExtractPairMetrics.timingAlignment":
+		if e.ComplexityRoot.ExtractPairMetrics.TimingAlignment == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.TimingAlignment(childComplexity), true
+
+	case "ExtractPairMetrics.usefulGodSupport":
+		if e.ComplexityRoot.ExtractPairMetrics.UsefulGodSupport == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairMetrics.UsefulGodSupport(childComplexity), true
+
+	case "ExtractPairScore.confidence":
+		if e.ComplexityRoot.ExtractPairScore.Confidence == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScore.Confidence(childComplexity), true
+
+	case "ExtractPairScore.max":
+		if e.ComplexityRoot.ExtractPairScore.Max == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScore.Max(childComplexity), true
+
+	case "ExtractPairScore.min":
+		if e.ComplexityRoot.ExtractPairScore.Min == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScore.Min(childComplexity), true
+
+	case "ExtractPairScore.norm0_100":
+		if e.ComplexityRoot.ExtractPairScore.Norm0_100 == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScore.Norm0_100(childComplexity), true
+
+	case "ExtractPairScore.parts":
+		if e.ComplexityRoot.ExtractPairScore.Parts == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScore.Parts(childComplexity), true
+
+	case "ExtractPairScore.total":
+		if e.ComplexityRoot.ExtractPairScore.Total == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScore.Total(childComplexity), true
+
+	case "ExtractPairScorePart.label":
+		if e.ComplexityRoot.ExtractPairScorePart.Label == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScorePart.Label(childComplexity), true
+
+	case "ExtractPairScorePart.note":
+		if e.ComplexityRoot.ExtractPairScorePart.Note == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScorePart.Note(childComplexity), true
+
+	case "ExtractPairScorePart.raw":
+		if e.ComplexityRoot.ExtractPairScorePart.Raw == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScorePart.Raw(childComplexity), true
+
+	case "ExtractPairScorePart.refsA":
+		if e.ComplexityRoot.ExtractPairScorePart.RefsA == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScorePart.RefsA(childComplexity), true
+
+	case "ExtractPairScorePart.refsB":
+		if e.ComplexityRoot.ExtractPairScorePart.RefsB == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScorePart.RefsB(childComplexity), true
+
+	case "ExtractPairScorePart.w":
+		if e.ComplexityRoot.ExtractPairScorePart.W == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPairScorePart.W(childComplexity), true
+
+	case "ExtractPillar.branch":
+		if e.ComplexityRoot.ExtractPillar.Branch == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPillar.Branch(childComplexity), true
+
+	case "ExtractPillar.gongMang":
+		if e.ComplexityRoot.ExtractPillar.GongMang == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPillar.GongMang(childComplexity), true
+
+	case "ExtractPillar.hidden":
+		if e.ComplexityRoot.ExtractPillar.Hidden == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPillar.Hidden(childComplexity), true
+
+	case "ExtractPillar.k":
+		if e.ComplexityRoot.ExtractPillar.K == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPillar.K(childComplexity), true
+
+	case "ExtractPillar.naEum":
+		if e.ComplexityRoot.ExtractPillar.NaEum == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPillar.NaEum(childComplexity), true
+
+	case "ExtractPillar.stem":
+		if e.ComplexityRoot.ExtractPillar.Stem == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractPillar.Stem(childComplexity), true
+
+	case "ExtractSajuDoc.daeun":
+		if e.ComplexityRoot.ExtractSajuDoc.Daeun == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Daeun(childComplexity), true
+
+	case "ExtractSajuDoc.daeunList":
+		if e.ComplexityRoot.ExtractSajuDoc.DaeunList == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.DaeunList(childComplexity), true
+
+	case "ExtractSajuDoc.dayMaster":
+		if e.ComplexityRoot.ExtractSajuDoc.DayMaster == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.DayMaster(childComplexity), true
+
+	case "ExtractSajuDoc.edges":
+		if e.ComplexityRoot.ExtractSajuDoc.Edges == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Edges(childComplexity), true
+
+	case "ExtractSajuDoc.elBalance":
+		if e.ComplexityRoot.ExtractSajuDoc.ElBalance == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.ElBalance(childComplexity), true
+
+	case "ExtractSajuDoc.evals":
+		if e.ComplexityRoot.ExtractSajuDoc.Evals == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Evals(childComplexity), true
+
+	case "ExtractSajuDoc.facts":
+		if e.ComplexityRoot.ExtractSajuDoc.Facts == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Facts(childComplexity), true
+
+	case "ExtractSajuDoc.hourCtx":
+		if e.ComplexityRoot.ExtractSajuDoc.HourCtx == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.HourCtx(childComplexity), true
+
+	case "ExtractSajuDoc.id":
+		if e.ComplexityRoot.ExtractSajuDoc.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.ID(childComplexity), true
+
+	case "ExtractSajuDoc.ilun":
+		if e.ComplexityRoot.ExtractSajuDoc.Ilun == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Ilun(childComplexity), true
+
+	case "ExtractSajuDoc.ilunList":
+		if e.ComplexityRoot.ExtractSajuDoc.IlunList == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.IlunList(childComplexity), true
+
+	case "ExtractSajuDoc.input":
+		if e.ComplexityRoot.ExtractSajuDoc.Input == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Input(childComplexity), true
+
+	case "ExtractSajuDoc.nodes":
+		if e.ComplexityRoot.ExtractSajuDoc.Nodes == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Nodes(childComplexity), true
+
+	case "ExtractSajuDoc.pillars":
+		if e.ComplexityRoot.ExtractSajuDoc.Pillars == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Pillars(childComplexity), true
+
+	case "ExtractSajuDoc.schemaVer":
+		if e.ComplexityRoot.ExtractSajuDoc.SchemaVer == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.SchemaVer(childComplexity), true
+
+	case "ExtractSajuDoc.seun":
+		if e.ComplexityRoot.ExtractSajuDoc.Seun == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Seun(childComplexity), true
+
+	case "ExtractSajuDoc.seunList":
+		if e.ComplexityRoot.ExtractSajuDoc.SeunList == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.SeunList(childComplexity), true
+
+	case "ExtractSajuDoc.wolun":
+		if e.ComplexityRoot.ExtractSajuDoc.Wolun == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.Wolun(childComplexity), true
+
+	case "ExtractSajuDoc.wolunList":
+		if e.ComplexityRoot.ExtractSajuDoc.WolunList == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuDoc.WolunList(childComplexity), true
+
+	case "ExtractSajuEdge.a":
+		if e.ComplexityRoot.ExtractSajuEdge.A == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuEdge.A(childComplexity), true
+
+	case "ExtractSajuEdge.active":
+		if e.ComplexityRoot.ExtractSajuEdge.Active == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuEdge.Active(childComplexity), true
+
+	case "ExtractSajuEdge.b":
+		if e.ComplexityRoot.ExtractSajuEdge.B == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuEdge.B(childComplexity), true
+
+	case "ExtractSajuEdge.id":
+		if e.ComplexityRoot.ExtractSajuEdge.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuEdge.ID(childComplexity), true
+
+	case "ExtractSajuEdge.refs":
+		if e.ComplexityRoot.ExtractSajuEdge.Refs == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuEdge.Refs(childComplexity), true
+
+	case "ExtractSajuEdge.result":
+		if e.ComplexityRoot.ExtractSajuEdge.Result == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuEdge.Result(childComplexity), true
+
+	case "ExtractSajuEdge.t":
+		if e.ComplexityRoot.ExtractSajuEdge.T == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuEdge.T(childComplexity), true
+
+	case "ExtractSajuEdge.w":
+		if e.ComplexityRoot.ExtractSajuEdge.W == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuEdge.W(childComplexity), true
+
+	case "ExtractSajuInputDisplay.adjustedDt":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.AdjustedDt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.AdjustedDt(childComplexity), true
+
+	case "ExtractSajuInputDisplay.calendar":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.Calendar == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.Calendar(childComplexity), true
+
+	case "ExtractSajuInputDisplay.dtLocal":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.DtLocal == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.DtLocal(childComplexity), true
+
+	case "ExtractSajuInputDisplay.engine":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.Engine == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.Engine(childComplexity), true
+
+	case "ExtractSajuInputDisplay.fortuneBaseDt":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.FortuneBaseDt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.FortuneBaseDt(childComplexity), true
+
+	case "ExtractSajuInputDisplay.ilunMonth":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.IlunMonth == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.IlunMonth(childComplexity), true
+
+	case "ExtractSajuInputDisplay.ilunYear":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.IlunYear == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.IlunYear(childComplexity), true
+
+	case "ExtractSajuInputDisplay.leapMonth":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.LeapMonth == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.LeapMonth(childComplexity), true
+
+	case "ExtractSajuInputDisplay.loc":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.Loc == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.Loc(childComplexity), true
+
+	case "ExtractSajuInputDisplay.seunFromYear":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.SeunFromYear == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.SeunFromYear(childComplexity), true
+
+	case "ExtractSajuInputDisplay.seunToYear":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.SeunToYear == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.SeunToYear(childComplexity), true
+
+	case "ExtractSajuInputDisplay.sex":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.Sex == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.Sex(childComplexity), true
+
+	case "ExtractSajuInputDisplay.solarDt":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.SolarDt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.SolarDt(childComplexity), true
+
+	case "ExtractSajuInputDisplay.timePrec":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.TimePrec == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.TimePrec(childComplexity), true
+
+	case "ExtractSajuInputDisplay.tz":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.Tz == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.Tz(childComplexity), true
+
+	case "ExtractSajuInputDisplay.wolunYear":
+		if e.ComplexityRoot.ExtractSajuInputDisplay.WolunYear == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuInputDisplay.WolunYear(childComplexity), true
+
+	case "ExtractSajuNode.branch":
+		if e.ComplexityRoot.ExtractSajuNode.Branch == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.Branch(childComplexity), true
+
+	case "ExtractSajuNode.el":
+		if e.ComplexityRoot.ExtractSajuNode.El == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.El(childComplexity), true
+
+	case "ExtractSajuNode.id":
+		if e.ComplexityRoot.ExtractSajuNode.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.ID(childComplexity), true
+
+	case "ExtractSajuNode.idx":
+		if e.ComplexityRoot.ExtractSajuNode.Idx == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.Idx(childComplexity), true
+
+	case "ExtractSajuNode.kind":
+		if e.ComplexityRoot.ExtractSajuNode.Kind == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.Kind(childComplexity), true
+
+	case "ExtractSajuNode.pillar":
+		if e.ComplexityRoot.ExtractSajuNode.Pillar == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.Pillar(childComplexity), true
+
+	case "ExtractSajuNode.stem":
+		if e.ComplexityRoot.ExtractSajuNode.Stem == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.Stem(childComplexity), true
+
+	case "ExtractSajuNode.strength":
+		if e.ComplexityRoot.ExtractSajuNode.Strength == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.Strength(childComplexity), true
+
+	case "ExtractSajuNode.tenGod":
+		if e.ComplexityRoot.ExtractSajuNode.TenGod == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.TenGod(childComplexity), true
+
+	case "ExtractSajuNode.twelve":
+		if e.ComplexityRoot.ExtractSajuNode.Twelve == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.Twelve(childComplexity), true
+
+	case "ExtractSajuNode.yy":
+		if e.ComplexityRoot.ExtractSajuNode.Yy == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractSajuNode.Yy(childComplexity), true
+
+	case "ExtractScore.confidence":
+		if e.ComplexityRoot.ExtractScore.Confidence == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScore.Confidence(childComplexity), true
+
+	case "ExtractScore.max":
+		if e.ComplexityRoot.ExtractScore.Max == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScore.Max(childComplexity), true
+
+	case "ExtractScore.min":
+		if e.ComplexityRoot.ExtractScore.Min == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScore.Min(childComplexity), true
+
+	case "ExtractScore.norm0_100":
+		if e.ComplexityRoot.ExtractScore.Norm0_100 == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScore.Norm0_100(childComplexity), true
+
+	case "ExtractScore.parts":
+		if e.ComplexityRoot.ExtractScore.Parts == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScore.Parts(childComplexity), true
+
+	case "ExtractScore.total":
+		if e.ComplexityRoot.ExtractScore.Total == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScore.Total(childComplexity), true
+
+	case "ExtractScorePart.label":
+		if e.ComplexityRoot.ExtractScorePart.Label == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScorePart.Label(childComplexity), true
+
+	case "ExtractScorePart.note":
+		if e.ComplexityRoot.ExtractScorePart.Note == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScorePart.Note(childComplexity), true
+
+	case "ExtractScorePart.raw":
+		if e.ComplexityRoot.ExtractScorePart.Raw == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScorePart.Raw(childComplexity), true
+
+	case "ExtractScorePart.refs":
+		if e.ComplexityRoot.ExtractScorePart.Refs == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScorePart.Refs(childComplexity), true
+
+	case "ExtractScorePart.w":
+		if e.ComplexityRoot.ExtractScorePart.W == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ExtractScorePart.W(childComplexity), true
+
+	case "ItemNCard.cardId":
+		if e.ComplexityRoot.ItemNCard.CardID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.CardID(childComplexity), true
+
+	case "ItemNCard.category":
+		if e.ComplexityRoot.ItemNCard.Category == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.Category(childComplexity), true
+
+	case "ItemNCard.contentJson":
+		if e.ComplexityRoot.ItemNCard.ContentJSON == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.ContentJSON(childComplexity), true
+
+	case "ItemNCard.cooldownGroup":
+		if e.ComplexityRoot.ItemNCard.CooldownGroup == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.CooldownGroup(childComplexity), true
+
+	case "ItemNCard.createdAt":
+		if e.ComplexityRoot.ItemNCard.CreatedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.CreatedAt(childComplexity), true
+
+	case "ItemNCard.debugJson":
+		if e.ComplexityRoot.ItemNCard.DebugJSON == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.DebugJSON(childComplexity), true
+
+	case "ItemNCard.deletedAt":
+		if e.ComplexityRoot.ItemNCard.DeletedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.DeletedAt(childComplexity), true
+
+	case "ItemNCard.domains":
+		if e.ComplexityRoot.ItemNCard.Domains == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.Domains(childComplexity), true
+
+	case "ItemNCard.id":
+		if e.ComplexityRoot.ItemNCard.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.ID(childComplexity), true
+
+	case "ItemNCard.maxPerUser":
+		if e.ComplexityRoot.ItemNCard.MaxPerUser == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.MaxPerUser(childComplexity), true
+
+	case "ItemNCard.priority":
+		if e.ComplexityRoot.ItemNCard.Priority == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.Priority(childComplexity), true
+
+	case "ItemNCard.ruleSet":
+		if e.ComplexityRoot.ItemNCard.RuleSet == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.RuleSet(childComplexity), true
+
+	case "ItemNCard.scope":
+		if e.ComplexityRoot.ItemNCard.Scope == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.Scope(childComplexity), true
+
+	case "ItemNCard.scoreJson":
+		if e.ComplexityRoot.ItemNCard.ScoreJSON == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.ScoreJSON(childComplexity), true
+
+	case "ItemNCard.status":
+		if e.ComplexityRoot.ItemNCard.Status == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.Status(childComplexity), true
+
+	case "ItemNCard.tags":
+		if e.ComplexityRoot.ItemNCard.Tags == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.Tags(childComplexity), true
+
+	case "ItemNCard.title":
+		if e.ComplexityRoot.ItemNCard.Title == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.Title(childComplexity), true
+
+	case "ItemNCard.triggerJson":
+		if e.ComplexityRoot.ItemNCard.TriggerJSON == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.TriggerJSON(childComplexity), true
+
+	case "ItemNCard.uid":
+		if e.ComplexityRoot.ItemNCard.UID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.UID(childComplexity), true
+
+	case "ItemNCard.updatedAt":
+		if e.ComplexityRoot.ItemNCard.UpdatedAt == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.UpdatedAt(childComplexity), true
+
+	case "ItemNCard.version":
+		if e.ComplexityRoot.ItemNCard.Version == nil {
+			break
+		}
+
+		return e.ComplexityRoot.ItemNCard.Version(childComplexity), true
 
 	case "KV.k":
-		if e.complexity.KV.K == nil {
+		if e.ComplexityRoot.KV.K == nil {
 			break
 		}
 
-		return e.complexity.KV.K(childComplexity), true
+		return e.ComplexityRoot.KV.K(childComplexity), true
 
 	case "KV.v":
-		if e.complexity.KV.V == nil {
+		if e.ComplexityRoot.KV.V == nil {
 			break
 		}
 
-		return e.complexity.KV.V(childComplexity), true
+		return e.ComplexityRoot.KV.V(childComplexity), true
+
+	case "LLMRequestResult.errorMessage":
+		if e.ComplexityRoot.LLMRequestResult.ErrorMessage == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LLMRequestResult.ErrorMessage(childComplexity), true
+
+	case "LLMRequestResult.id":
+		if e.ComplexityRoot.LLMRequestResult.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LLMRequestResult.ID(childComplexity), true
+
+	case "LLMRequestResult.inputTokens":
+		if e.ComplexityRoot.LLMRequestResult.InputTokens == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LLMRequestResult.InputTokens(childComplexity), true
+
+	case "LLMRequestResult.outputTokens":
+		if e.ComplexityRoot.LLMRequestResult.OutputTokens == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LLMRequestResult.OutputTokens(childComplexity), true
+
+	case "LLMRequestResult.responseText":
+		if e.ComplexityRoot.LLMRequestResult.ResponseText == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LLMRequestResult.ResponseText(childComplexity), true
+
+	case "LLMRequestResult.totalTokens":
+		if e.ComplexityRoot.LLMRequestResult.TotalTokens == nil {
+			break
+		}
+
+		return e.ComplexityRoot.LLMRequestResult.TotalTokens(childComplexity), true
 
 	case "LocalLog.createdAt":
-		if e.complexity.LocalLog.CreatedAt == nil {
+		if e.ComplexityRoot.LocalLog.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.LocalLog.CreatedAt(childComplexity), true
+		return e.ComplexityRoot.LocalLog.CreatedAt(childComplexity), true
 
 	case "LocalLog.expiresAt":
-		if e.complexity.LocalLog.ExpiresAt == nil {
+		if e.ComplexityRoot.LocalLog.ExpiresAt == nil {
 			break
 		}
 
-		return e.complexity.LocalLog.ExpiresAt(childComplexity), true
+		return e.ComplexityRoot.LocalLog.ExpiresAt(childComplexity), true
 
 	case "LocalLog.id":
-		if e.complexity.LocalLog.ID == nil {
+		if e.ComplexityRoot.LocalLog.ID == nil {
 			break
 		}
 
-		return e.complexity.LocalLog.ID(childComplexity), true
+		return e.ComplexityRoot.LocalLog.ID(childComplexity), true
 
 	case "LocalLog.status":
-		if e.complexity.LocalLog.Status == nil {
+		if e.ComplexityRoot.LocalLog.Status == nil {
 			break
 		}
 
-		return e.complexity.LocalLog.Status(childComplexity), true
+		return e.ComplexityRoot.LocalLog.Status(childComplexity), true
 
 	case "LocalLog.text":
-		if e.complexity.LocalLog.Text == nil {
+		if e.ComplexityRoot.LocalLog.Text == nil {
 			break
 		}
 
-		return e.complexity.LocalLog.Text(childComplexity), true
+		return e.ComplexityRoot.LocalLog.Text(childComplexity), true
 
 	case "LocalLog.uid":
-		if e.complexity.LocalLog.UID == nil {
+		if e.ComplexityRoot.LocalLog.UID == nil {
 			break
 		}
 
-		return e.complexity.LocalLog.UID(childComplexity), true
+		return e.ComplexityRoot.LocalLog.UID(childComplexity), true
 
 	case "Mutation.createAdminUser":
-		if e.complexity.Mutation.CreateAdminUser == nil {
+		if e.ComplexityRoot.Mutation.CreateAdminUser == nil {
 			break
 		}
 
@@ -627,10 +2986,22 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateAdminUser(childComplexity, args["email"].(string), args["password"].(string)), true
+		return e.ComplexityRoot.Mutation.CreateAdminUser(childComplexity, args["email"].(string), args["password"].(string)), true
+
+	case "Mutation.createItemnCard":
+		if e.ComplexityRoot.Mutation.CreateItemnCard == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createItemnCard_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.CreateItemnCard(childComplexity, args["input"].(model.ItemNCardInput)), true
 
 	case "Mutation.createPhyIdealPartner":
-		if e.complexity.Mutation.CreatePhyIdealPartner == nil {
+		if e.ComplexityRoot.Mutation.CreatePhyIdealPartner == nil {
 			break
 		}
 
@@ -639,10 +3010,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreatePhyIdealPartner(childComplexity, args["input"].(model.PhyIdealPartnerCreateInput)), true
+		return e.ComplexityRoot.Mutation.CreatePhyIdealPartner(childComplexity, args["input"].(model.PhyIdealPartnerCreateInput)), true
 
 	case "Mutation.createSajuProfile":
-		if e.complexity.Mutation.CreateSajuProfile == nil {
+		if e.ComplexityRoot.Mutation.CreateSajuProfile == nil {
 			break
 		}
 
@@ -651,10 +3022,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateSajuProfile(childComplexity, args["input"].(model.SajuProfileCreateInput)), true
+		return e.ComplexityRoot.Mutation.CreateSajuProfile(childComplexity, args["input"].(model.SajuProfileCreateInput)), true
 
 	case "Mutation.delAiMeta":
-		if e.complexity.Mutation.DelAiMeta == nil {
+		if e.ComplexityRoot.Mutation.DelAiMeta == nil {
 			break
 		}
 
@@ -663,10 +3034,22 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DelAiMeta(childComplexity, args["uid"].(string)), true
+		return e.ComplexityRoot.Mutation.DelAiMeta(childComplexity, args["uid"].(string)), true
+
+	case "Mutation.deleteItemnCard":
+		if e.ComplexityRoot.Mutation.DeleteItemnCard == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteItemnCard_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.DeleteItemnCard(childComplexity, args["uid"].(string)), true
 
 	case "Mutation.deletePhyIdealPartner":
-		if e.complexity.Mutation.DeletePhyIdealPartner == nil {
+		if e.ComplexityRoot.Mutation.DeletePhyIdealPartner == nil {
 			break
 		}
 
@@ -675,10 +3058,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeletePhyIdealPartner(childComplexity, args["uid"].(string)), true
+		return e.ComplexityRoot.Mutation.DeletePhyIdealPartner(childComplexity, args["uid"].(string)), true
 
 	case "Mutation.deleteSajuProfile":
-		if e.complexity.Mutation.DeleteSajuProfile == nil {
+		if e.ComplexityRoot.Mutation.DeleteSajuProfile == nil {
 			break
 		}
 
@@ -687,10 +3070,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteSajuProfile(childComplexity, args["uid"].(string)), true
+		return e.ComplexityRoot.Mutation.DeleteSajuProfile(childComplexity, args["uid"].(string)), true
 
 	case "Mutation.login":
-		if e.complexity.Mutation.Login == nil {
+		if e.ComplexityRoot.Mutation.Login == nil {
 			break
 		}
 
@@ -699,17 +3082,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.Login(childComplexity, args["email"].(string), args["password"].(string), args["otp"].(string)), true
+		return e.ComplexityRoot.Mutation.Login(childComplexity, args["email"].(string), args["password"].(string), args["otp"].(string)), true
 
 	case "Mutation.logout":
-		if e.complexity.Mutation.Logout == nil {
+		if e.ComplexityRoot.Mutation.Logout == nil {
 			break
 		}
 
-		return e.complexity.Mutation.Logout(childComplexity), true
+		return e.ComplexityRoot.Mutation.Logout(childComplexity), true
 
 	case "Mutation.putAiMeta":
-		if e.complexity.Mutation.PutAiMeta == nil {
+		if e.ComplexityRoot.Mutation.PutAiMeta == nil {
 			break
 		}
 
@@ -718,10 +3101,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.PutAiMeta(childComplexity, args["input"].(model.AiMetaInput)), true
+		return e.ComplexityRoot.Mutation.PutAiMeta(childComplexity, args["input"].(model.AiMetaInput)), true
 
 	case "Mutation.runAiExecution":
-		if e.complexity.Mutation.RunAiExecution == nil {
+		if e.ComplexityRoot.Mutation.RunAiExecution == nil {
 			break
 		}
 
@@ -730,10 +3113,46 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.RunAiExecution(childComplexity, args["input"].(model.AiExcutionInput)), true
+		return e.ComplexityRoot.Mutation.RunAiExecution(childComplexity, args["input"].(model.AiExcutionInput)), true
+
+	case "Mutation.runChemiGeneration":
+		if e.ComplexityRoot.Mutation.RunChemiGeneration == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_runChemiGeneration_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.RunChemiGeneration(childComplexity, args["input"].(model.ChemiGenerationRequest)), true
+
+	case "Mutation.runSajuGeneration":
+		if e.ComplexityRoot.Mutation.RunSajuGeneration == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_runSajuGeneration_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.RunSajuGeneration(childComplexity, args["input"].(model.SajuGenerationRequest)), true
+
+	case "Mutation.sendLLMRequest":
+		if e.ComplexityRoot.Mutation.SendLLMRequest == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_sendLLMRequest_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.SendLLMRequest(childComplexity, args["input"].(model.SendLLMRequestInput)), true
 
 	case "Mutation.setAdminUserActive":
-		if e.complexity.Mutation.SetAdminUserActive == nil {
+		if e.ComplexityRoot.Mutation.SetAdminUserActive == nil {
 			break
 		}
 
@@ -742,10 +3161,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetAdminUserActive(childComplexity, args["uid"].(string), args["active"].(bool)), true
+		return e.ComplexityRoot.Mutation.SetAdminUserActive(childComplexity, args["uid"].(string), args["active"].(bool)), true
 
 	case "Mutation.setAiMetaDefault":
-		if e.complexity.Mutation.SetAiMetaDefault == nil {
+		if e.ComplexityRoot.Mutation.SetAiMetaDefault == nil {
 			break
 		}
 
@@ -754,10 +3173,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetAiMetaDefault(childComplexity, args["uid"].(string)), true
+		return e.ComplexityRoot.Mutation.SetAiMetaDefault(childComplexity, args["uid"].(string)), true
 
 	case "Mutation.setAiMetaInUse":
-		if e.complexity.Mutation.SetAiMetaInUse == nil {
+		if e.ComplexityRoot.Mutation.SetAiMetaInUse == nil {
 			break
 		}
 
@@ -766,10 +3185,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.SetAiMetaInUse(childComplexity, args["uid"].(string)), true
+		return e.ComplexityRoot.Mutation.SetAiMetaInUse(childComplexity, args["uid"].(string)), true
 
 	case "Mutation.updateAdminUser":
-		if e.complexity.Mutation.UpdateAdminUser == nil {
+		if e.ComplexityRoot.Mutation.UpdateAdminUser == nil {
 			break
 		}
 
@@ -778,129 +3197,148 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateAdminUser(childComplexity, args["uid"].(string), args["email"].(string), args["password"].(string)), true
+		return e.ComplexityRoot.Mutation.UpdateAdminUser(childComplexity, args["uid"].(string), args["email"].(string), args["password"].(string)), true
+
+	case "Mutation.updateItemnCard":
+		if e.ComplexityRoot.Mutation.UpdateItemnCard == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateItemnCard_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Mutation.UpdateItemnCard(childComplexity, args["uid"].(string), args["input"].(model.ItemNCardInput)), true
 
 	case "PhyIdealPartner.age":
-		if e.complexity.PhyIdealPartner.Age == nil {
+		if e.ComplexityRoot.PhyIdealPartner.Age == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.Age(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.Age(childComplexity), true
 
 	case "PhyIdealPartner.createdAt":
-		if e.complexity.PhyIdealPartner.CreatedAt == nil {
+		if e.ComplexityRoot.PhyIdealPartner.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.CreatedAt(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.CreatedAt(childComplexity), true
 
 	case "PhyIdealPartner.embeddingModel":
-		if e.complexity.PhyIdealPartner.EmbeddingModel == nil {
+		if e.ComplexityRoot.PhyIdealPartner.EmbeddingModel == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.EmbeddingModel(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.EmbeddingModel(childComplexity), true
 
 	case "PhyIdealPartner.embeddingText":
-		if e.complexity.PhyIdealPartner.EmbeddingText == nil {
+		if e.ComplexityRoot.PhyIdealPartner.EmbeddingText == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.EmbeddingText(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.EmbeddingText(childComplexity), true
 
 	case "PhyIdealPartner.featureEyes":
-		if e.complexity.PhyIdealPartner.FeatureEyes == nil {
+		if e.ComplexityRoot.PhyIdealPartner.FeatureEyes == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.FeatureEyes(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.FeatureEyes(childComplexity), true
 
 	case "PhyIdealPartner.featureFaceShape":
-		if e.complexity.PhyIdealPartner.FeatureFaceShape == nil {
+		if e.ComplexityRoot.PhyIdealPartner.FeatureFaceShape == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.FeatureFaceShape(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.FeatureFaceShape(childComplexity), true
 
 	case "PhyIdealPartner.featureMouth":
-		if e.complexity.PhyIdealPartner.FeatureMouth == nil {
+		if e.ComplexityRoot.PhyIdealPartner.FeatureMouth == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.FeatureMouth(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.FeatureMouth(childComplexity), true
 
 	case "PhyIdealPartner.featureNose":
-		if e.complexity.PhyIdealPartner.FeatureNose == nil {
+		if e.ComplexityRoot.PhyIdealPartner.FeatureNose == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.FeatureNose(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.FeatureNose(childComplexity), true
 
 	case "PhyIdealPartner.hasImage":
-		if e.complexity.PhyIdealPartner.HasImage == nil {
+		if e.ComplexityRoot.PhyIdealPartner.HasImage == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.HasImage(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.HasImage(childComplexity), true
 
 	case "PhyIdealPartner.id":
-		if e.complexity.PhyIdealPartner.ID == nil {
+		if e.ComplexityRoot.PhyIdealPartner.ID == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.ID(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.ID(childComplexity), true
 
 	case "PhyIdealPartner.image":
-		if e.complexity.PhyIdealPartner.Image == nil {
+		if e.ComplexityRoot.PhyIdealPartner.Image == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.Image(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.Image(childComplexity), true
 
 	case "PhyIdealPartner.personalityMatch":
-		if e.complexity.PhyIdealPartner.PersonalityMatch == nil {
+		if e.ComplexityRoot.PhyIdealPartner.PersonalityMatch == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.PersonalityMatch(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.PersonalityMatch(childComplexity), true
 
 	case "PhyIdealPartner.sex":
-		if e.complexity.PhyIdealPartner.Sex == nil {
+		if e.ComplexityRoot.PhyIdealPartner.Sex == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.Sex(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.Sex(childComplexity), true
 
 	case "PhyIdealPartner.similarityScore":
-		if e.complexity.PhyIdealPartner.SimilarityScore == nil {
+		if e.ComplexityRoot.PhyIdealPartner.SimilarityScore == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.SimilarityScore(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.SimilarityScore(childComplexity), true
 
 	case "PhyIdealPartner.summary":
-		if e.complexity.PhyIdealPartner.Summary == nil {
+		if e.ComplexityRoot.PhyIdealPartner.Summary == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.Summary(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.Summary(childComplexity), true
 
 	case "PhyIdealPartner.uid":
-		if e.complexity.PhyIdealPartner.UID == nil {
+		if e.ComplexityRoot.PhyIdealPartner.UID == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.UID(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.UID(childComplexity), true
 
 	case "PhyIdealPartner.updatedAt":
-		if e.complexity.PhyIdealPartner.UpdatedAt == nil {
+		if e.ComplexityRoot.PhyIdealPartner.UpdatedAt == nil {
 			break
 		}
 
-		return e.complexity.PhyIdealPartner.UpdatedAt(childComplexity), true
+		return e.ComplexityRoot.PhyIdealPartner.UpdatedAt(childComplexity), true
+
+	case "Query.adminUsers":
+		if e.ComplexityRoot.Query.AdminUsers == nil {
+			break
+		}
+
+		return e.ComplexityRoot.Query.AdminUsers(childComplexity), true
 
 	case "Query.aiExecution":
-		if e.complexity.Query.AiExecution == nil {
+		if e.ComplexityRoot.Query.AiExecution == nil {
 			break
 		}
 
@@ -909,10 +3347,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.AiExecution(childComplexity, args["uid"].(string)), true
+		return e.ComplexityRoot.Query.AiExecution(childComplexity, args["uid"].(string)), true
 
 	case "Query.aiExecutions":
-		if e.complexity.Query.AiExecutions == nil {
+		if e.ComplexityRoot.Query.AiExecutions == nil {
 			break
 		}
 
@@ -921,10 +3359,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.AiExecutions(childComplexity, args["input"].(model.AiExecutionSearchInput)), true
+		return e.ComplexityRoot.Query.AiExecutions(childComplexity, args["input"].(model.AiExecutionSearchInput)), true
 
 	case "Query.aiMeta":
-		if e.complexity.Query.AiMeta == nil {
+		if e.ComplexityRoot.Query.AiMeta == nil {
 			break
 		}
 
@@ -933,10 +3371,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.AiMeta(childComplexity, args["uid"].(string)), true
+		return e.ComplexityRoot.Query.AiMeta(childComplexity, args["uid"].(string)), true
 
 	case "Query.aiMetaKVs":
-		if e.complexity.Query.AiMetaKVs == nil {
+		if e.ComplexityRoot.Query.AiMetaKVs == nil {
 			break
 		}
 
@@ -945,17 +3383,17 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.AiMetaKVs(childComplexity, args["input"].(model.AiMetaKVsInput)), true
+		return e.ComplexityRoot.Query.AiMetaKVs(childComplexity, args["input"].(model.AiMetaKVsInput)), true
 
 	case "Query.aiMetaTypes":
-		if e.complexity.Query.AiMetaTypes == nil {
+		if e.ComplexityRoot.Query.AiMetaTypes == nil {
 			break
 		}
 
-		return e.complexity.Query.AiMetaTypes(childComplexity), true
+		return e.ComplexityRoot.Query.AiMetaTypes(childComplexity), true
 
 	case "Query.aiMetas":
-		if e.complexity.Query.AiMetas == nil {
+		if e.ComplexityRoot.Query.AiMetas == nil {
 			break
 		}
 
@@ -964,10 +3402,82 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.AiMetas(childComplexity, args["input"].(model.AiMetaSearchInput)), true
+		return e.ComplexityRoot.Query.AiMetas(childComplexity, args["input"].(model.AiMetaSearchInput)), true
+
+	case "Query.extract_pair":
+		if e.ComplexityRoot.Query.ExtractPair == nil {
+			break
+		}
+
+		args, err := ec.field_Query_extract_pair_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.ExtractPair(childComplexity, args["input"].(model.ExtractPairInput)), true
+
+	case "Query.extract_saju":
+		if e.ComplexityRoot.Query.ExtractSaju == nil {
+			break
+		}
+
+		args, err := ec.field_Query_extract_saju_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.ExtractSaju(childComplexity, args["input"].(model.ExtractSajuInput)), true
+
+	case "Query.itemnCard":
+		if e.ComplexityRoot.Query.ItemnCard == nil {
+			break
+		}
+
+		args, err := ec.field_Query_itemnCard_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.ItemnCard(childComplexity, args["uid"].(*string)), true
+
+	case "Query.itemnCardByCardId":
+		if e.ComplexityRoot.Query.ItemnCardByCardID == nil {
+			break
+		}
+
+		args, err := ec.field_Query_itemnCardByCardId_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.ItemnCardByCardID(childComplexity, args["cardId"].(string), args["scope"].(*string)), true
+
+	case "Query.itemnCards":
+		if e.ComplexityRoot.Query.ItemnCards == nil {
+			break
+		}
+
+		args, err := ec.field_Query_itemnCards_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.ItemnCards(childComplexity, args["input"].(model.ItemNCardSearchInput)), true
+
+	case "Query.itemnCardsByTokens":
+		if e.ComplexityRoot.Query.ItemnCardsByTokens == nil {
+			break
+		}
+
+		args, err := ec.field_Query_itemnCardsByTokens_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.ItemnCardsByTokens(childComplexity, args["input"].(model.ItemnCardsByTokensInput)), true
 
 	case "Query.localLogs":
-		if e.complexity.Query.LocalLogs == nil {
+		if e.ComplexityRoot.Query.LocalLogs == nil {
 			break
 		}
 
@@ -976,10 +3486,22 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.LocalLogs(childComplexity, args["input"].(model.LocalLogSearchInput)), true
+		return e.ComplexityRoot.Query.LocalLogs(childComplexity, args["input"].(model.LocalLogSearchInput)), true
+
+	case "Query.pairCardsByTokens":
+		if e.ComplexityRoot.Query.PairCardsByTokens == nil {
+			break
+		}
+
+		args, err := ec.field_Query_pairCardsByTokens_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.PairCardsByTokens(childComplexity, args["input"].(model.PairCardsByTokensInput)), true
 
 	case "Query.palja":
-		if e.complexity.Query.Palja == nil {
+		if e.ComplexityRoot.Query.Palja == nil {
 			break
 		}
 
@@ -988,10 +3510,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.Palja(childComplexity, args["birthdate"].(string), args["timezone"].(string)), true
+		return e.ComplexityRoot.Query.Palja(childComplexity, args["birthdate"].(string), args["timezone"].(string)), true
 
 	case "Query.phyIdealPartner":
-		if e.complexity.Query.PhyIdealPartner == nil {
+		if e.ComplexityRoot.Query.PhyIdealPartner == nil {
 			break
 		}
 
@@ -1000,10 +3522,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.PhyIdealPartner(childComplexity, args["uid"].(string)), true
+		return e.ComplexityRoot.Query.PhyIdealPartner(childComplexity, args["uid"].(string)), true
 
 	case "Query.phyIdealPartners":
-		if e.complexity.Query.PhyIdealPartners == nil {
+		if e.ComplexityRoot.Query.PhyIdealPartners == nil {
 			break
 		}
 
@@ -1012,10 +3534,34 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.PhyIdealPartners(childComplexity, args["input"].(model.PhyIdealPartnerSearchInput)), true
+		return e.ComplexityRoot.Query.PhyIdealPartners(childComplexity, args["input"].(model.PhyIdealPartnerSearchInput)), true
+
+	case "Query.sajuChart":
+		if e.ComplexityRoot.Query.SajuChart == nil {
+			break
+		}
+
+		args, err := ec.field_Query_sajuChart_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.SajuChart(childComplexity, args["input"].(model.SajuChartInput)), true
+
+	case "Query.sajuPairChart":
+		if e.ComplexityRoot.Query.SajuPairChart == nil {
+			break
+		}
+
+		args, err := ec.field_Query_sajuPairChart_args(ctx, rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.ComplexityRoot.Query.SajuPairChart(childComplexity, args["input"].(model.SajuPairChartInput)), true
 
 	case "Query.sajuProfile":
-		if e.complexity.Query.SajuProfile == nil {
+		if e.ComplexityRoot.Query.SajuProfile == nil {
 			break
 		}
 
@@ -1024,10 +3570,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.SajuProfile(childComplexity, args["uid"].(string)), true
+		return e.ComplexityRoot.Query.SajuProfile(childComplexity, args["uid"].(string)), true
 
 	case "Query.sajuProfileLogs":
-		if e.complexity.Query.SajuProfileLogs == nil {
+		if e.ComplexityRoot.Query.SajuProfileLogs == nil {
 			break
 		}
 
@@ -1036,10 +3582,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.SajuProfileLogs(childComplexity, args["input"].(model.SajuProfileLogSearchInput)), true
+		return e.ComplexityRoot.Query.SajuProfileLogs(childComplexity, args["input"].(model.SajuProfileLogSearchInput)), true
 
 	case "Query.sajuProfileSimilarPartners":
-		if e.complexity.Query.SajuProfileSimilarPartners == nil {
+		if e.ComplexityRoot.Query.SajuProfileSimilarPartners == nil {
 			break
 		}
 
@@ -1048,10 +3594,10 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.SajuProfileSimilarPartners(childComplexity, args["uid"].(string), args["limit"].(int), args["offset"].(int)), true
+		return e.ComplexityRoot.Query.SajuProfileSimilarPartners(childComplexity, args["uid"].(string), args["limit"].(int), args["offset"].(int)), true
 
 	case "Query.sajuProfiles":
-		if e.complexity.Query.SajuProfiles == nil {
+		if e.ComplexityRoot.Query.SajuProfiles == nil {
 			break
 		}
 
@@ -1060,406 +3606,679 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Query.SajuProfiles(childComplexity, args["input"].(model.SajuProfileSearchInput)), true
+		return e.ComplexityRoot.Query.SajuProfiles(childComplexity, args["input"].(model.SajuProfileSearchInput)), true
 
 	case "Query.systemStats":
-		if e.complexity.Query.SystemStats == nil {
+		if e.ComplexityRoot.Query.SystemStats == nil {
 			break
 		}
 
-		return e.complexity.Query.SystemStats(childComplexity), true
+		return e.ComplexityRoot.Query.SystemStats(childComplexity), true
+
+	case "SajuChart.dm":
+		if e.ComplexityRoot.SajuChart.Dm == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.Dm(childComplexity), true
+
+	case "SajuChart.engineVersion":
+		if e.ComplexityRoot.SajuChart.EngineVersion == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.EngineVersion(childComplexity), true
+
+	case "SajuChart.id":
+		if e.ComplexityRoot.SajuChart.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.ID(childComplexity), true
+
+	case "SajuChart.items":
+		if e.ComplexityRoot.SajuChart.Items == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.Items(childComplexity), true
+
+	case "SajuChart.itemsSummary":
+		if e.ComplexityRoot.SajuChart.ItemsSummary == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.ItemsSummary(childComplexity), true
+
+	case "SajuChart.mode":
+		if e.ComplexityRoot.SajuChart.Mode == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.Mode(childComplexity), true
+
+	case "SajuChart.period":
+		if e.ComplexityRoot.SajuChart.Period == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.Period(childComplexity), true
+
+	case "SajuChart.pillarSource":
+		if e.ComplexityRoot.SajuChart.PillarSource == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.PillarSource(childComplexity), true
+
+	case "SajuChart.pillars":
+		if e.ComplexityRoot.SajuChart.Pillars == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.Pillars(childComplexity), true
+
+	case "SajuChart.ruleSet":
+		if e.ComplexityRoot.SajuChart.RuleSet == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.RuleSet(childComplexity), true
+
+	case "SajuChart.tokens":
+		if e.ComplexityRoot.SajuChart.Tokens == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChart.Tokens(childComplexity), true
+
+	case "SajuChartPillars.d":
+		if e.ComplexityRoot.SajuChartPillars.D == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChartPillars.D(childComplexity), true
+
+	case "SajuChartPillars.h":
+		if e.ComplexityRoot.SajuChartPillars.H == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChartPillars.H(childComplexity), true
+
+	case "SajuChartPillars.m":
+		if e.ComplexityRoot.SajuChartPillars.M == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChartPillars.M(childComplexity), true
+
+	case "SajuChartPillars.y":
+		if e.ComplexityRoot.SajuChartPillars.Y == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuChartPillars.Y(childComplexity), true
+
+	case "SajuGenerationResponse.targets":
+		if e.ComplexityRoot.SajuGenerationResponse.Targets == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuGenerationResponse.Targets(childComplexity), true
+
+	case "SajuGenerationTargetOutput.kind":
+		if e.ComplexityRoot.SajuGenerationTargetOutput.Kind == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuGenerationTargetOutput.Kind(childComplexity), true
+
+	case "SajuGenerationTargetOutput.max_chars":
+		if e.ComplexityRoot.SajuGenerationTargetOutput.MaxChars == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuGenerationTargetOutput.MaxChars(childComplexity), true
+
+	case "SajuGenerationTargetOutput.period":
+		if e.ComplexityRoot.SajuGenerationTargetOutput.Period == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuGenerationTargetOutput.Period(childComplexity), true
+
+	case "SajuGenerationTargetOutput.result":
+		if e.ComplexityRoot.SajuGenerationTargetOutput.Result == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuGenerationTargetOutput.Result(childComplexity), true
+
+	case "SajuPairChart.chartA":
+		if e.ComplexityRoot.SajuPairChart.ChartA == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPairChart.ChartA(childComplexity), true
+
+	case "SajuPairChart.chartB":
+		if e.ComplexityRoot.SajuPairChart.ChartB == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPairChart.ChartB(childComplexity), true
+
+	case "SajuPairChart.engineVersion":
+		if e.ComplexityRoot.SajuPairChart.EngineVersion == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPairChart.EngineVersion(childComplexity), true
+
+	case "SajuPairChart.id":
+		if e.ComplexityRoot.SajuPairChart.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPairChart.ID(childComplexity), true
+
+	case "SajuPairChart.pItems":
+		if e.ComplexityRoot.SajuPairChart.PItems == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPairChart.PItems(childComplexity), true
+
+	case "SajuPairChart.pItemsSummary":
+		if e.ComplexityRoot.SajuPairChart.PItemsSummary == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPairChart.PItemsSummary(childComplexity), true
+
+	case "SajuPairChart.pTokens":
+		if e.ComplexityRoot.SajuPairChart.PTokens == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPairChart.PTokens(childComplexity), true
+
+	case "SajuPairChart.ruleSet":
+		if e.ComplexityRoot.SajuPairChart.RuleSet == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPairChart.RuleSet(childComplexity), true
+
+	case "SajuPillarSource.baseDate":
+		if e.ComplexityRoot.SajuPillarSource.BaseDate == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPillarSource.BaseDate(childComplexity), true
+
+	case "SajuPillarSource.baseTimeUsed":
+		if e.ComplexityRoot.SajuPillarSource.BaseTimeUsed == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPillarSource.BaseTimeUsed(childComplexity), true
+
+	case "SajuPillarSource.description":
+		if e.ComplexityRoot.SajuPillarSource.Description == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPillarSource.Description(childComplexity), true
+
+	case "SajuPillarSource.mode":
+		if e.ComplexityRoot.SajuPillarSource.Mode == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPillarSource.Mode(childComplexity), true
+
+	case "SajuPillarSource.period":
+		if e.ComplexityRoot.SajuPillarSource.Period == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SajuPillarSource.Period(childComplexity), true
 
 	case "SajuProfile.birthdate":
-		if e.complexity.SajuProfile.Birthdate == nil {
+		if e.ComplexityRoot.SajuProfile.Birthdate == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.Birthdate(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.Birthdate(childComplexity), true
 
 	case "SajuProfile.createdAt":
-		if e.complexity.SajuProfile.CreatedAt == nil {
+		if e.ComplexityRoot.SajuProfile.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.CreatedAt(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.CreatedAt(childComplexity), true
 
 	case "SajuProfile.email":
-		if e.complexity.SajuProfile.Email == nil {
+		if e.ComplexityRoot.SajuProfile.Email == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.Email(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.Email(childComplexity), true
 
 	case "SajuProfile.id":
-		if e.complexity.SajuProfile.ID == nil {
+		if e.ComplexityRoot.SajuProfile.ID == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.ID(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.ID(childComplexity), true
 
 	case "SajuProfile.image":
-		if e.complexity.SajuProfile.Image == nil {
+		if e.ComplexityRoot.SajuProfile.Image == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.Image(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.Image(childComplexity), true
 
 	case "SajuProfile.imageMimeType":
-		if e.complexity.SajuProfile.ImageMimeType == nil {
+		if e.ComplexityRoot.SajuProfile.ImageMimeType == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.ImageMimeType(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.ImageMimeType(childComplexity), true
 
 	case "SajuProfile.myFeatureEyes":
-		if e.complexity.SajuProfile.MyFeatureEyes == nil {
+		if e.ComplexityRoot.SajuProfile.MyFeatureEyes == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.MyFeatureEyes(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.MyFeatureEyes(childComplexity), true
 
 	case "SajuProfile.myFeatureFaceShape":
-		if e.complexity.SajuProfile.MyFeatureFaceShape == nil {
+		if e.ComplexityRoot.SajuProfile.MyFeatureFaceShape == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.MyFeatureFaceShape(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.MyFeatureFaceShape(childComplexity), true
 
 	case "SajuProfile.myFeatureMouth":
-		if e.complexity.SajuProfile.MyFeatureMouth == nil {
+		if e.ComplexityRoot.SajuProfile.MyFeatureMouth == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.MyFeatureMouth(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.MyFeatureMouth(childComplexity), true
 
 	case "SajuProfile.myFeatureNose":
-		if e.complexity.SajuProfile.MyFeatureNose == nil {
+		if e.ComplexityRoot.SajuProfile.MyFeatureNose == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.MyFeatureNose(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.MyFeatureNose(childComplexity), true
 
 	case "SajuProfile.myFeatureNotes":
-		if e.complexity.SajuProfile.MyFeatureNotes == nil {
+		if e.ComplexityRoot.SajuProfile.MyFeatureNotes == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.MyFeatureNotes(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.MyFeatureNotes(childComplexity), true
 
 	case "SajuProfile.nickname":
-		if e.complexity.SajuProfile.Nickname == nil {
+		if e.ComplexityRoot.SajuProfile.Nickname == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.Nickname(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.Nickname(childComplexity), true
 
 	case "SajuProfile.palja":
-		if e.complexity.SajuProfile.Palja == nil {
+		if e.ComplexityRoot.SajuProfile.Palja == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.Palja(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.Palja(childComplexity), true
 
 	case "SajuProfile.partnerAge":
-		if e.complexity.SajuProfile.PartnerAge == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerAge == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerAge(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerAge(childComplexity), true
 
 	case "SajuProfile.partnerEmbeddingText":
-		if e.complexity.SajuProfile.PartnerEmbeddingText == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerEmbeddingText == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerEmbeddingText(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerEmbeddingText(childComplexity), true
 
 	case "SajuProfile.partnerFeatureEyes":
-		if e.complexity.SajuProfile.PartnerFeatureEyes == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerFeatureEyes == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerFeatureEyes(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerFeatureEyes(childComplexity), true
 
 	case "SajuProfile.partnerFeatureFaceShape":
-		if e.complexity.SajuProfile.PartnerFeatureFaceShape == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerFeatureFaceShape == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerFeatureFaceShape(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerFeatureFaceShape(childComplexity), true
 
 	case "SajuProfile.partnerFeatureMouth":
-		if e.complexity.SajuProfile.PartnerFeatureMouth == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerFeatureMouth == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerFeatureMouth(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerFeatureMouth(childComplexity), true
 
 	case "SajuProfile.partnerFeatureNose":
-		if e.complexity.SajuProfile.PartnerFeatureNose == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerFeatureNose == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerFeatureNose(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerFeatureNose(childComplexity), true
 
 	case "SajuProfile.partnerMatchTips":
-		if e.complexity.SajuProfile.PartnerMatchTips == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerMatchTips == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerMatchTips(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerMatchTips(childComplexity), true
 
 	case "SajuProfile.partnerPersonalityMatch":
-		if e.complexity.SajuProfile.PartnerPersonalityMatch == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerPersonalityMatch == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerPersonalityMatch(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerPersonalityMatch(childComplexity), true
 
 	case "SajuProfile.partnerSex":
-		if e.complexity.SajuProfile.PartnerSex == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerSex == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerSex(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerSex(childComplexity), true
 
 	case "SajuProfile.partnerSummary":
-		if e.complexity.SajuProfile.PartnerSummary == nil {
+		if e.ComplexityRoot.SajuProfile.PartnerSummary == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PartnerSummary(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PartnerSummary(childComplexity), true
 
 	case "SajuProfile.phyContent":
-		if e.complexity.SajuProfile.PhyContent == nil {
+		if e.ComplexityRoot.SajuProfile.PhyContent == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PhyContent(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PhyContent(childComplexity), true
 
 	case "SajuProfile.phyPartnerSimilarity":
-		if e.complexity.SajuProfile.PhyPartnerSimilarity == nil {
+		if e.ComplexityRoot.SajuProfile.PhyPartnerSimilarity == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PhyPartnerSimilarity(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PhyPartnerSimilarity(childComplexity), true
 
 	case "SajuProfile.phyPartnerUid":
-		if e.complexity.SajuProfile.PhyPartnerUID == nil {
+		if e.ComplexityRoot.SajuProfile.PhyPartnerUID == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PhyPartnerUID(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PhyPartnerUID(childComplexity), true
 
 	case "SajuProfile.phySummary":
-		if e.complexity.SajuProfile.PhySummary == nil {
+		if e.ComplexityRoot.SajuProfile.PhySummary == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.PhySummary(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.PhySummary(childComplexity), true
 
 	case "SajuProfile.sajuContent":
-		if e.complexity.SajuProfile.SajuContent == nil {
+		if e.ComplexityRoot.SajuProfile.SajuContent == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.SajuContent(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.SajuContent(childComplexity), true
 
 	case "SajuProfile.sajuSummary":
-		if e.complexity.SajuProfile.SajuSummary == nil {
+		if e.ComplexityRoot.SajuProfile.SajuSummary == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.SajuSummary(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.SajuSummary(childComplexity), true
 
 	case "SajuProfile.sex":
-		if e.complexity.SajuProfile.Sex == nil {
+		if e.ComplexityRoot.SajuProfile.Sex == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.Sex(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.Sex(childComplexity), true
 
 	case "SajuProfile.uid":
-		if e.complexity.SajuProfile.UID == nil {
+		if e.ComplexityRoot.SajuProfile.UID == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.UID(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.UID(childComplexity), true
 
 	case "SajuProfile.updatedAt":
-		if e.complexity.SajuProfile.UpdatedAt == nil {
+		if e.ComplexityRoot.SajuProfile.UpdatedAt == nil {
 			break
 		}
 
-		return e.complexity.SajuProfile.UpdatedAt(childComplexity), true
+		return e.ComplexityRoot.SajuProfile.UpdatedAt(childComplexity), true
 
 	case "SajuProfileLog.createdAt":
-		if e.complexity.SajuProfileLog.CreatedAt == nil {
+		if e.ComplexityRoot.SajuProfileLog.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.SajuProfileLog.CreatedAt(childComplexity), true
+		return e.ComplexityRoot.SajuProfileLog.CreatedAt(childComplexity), true
 
 	case "SajuProfileLog.id":
-		if e.complexity.SajuProfileLog.ID == nil {
+		if e.ComplexityRoot.SajuProfileLog.ID == nil {
 			break
 		}
 
-		return e.complexity.SajuProfileLog.ID(childComplexity), true
+		return e.ComplexityRoot.SajuProfileLog.ID(childComplexity), true
 
 	case "SajuProfileLog.sajuUid":
-		if e.complexity.SajuProfileLog.SajuUID == nil {
+		if e.ComplexityRoot.SajuProfileLog.SajuUID == nil {
 			break
 		}
 
-		return e.complexity.SajuProfileLog.SajuUID(childComplexity), true
+		return e.ComplexityRoot.SajuProfileLog.SajuUID(childComplexity), true
 
 	case "SajuProfileLog.status":
-		if e.complexity.SajuProfileLog.Status == nil {
+		if e.ComplexityRoot.SajuProfileLog.Status == nil {
 			break
 		}
 
-		return e.complexity.SajuProfileLog.Status(childComplexity), true
+		return e.ComplexityRoot.SajuProfileLog.Status(childComplexity), true
 
 	case "SajuProfileLog.text":
-		if e.complexity.SajuProfileLog.Text == nil {
+		if e.ComplexityRoot.SajuProfileLog.Text == nil {
 			break
 		}
 
-		return e.complexity.SajuProfileLog.Text(childComplexity), true
+		return e.ComplexityRoot.SajuProfileLog.Text(childComplexity), true
 
 	case "SajuProfileLog.uid":
-		if e.complexity.SajuProfileLog.UID == nil {
+		if e.ComplexityRoot.SajuProfileLog.UID == nil {
 			break
 		}
 
-		return e.complexity.SajuProfileLog.UID(childComplexity), true
+		return e.ComplexityRoot.SajuProfileLog.UID(childComplexity), true
 
 	case "SajuProfileLog.updatedAt":
-		if e.complexity.SajuProfileLog.UpdatedAt == nil {
+		if e.ComplexityRoot.SajuProfileLog.UpdatedAt == nil {
 			break
 		}
 
-		return e.complexity.SajuProfileLog.UpdatedAt(childComplexity), true
+		return e.ComplexityRoot.SajuProfileLog.UpdatedAt(childComplexity), true
+
+	case "SelectedItemnCard.cardId":
+		if e.ComplexityRoot.SelectedItemnCard.CardID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SelectedItemnCard.CardID(childComplexity), true
+
+	case "SelectedItemnCard.contentSummary":
+		if e.ComplexityRoot.SelectedItemnCard.ContentSummary == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SelectedItemnCard.ContentSummary(childComplexity), true
+
+	case "SelectedItemnCard.evidence":
+		if e.ComplexityRoot.SelectedItemnCard.Evidence == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SelectedItemnCard.Evidence(childComplexity), true
+
+	case "SelectedItemnCard.id":
+		if e.ComplexityRoot.SelectedItemnCard.ID == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SelectedItemnCard.ID(childComplexity), true
+
+	case "SelectedItemnCard.score":
+		if e.ComplexityRoot.SelectedItemnCard.Score == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SelectedItemnCard.Score(childComplexity), true
+
+	case "SelectedItemnCard.title":
+		if e.ComplexityRoot.SelectedItemnCard.Title == nil {
+			break
+		}
+
+		return e.ComplexityRoot.SelectedItemnCard.Title(childComplexity), true
 
 	case "SimpleResult.base64Value":
-		if e.complexity.SimpleResult.Base64Value == nil {
+		if e.ComplexityRoot.SimpleResult.Base64Value == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Base64Value(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Base64Value(childComplexity), true
 
 	case "SimpleResult.err":
-		if e.complexity.SimpleResult.Err == nil {
+		if e.ComplexityRoot.SimpleResult.Err == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Err(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Err(childComplexity), true
 
 	case "SimpleResult.kvs":
-		if e.complexity.SimpleResult.Kvs == nil {
+		if e.ComplexityRoot.SimpleResult.Kvs == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Kvs(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Kvs(childComplexity), true
 
 	case "SimpleResult.limit":
-		if e.complexity.SimpleResult.Limit == nil {
+		if e.ComplexityRoot.SimpleResult.Limit == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Limit(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Limit(childComplexity), true
 
 	case "SimpleResult.msg":
-		if e.complexity.SimpleResult.Msg == nil {
+		if e.ComplexityRoot.SimpleResult.Msg == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Msg(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Msg(childComplexity), true
 
 	case "SimpleResult.node":
-		if e.complexity.SimpleResult.Node == nil {
+		if e.ComplexityRoot.SimpleResult.Node == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Node(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Node(childComplexity), true
 
 	case "SimpleResult.nodes":
-		if e.complexity.SimpleResult.Nodes == nil {
+		if e.ComplexityRoot.SimpleResult.Nodes == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Nodes(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Nodes(childComplexity), true
 
 	case "SimpleResult.offset":
-		if e.complexity.SimpleResult.Offset == nil {
+		if e.ComplexityRoot.SimpleResult.Offset == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Offset(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Offset(childComplexity), true
 
 	case "SimpleResult.ok":
-		if e.complexity.SimpleResult.Ok == nil {
+		if e.ComplexityRoot.SimpleResult.Ok == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Ok(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Ok(childComplexity), true
 
 	case "SimpleResult.total":
-		if e.complexity.SimpleResult.Total == nil {
+		if e.ComplexityRoot.SimpleResult.Total == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Total(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Total(childComplexity), true
 
 	case "SimpleResult.uid":
-		if e.complexity.SimpleResult.UID == nil {
+		if e.ComplexityRoot.SimpleResult.UID == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.UID(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.UID(childComplexity), true
 
 	case "SimpleResult.value":
-		if e.complexity.SimpleResult.Value == nil {
+		if e.ComplexityRoot.SimpleResult.Value == nil {
 			break
 		}
 
-		return e.complexity.SimpleResult.Value(childComplexity), true
+		return e.ComplexityRoot.SimpleResult.Value(childComplexity), true
 
 	case "SystemStats.cpuUsage":
-		if e.complexity.SystemStats.CPUUsage == nil {
+		if e.ComplexityRoot.SystemStats.CPUUsage == nil {
 			break
 		}
 
-		return e.complexity.SystemStats.CPUUsage(childComplexity), true
+		return e.ComplexityRoot.SystemStats.CPUUsage(childComplexity), true
 
 	case "SystemStats.hostname":
-		if e.complexity.SystemStats.Hostname == nil {
+		if e.ComplexityRoot.SystemStats.Hostname == nil {
 			break
 		}
 
-		return e.complexity.SystemStats.Hostname(childComplexity), true
+		return e.ComplexityRoot.SystemStats.Hostname(childComplexity), true
 
 	case "SystemStats.id":
-		if e.complexity.SystemStats.ID == nil {
+		if e.ComplexityRoot.SystemStats.ID == nil {
 			break
 		}
 
-		return e.complexity.SystemStats.ID(childComplexity), true
+		return e.ComplexityRoot.SystemStats.ID(childComplexity), true
 
 	case "SystemStats.memoryTotal":
-		if e.complexity.SystemStats.MemoryTotal == nil {
+		if e.ComplexityRoot.SystemStats.MemoryTotal == nil {
 			break
 		}
 
-		return e.complexity.SystemStats.MemoryTotal(childComplexity), true
+		return e.ComplexityRoot.SystemStats.MemoryTotal(childComplexity), true
 
 	case "SystemStats.memoryUsage":
-		if e.complexity.SystemStats.MemoryUsage == nil {
+		if e.ComplexityRoot.SystemStats.MemoryUsage == nil {
 			break
 		}
 
-		return e.complexity.SystemStats.MemoryUsage(childComplexity), true
+		return e.ComplexityRoot.SystemStats.MemoryUsage(childComplexity), true
 
 	}
 	return 0, false
@@ -1467,20 +4286,38 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
-	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
+	ec := newExecutionContext(opCtx, e, make(chan graphql.DeferredResult))
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAiExcutionInput,
 		ec.unmarshalInputAiExecutionSearchInput,
 		ec.unmarshalInputAiMetaInput,
 		ec.unmarshalInputAiMetaKVsInput,
 		ec.unmarshalInputAiMetaSearchInput,
+		ec.unmarshalInputChemiGenerationPairInput,
+		ec.unmarshalInputChemiGenerationRequest,
+		ec.unmarshalInputChemiGenerationTargetInput,
+		ec.unmarshalInputExtractEngineInput,
+		ec.unmarshalInputExtractGeoInput,
+		ec.unmarshalInputExtractPairInput,
+		ec.unmarshalInputExtractSajuInput,
+		ec.unmarshalInputItemNCardInput,
+		ec.unmarshalInputItemNCardSearchInput,
+		ec.unmarshalInputItemnCardsByTokensInput,
 		ec.unmarshalInputKVInput,
 		ec.unmarshalInputLocalLogSearchInput,
+		ec.unmarshalInputPairCardsByTokensInput,
 		ec.unmarshalInputPhyIdealPartnerCreateInput,
 		ec.unmarshalInputPhyIdealPartnerSearchInput,
+		ec.unmarshalInputSajuBirthInput,
+		ec.unmarshalInputSajuChartInput,
+		ec.unmarshalInputSajuGenerationRequest,
+		ec.unmarshalInputSajuGenerationTargetInput,
+		ec.unmarshalInputSajuGenerationUserInput,
+		ec.unmarshalInputSajuPairChartInput,
 		ec.unmarshalInputSajuProfileCreateInput,
 		ec.unmarshalInputSajuProfileLogSearchInput,
 		ec.unmarshalInputSajuProfileSearchInput,
+		ec.unmarshalInputSendLLMRequestInput,
 	)
 	first := true
 
@@ -1494,9 +4331,9 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 				ctx = graphql.WithUnmarshalerMap(ctx, inputUnmarshalMap)
 				data = ec._Query(ctx, opCtx.Operation.SelectionSet)
 			} else {
-				if atomic.LoadInt32(&ec.pendingDeferred) > 0 {
-					result := <-ec.deferredResults
-					atomic.AddInt32(&ec.pendingDeferred, -1)
+				if atomic.LoadInt32(&ec.PendingDeferred) > 0 {
+					result := <-ec.DeferredResults
+					atomic.AddInt32(&ec.PendingDeferred, -1)
 					data = result.Result
 					response.Path = result.Path
 					response.Label = result.Label
@@ -1508,8 +4345,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 			var buf bytes.Buffer
 			data.MarshalGQL(&buf)
 			response.Data = buf.Bytes()
-			if atomic.LoadInt32(&ec.deferred) > 0 {
-				hasNext := atomic.LoadInt32(&ec.pendingDeferred) > 0
+			if atomic.LoadInt32(&ec.Deferred) > 0 {
+				hasNext := atomic.LoadInt32(&ec.PendingDeferred) > 0
 				response.HasNext = &hasNext
 			}
 
@@ -1537,52 +4374,34 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 }
 
 type executionContext struct {
-	*graphql.OperationContext
-	*executableSchema
-	deferred        int32
-	pendingDeferred int32
-	deferredResults chan graphql.DeferredResult
+	*graphql.ExecutionContextState[ResolverRoot, DirectiveRoot, ComplexityRoot]
 }
 
-func (ec *executionContext) processDeferredGroup(dg graphql.DeferredGroup) {
-	atomic.AddInt32(&ec.pendingDeferred, 1)
-	go func() {
-		ctx := graphql.WithFreshResponseContext(dg.Context)
-		dg.FieldSet.Dispatch(ctx)
-		ds := graphql.DeferredResult{
-			Path:   dg.Path,
-			Label:  dg.Label,
-			Result: dg.FieldSet,
-			Errors: graphql.GetErrors(ctx),
-		}
-		// null fields should bubble up
-		if dg.FieldSet.Invalids > 0 {
-			ds.Result = graphql.Null
-		}
-		ec.deferredResults <- ds
-	}()
-}
-
-func (ec *executionContext) introspectSchema() (*introspection.Schema, error) {
-	if ec.DisableIntrospection {
-		return nil, errors.New("introspection disabled")
+func newExecutionContext(
+	opCtx *graphql.OperationContext,
+	execSchema *executableSchema,
+	deferredResults chan graphql.DeferredResult,
+) executionContext {
+	return executionContext{
+		ExecutionContextState: graphql.NewExecutionContextState[ResolverRoot, DirectiveRoot, ComplexityRoot](
+			opCtx,
+			(*graphql.ExecutableSchemaState[ResolverRoot, DirectiveRoot, ComplexityRoot])(execSchema),
+			parsedSchema,
+			deferredResults,
+		),
 	}
-	return introspection.WrapSchema(ec.Schema()), nil
-}
-
-func (ec *executionContext) introspectType(name string) (*introspection.Type, error) {
-	if ec.DisableIntrospection {
-		return nil, errors.New("introspection disabled")
-	}
-	return introspection.WrapTypeFromDef(ec.Schema(), ec.Schema().Types[name]), nil
 }
 
 var sources = []*ast.Source{
-	{Name: "../admgql.graphql", Input: `scalar BigInt
+	{Name: "../admgql.graphql", Input: `# admgql.graphql: 관리자용 GraphQL 스키마 (쿼리/뮤테이션, 공통·사주·AI·카드·로그 등)
+
+scalar BigInt
 
 interface Node {
   id: ID
 }
+
+# 키-값 공통 타입
 type KV {
   k: String!
   v: String!
@@ -1592,6 +4411,7 @@ input KVInput {
   v: String!
 }
 
+# 공통 응답 래퍼 (목록/단건/에러/페이징 등)
 type SimpleResult {
   ok: Boolean!
   uid: String
@@ -1608,54 +4428,96 @@ type SimpleResult {
 }
 
 type Query {
+  # 관리자 계정
+  adminUsers: SimpleResult!
+
+  # 사주 프로필
   sajuProfiles(input: SajuProfileSearchInput!): SimpleResult!
   sajuProfile(uid: String!): SimpleResult!
-  sajuProfileSimilarPartners(
-    uid: String!
-    limit: Int!
-    offset: Int!
-  ): SimpleResult!
-  phyIdealPartners(input: PhyIdealPartnerSearchInput!): SimpleResult!
-  phyIdealPartner(uid: String!): SimpleResult!
+  sajuProfileSimilarPartners(uid: String!, limit: Int!, offset: Int!): SimpleResult!
   sajuProfileLogs(input: SajuProfileLogSearchInput!): SimpleResult!
 
+  # 이상형 파트너(물리)
+  phyIdealPartners(input: PhyIdealPartnerSearchInput!): SimpleResult!
+  phyIdealPartner(uid: String!): SimpleResult!
+
+  # AI 메타/실행
   aiMetas(input: AiMetaSearchInput!): SimpleResult!
   aiMeta(uid: String!): SimpleResult!
   aiMetaTypes: SimpleResult!
-  aiMetaKVs(input: AiMetaKVsInput!): SimpleResult! #kvs는 출력되는값
+  aiMetaKVs(input: AiMetaKVsInput!): SimpleResult!
   aiExecutions(input: AiExecutionSearchInput!): SimpleResult!
   aiExecution(uid: String!): SimpleResult!
   palja(birthdate: String!, timezone: String!): SimpleResult!
 
+  # 사주어셈블-ItemNCard (사주/궁합 카드)
+  itemnCards(input: ItemNCardSearchInput!): SimpleResult!
+  itemnCard(uid: String): SimpleResult
+  itemnCardByCardId(cardId: String!, scope: String): SimpleResult
+
+  # 사주어셈블-SajuAssemble: 명식/차트·토큰 추출 및 카드 조회 (설계: docs/SajuAssemble/GraphQL_Extract_Design.md)
+  # 사주
+  sajuChart(input: SajuChartInput!): SimpleResult!
+  itemnCardsByTokens(input: ItemnCardsByTokensInput!): SimpleResult!
+  extract_saju(input: ExtractSajuInput!): SimpleResult!
+  # 궁합
+  sajuPairChart(input: SajuPairChartInput!): SimpleResult!
+  pairCardsByTokens(input: PairCardsByTokensInput!): SimpleResult!
+  extract_pair(input: ExtractPairInput!): SimpleResult!
+
+  # 로그/시스템
   localLogs(input: LocalLogSearchInput!): SimpleResult!
   systemStats: SimpleResult!
 }
 
 type Mutation {
-  # AdminUser
-  login(email: String!, password: String!, otp: String!): SimpleResult! # 로그인 - 권한없이 가능
-  logout: SimpleResult! # 로그아웃 - 로그인 권한 필요
-  createAdminUser(email: String!, password: String!): SimpleResult! # 관리자 생성 join - 권한없이 가능
-  setAdminUserActive(uid: String!, active: Boolean!): SimpleResult! # 관리자 활성화 비활성화 - 로그인 권한 필요
-  updateAdminUser(
-    uid: String!
-    email: String!
-    password: String!
-  ): SimpleResult! # 관리자 정보 수정 - 로그인 권한 필요
-  # SajuProfile
+  # 관리자 계정
+  login(email: String!, password: String!, otp: String!): SimpleResult!
+  logout: SimpleResult!
+  createAdminUser(email: String!, password: String!): SimpleResult!
+  setAdminUserActive(uid: String!, active: Boolean!): SimpleResult!
+  updateAdminUser(uid: String!, email: String!, password: String!): SimpleResult!
+
+  # 사주 프로필
   createSajuProfile(input: SajuProfileCreateInput!): SimpleResult
   deleteSajuProfile(uid: String!): SimpleResult
 
+  # 이상형 파트너
   createPhyIdealPartner(input: PhyIdealPartnerCreateInput!): SimpleResult
   deletePhyIdealPartner(uid: String!): SimpleResult
 
-  putAiMeta(input: AiMetaInput!): SimpleResult # AI Meta 생성 및 수정
-  setAiMetaInUse(uid: String!): SimpleResult # AI Meta 사용 여부 설정
-  delAiMeta(uid: String!): SimpleResult # AI Meta 삭제
-  setAiMetaDefault(uid: String!): SimpleResult # AI Meta 기본 설정
+  # AI 메타
+  putAiMeta(input: AiMetaInput!): SimpleResult
+  setAiMetaInUse(uid: String!): SimpleResult
+  delAiMeta(uid: String!): SimpleResult
+  setAiMetaDefault(uid: String!): SimpleResult
   runAiExecution(input: AiExcutionInput!): SimpleResult!
+
+  # 사주어셈블-ItemNCard
+  createItemnCard(input: ItemNCardInput!): SimpleResult
+  updateItemnCard(uid: String!, input: ItemNCardInput!): SimpleResult
+  deleteItemnCard(uid: String!): SimpleResult
+
+  # 사주어셈블-사주/궁합 생성 (실행) (추후 수정 혹은 삭제 예정)
+  runSajuGeneration(input: SajuGenerationRequest!): SajuGenerationResponse!
+  runChemiGeneration(input: ChemiGenerationRequest!): ChemiGenerationResponse!
+
+  # 사주어셈블-공통 LLM 요청 (프롬프트만 전달, 카드 UID 없음)
+  sendLLMRequest(input: SendLLMRequestInput!): SimpleResult!
 }
 
+# 관리자 계정 (목록 노드용)
+type AdminUser implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  username: String!
+  email: String!
+  isActive: Boolean!
+}
+
+# 사주 프로필
 type SajuProfile implements Node {
   id: ID
   uid: String!
@@ -1665,25 +4527,20 @@ type SajuProfile implements Node {
   birthdate: String!
   palja: String!
   email: String!
-  image: String! # base64 encoded image
+  image: String!
   imageMimeType: String!
   nickname: String!
-  #
   sajuSummary: String!
   sajuContent: String!
-  #
   phySummary: String!
   phyContent: String!
-  #
   myFeatureEyes: String!
   myFeatureNose: String!
   myFeatureMouth: String!
   myFeatureFaceShape: String!
   myFeatureNotes: String!
-  #
   partnerEmbeddingText: String!
   partnerMatchTips: String!
-  #
   partnerSummary: String!
   partnerFeatureEyes: String!
   partnerFeatureNose: String!
@@ -1692,8 +4549,6 @@ type SajuProfile implements Node {
   partnerPersonalityMatch: String!
   partnerSex: String!
   partnerAge: Int!
-
-  #
   phyPartnerUid: String!
   phyPartnerSimilarity: Float!
 }
@@ -1706,57 +4561,12 @@ input SajuProfileSearchInput {
 }
 
 input SajuProfileCreateInput {
-  image: String! # base64 encoded image
-  birthdate: String! # yyyymmddhhmm format (hhmm optional)
-  sex: String!
-}
-
-# phy ideal partner
-type PhyIdealPartner implements Node {
-  id: ID
-  uid: String!
-  createdAt: BigInt!
-  updatedAt: BigInt!
-  # input
-  summary: String!
-  featureEyes: String!
-  featureNose: String!
-  featureMouth: String!
-  featureFaceShape: String!
-  personalityMatch: String!
-  sex: String!
-  age: Int!
-  # Image Data (Generated or Uploaded)
   image: String!
-  # Embedding
-  embeddingModel: String!
-  embeddingText: String!
-
-  # 유사도
-  similarityScore: Float!
-  hasImage: Boolean!
-}
-
-input PhyIdealPartnerCreateInput {
-  summary: String!
-  featureEyes: String!
-  featureNose: String!
-  featureMouth: String!
-  featureFaceShape: String!
-  personalityMatch: String!
+  birthdate: String!
   sex: String!
-  age: Int!
-  image: String # base64 encoded image (optional)
 }
 
-input PhyIdealPartnerSearchInput {
-  limit: Int!
-  offset: Int!
-  sex: String
-  hasImage: Boolean
-}
-
-# Saju Profile Log
+# 사주 프로필 로그
 type SajuProfileLog implements Node {
   id: ID
   uid: String!
@@ -1773,105 +4583,85 @@ input SajuProfileLogSearchInput {
   status: String
 }
 
-# ai meta
+# 이상형 파트너(물리)
+type PhyIdealPartner implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  summary: String!
+  featureEyes: String!
+  featureNose: String!
+  featureMouth: String!
+  featureFaceShape: String!
+  personalityMatch: String!
+  sex: String!
+  age: Int!
+  image: String!
+  embeddingModel: String!
+  embeddingText: String!
+  similarityScore: Float!
+  hasImage: Boolean!
+}
+
+input PhyIdealPartnerCreateInput {
+  summary: String!
+  featureEyes: String!
+  featureNose: String!
+  featureMouth: String!
+  featureFaceShape: String!
+  personalityMatch: String!
+  sex: String!
+  age: Int!
+  image: String
+}
+
+input PhyIdealPartnerSearchInput {
+  limit: Int!
+  offset: Int!
+  sex: String
+  hasImage: Boolean
+}
+
+# AI 메타 (프롬프트/모델 설정)
 type AiMeta implements Node {
   id: ID
   uid: String!
   createdAt: BigInt!
   updatedAt: BigInt!
   metaType: String!
-
   name: String!
   desc: String!
   prompt: String!
   model: String!
   temperature: Float!
   maxTokens: Int!
-  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
-  inUse: Boolean! # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
+  size: String!
+  inUse: Boolean!
 }
 
 input AiMetaInput {
-  uid: String # optional
+  uid: String
   name: String!
   desc: String!
   prompt: String!
-  metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
+  metaType: String
   model: String!
   temperature: Float!
   maxTokens: Int!
-  size: String! # 1024x1024, 2048x2048, 4096x4096 // 이미지 사이즈
+  size: String!
 }
 
 input AiMetaSearchInput {
   limit: Int!
   offset: Int!
-  metaType: String # Saju, FaceFeature, Phy, IdealPartnerImage
-  inUse: Boolean # 사용 중인지 여부 (true: 사용 중, false: 사용 중이지 않음)
-}
-
-# AI Excution
-type AiExecution implements Node {
-  id: ID
-  uid: String!
-  createdAt: BigInt!
-  updatedAt: BigInt!
-  metaUid: String!
-  metaType: String!
-  status: String!
-  errorMessage: String!
-  # real Request
-  prompt: String!
-  valued_prompt: String!
-  inputkvs: [KV!]!
-  outputkvs: [KV!]!
-  model: String!
-  temperature: Float!
-  maxTokens: Int!
-  size: String!
-  inputImageBase64: String
-  # result
-  elapsedTime: Int!
-  outputText: String
-  outputImageBase64: String # if exists return base64 encoded image
-  # usage
-  inputTokens: Int!
-  outputTokens: Int!
-  totalTokens: Int!
-  #
-  runBy: String # admin, system
-  runSajuProfileUid: String # saju profile uid
-}
-
-input AiExcutionInput {
-  metaUid: String!
-  metaType: String!
-  promptType: String! # text, vision, image
-  prompt: String! # 프롬프트
-  valued_prompt: String! # params가 적용된 프롬프트
-  inputkvs: [KVInput!]! # 입력값들
-  outputkvs: [KVInput!]! # 출력값들
-  model: String!
-  temperature: Float!
-  maxTokens: Int!
-  size: String!
-
-  inputImageBase64: String
-}
-
-input AiExecutionSearchInput {
-  limit: Int!
-  offset: Int!
   metaType: String
-  metaUid: String
-  runBy: String # admin, system
-  runSajuProfileUid: String # saju profile uid
+  inUse: Boolean
 }
 
-#
 input AiMetaKVsInput {
-  type: String! # Meta type
-  kvs: [KVInput!]! # 메타에 따른 입력값들 - 사전정의됨
+  type: String!
+  kvs: [KVInput!]!
 }
 
 type AiMetaType implements Node {
@@ -1883,7 +4673,228 @@ type AiMetaType implements Node {
   hasOutputImage: Boolean!
 }
 
-# ! Local Log
+# AI 실행 이력
+type AiExecution implements Node {
+  id: ID
+  uid: String!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+  metaUid: String!
+  metaType: String!
+  status: String!
+  errorMessage: String!
+  prompt: String!
+  valued_prompt: String!
+  inputkvs: [KV!]!
+  outputkvs: [KV!]!
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String!
+  inputImageBase64: String
+  elapsedTime: Int!
+  outputText: String
+  outputImageBase64: String
+  inputTokens: Int!
+  outputTokens: Int!
+  totalTokens: Int!
+  runBy: String
+  runSajuProfileUid: String
+}
+
+input AiExcutionInput {
+  metaUid: String!
+  metaType: String!
+  promptType: String!
+  prompt: String!
+  valued_prompt: String!
+  inputkvs: [KVInput!]!
+  outputkvs: [KVInput!]!
+  model: String!
+  temperature: Float!
+  maxTokens: Int!
+  size: String!
+  inputImageBase64: String
+}
+
+input AiExecutionSearchInput {
+  limit: Int!
+  offset: Int!
+  metaType: String
+  metaUid: String
+  runBy: String
+  runSajuProfileUid: String
+}
+
+# ItemNCard (사주/궁합 카드)
+type ItemNCard implements Node {
+  id: ID
+  uid: String!
+  cardId: String!
+  version: Int!
+  status: String!
+  ruleSet: String!
+  scope: String!
+  title: String!
+  category: String!
+  tags: [String!]!
+  domains: [String!]!
+  priority: Int!
+  triggerJson: String!
+  scoreJson: String!
+  contentJson: String!
+  cooldownGroup: String!
+  maxPerUser: Int!
+  debugJson: String!
+  deletedAt: BigInt!
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+input ItemNCardSearchInput {
+  limit: Int!
+  offset: Int!
+  scope: String
+  status: String
+  category: String
+  tags: [String!]
+  ruleSet: String
+  domain: String
+  cooldownGroup: String
+  orderBy: String
+  orderDirection: String
+  includeDeleted: Boolean
+}
+
+input ItemNCardInput {
+  cardId: String!
+  version: Int!
+  status: String!
+  ruleSet: String!
+  scope: String!
+  title: String!
+  category: String!
+  tags: [String!]!
+  domains: [String!]!
+  priority: Int!
+  triggerJson: String!
+  scoreJson: String!
+  contentJson: String!
+  cooldownGroup: String!
+  maxPerUser: Int!
+  debugJson: String!
+}
+
+# ----- SajuAssemble: 명식/차트·토큰·카드 (GraphQL_Extract_Design.md) -----
+
+# 사주 차트 四柱 (년·월·일·시)
+type SajuChartPillars {
+  y: String!
+  m: String!
+  d: String!
+  h: String!
+}
+
+# 사주 차트 출처(기준일·모드·대운 등) 메타
+type SajuPillarSource {
+  baseDate: String!
+  baseTimeUsed: String!
+  mode: String!
+  period: String!
+  description: String!
+}
+
+# 단일 명식 차트: pillars 필수, 나머지 옵션 (items/tokens는 includeTokens 등으로 제어)
+type SajuChart implements Node {
+  id: ID
+  pillars: SajuChartPillars!
+  dm: String
+  itemsSummary: String
+  items: [String!]
+  ruleSet: String
+  engineVersion: String
+  mode: String
+  period: String
+  pillarSource: SajuPillarSource
+  tokens: [String!]
+}
+
+# 궁합 쌍 차트: A/B 차트 + P토큰
+type SajuPairChart implements Node {
+  id: ID
+  chartA: SajuChart!
+  chartB: SajuChart!
+  pTokens: [String!]!
+  pItemsSummary: String
+  pItems: [String!]
+  ruleSet: String
+  engineVersion: String
+}
+
+# 토큰 매칭으로 선별된 카드 한 건 (itemnCardsByTokens / pairCardsByTokens 공통)
+type SelectedItemnCard implements Node {
+  id: ID
+  cardId: String!
+  title: String!
+  evidence: [String!]!
+  score: Int!
+  contentSummary: String
+}
+
+# sendLLMRequest 응답 (node 또는 value/kvs로 전달)
+type LLMRequestResult implements Node {
+  id: ID
+  responseText: String
+  inputTokens: Int
+  outputTokens: Int
+  totalTokens: Int
+  errorMessage: String
+}
+
+input SajuChartInput {
+  birth: SajuBirthInput!
+  timezone: String
+  calendar: String
+  mode: String!
+  targetYear: Int
+  targetMonth: Int
+  targetDay: Int
+  targetDaesoonIndex: Int
+  gender: String
+  includeTokens: Boolean
+}
+
+input SajuPairChartInput {
+  birthA: SajuBirthInput!
+  birthB: SajuBirthInput!
+  timezone: String
+  calendar: String
+  includeTokens: Boolean
+}
+
+input ItemnCardsByTokensInput {
+  tokens: [String!]!
+  limit: Int
+  ruleSet: String
+}
+
+input PairCardsByTokensInput {
+  tokensA: [String!]!
+  tokensB: [String!]!
+  pTokens: [String!]!
+  limit: Int
+  ruleSet: String
+}
+
+input SendLLMRequestInput {
+  prompt: String!
+  systemPrompt: String
+  maxTokens: Int
+  model: String
+  temperature: Float
+}
+
+# ----- 로컬 로그 -----
 type LocalLog implements Node {
   id: ID
   uid: String!
@@ -1898,13 +4909,556 @@ input LocalLogSearchInput {
   status: String
 }
 
-# ! System Stats
+# 시스템 상태
 type SystemStats implements Node {
   id: ID
   hostname: String!
-  cpuUsage: Float! # 0.0 ~ 100.00
-  memoryUsage: Int! # bytes
-  memoryTotal: Int! # bytes
+  cpuUsage: Float!
+  memoryUsage: Int!
+  memoryTotal: Int!
+}
+
+# 사주 생성: 사용자 정보 + 출력 대상 → 결과 포함 대상 목록
+input SajuBirthInput {
+  date: String!
+  time: String!
+  time_precision: String
+}
+input SajuGenerationUserInput {
+  birth: SajuBirthInput!
+  timezone: String
+  rule_set: String
+  gender: String
+}
+input SajuGenerationTargetInput {
+  kind: String!
+  period: String!
+  max_chars: Int!
+}
+type SajuGenerationTargetOutput {
+  kind: String!
+  period: String!
+  max_chars: Int!
+  result: String!
+}
+input SajuGenerationRequest {
+  user_input: SajuGenerationUserInput!
+  targets: [SajuGenerationTargetInput!]!
+}
+type SajuGenerationResponse {
+  targets: [SajuGenerationTargetOutput!]!
+}
+
+# 궁합(캐미) 생성: 쌍 입력 + 대상 → 결과 포함 대상 목록
+input ChemiGenerationPairInput {
+  birthA: SajuBirthInput!
+  birthB: SajuBirthInput!
+  timezone: String
+}
+input ChemiGenerationTargetInput {
+  perspective: String!
+  max_chars: Int!
+}
+type ChemiGenerationTargetOutput {
+  perspective: String!
+  max_chars: Int!
+  result: String!
+}
+input ChemiGenerationRequest {
+  pair_input: ChemiGenerationPairInput!
+  targets: [ChemiGenerationTargetInput!]!
+}
+type ChemiGenerationResponse {
+  targets: [ChemiGenerationTargetOutput!]!
+}
+`, BuiltIn: false},
+	{Name: "../extracted_sajupair.graphql", Input: `# extracted_sajupair.graphql
+# extract_saju.go + extract_pair.go 기반 추출 전용 타입 스키마
+
+# 유연한 값 / 키-값 맵 (규칙·엔진 파라미터 등)
+scalar Any
+scalar Map
+
+# 사주 기둥 식별: 년·월·일·시
+enum ExtractPillarKey {
+  Y   # 년주
+  M   # 월주
+  D   # 일주
+  H   # 시주
+}
+
+# 노드 종류: 천간/지지/숨은천간
+enum ExtractNodeKind {
+  STEM    # 천간
+  BRANCH  # 지지
+  HIDDEN  # 숨은천간
+}
+
+# 오행: 목·화·토·금·수
+enum ExtractFiveEl {
+  WOOD   # 목
+  FIRE   # 화
+  EARTH  # 토
+  METAL  # 금
+  WATER  # 수
+}
+
+# 음양
+enum ExtractYinYang {
+  YIN   # 음
+  YANG  # 양
+}
+
+# 십신: 비견·겁재·식신·상관·편재·정재·편관·정관·편인·정인
+enum ExtractTenGod {
+  BIGYEON   # 비견
+  GEOBJAE   # 겁재
+  SIKSHIN   # 식신
+  SANGGWAN  # 상관
+  PYEONJAE  # 편재
+  JEONGJAE  # 정재
+  PYEONGWAN # 편관
+  JEONGGWAN # 정관
+  PYEONIN   # 편인
+  JEONGIN   # 정인
+}
+
+# 십이운성: 장생·목욕·관대·건록·제왕·쇠·병·사·묘·절·태·양
+enum ExtractTwelveFate {
+  JANGSAENG # 장생
+  MOKYOK   # 목욕
+  GWANDAE  # 관대
+  GEONROK  # 건록
+  JEWANG   # 제왕
+  SWOE     # 쇠
+  BYEONG   # 병
+  SA       # 사
+  MYO      # 묘
+  JEOL     # 절
+  TAE      # 태
+  YANG     # 양
+}
+
+# 시주 정밀도: 분 단위 / 시 단위 / 미상
+enum ExtractTimePrecision {
+  MINUTE  # 분 단위
+  HOUR    # 시 단위
+  UNKNOWN # 미상
+}
+
+# 시주 상태: 확정 / 미입력 / 추정
+enum ExtractHourPillarStatus {
+  KNOWN     # 확정
+  MISSING   # 미입력
+  ESTIMATED # 추정
+}
+
+# 궁합 평가 유형: 조화·충돌·보완·역할·시기·종합
+enum ExtractPairEvalKind {
+  HARMONY    # 조화
+  CONFLICT   # 충돌
+  COMPLEMENT # 보완
+  ROLE_FIT   # 역할
+  TIMING     # 시기
+  OVERALL    # 종합
+}
+
+# 위경도 (출생지)
+type ExtractGeo {
+  lat: Float!   # 위도
+  lon: Float!   # 경도
+}
+input ExtractGeoInput {
+  lat: Float!   # 위도
+  lon: Float!   # 경도
+}
+
+# 계산 엔진 정보 (이름·버전·시스템·파라미터)
+type ExtractEngine {
+  name: String!   # 엔진 이름
+  ver: String!    # 버전
+  sys: String     # 시스템 식별(옵션)
+  params: Map     # 엔진 파라미터 맵
+}
+input ExtractEngineInput {
+  name: String!   # 엔진 이름
+  ver: String!    # 버전
+  sys: String     # 시스템 식별(옵션)
+  params: Map     # 엔진 파라미터 맵
+}
+
+# 출생 입력: 현지 시각·타임존·위치·역법·성별·시주정밀도·엔진
+input ExtractSajuInput {
+  dtLocal: String!   # 현지 출생일시 문자열
+  tz: String!        # 타임존(예: Asia/Seoul)
+  loc: ExtractGeoInput   # 출생지 위경도(옵션)
+  calendar: String   # 역법(음력/양력 등)
+  leapMonth: Boolean # 윤달 여부
+  sex: String        # 성별
+  timePrec: ExtractTimePrecision   # 시주 정밀도(분/시/미상)
+  engine: ExtractEngineInput!   # 사용 계산 엔진
+  solarDt: String    # 양력 변환일시(옵션)
+  adjustedDt: String # 보정된 일시(옵션)
+  fortuneBaseDt: String # 운세 계산 기준일시(옵션; 없으면 dtLocal)
+  seunFromYear: Int # 세운 목록 시작 연도(옵션)
+  seunToYear: Int   # 세운 목록 종료 연도(옵션)
+  wolunYear: Int    # 월운 목록 대상 연도(옵션)
+  ilunYear: Int     # 일운 목록 대상 연도(옵션)
+  ilunMonth: Int    # 일운 목록 대상 월(옵션, 1..12)
+}
+
+# 출생 입력 표시용 타입 (리턴 데이터)
+type ExtractSajuInputDisplay {
+  dtLocal: String!   # 현지 출생일시
+  tz: String!       # 타임존
+  loc: ExtractGeo   # 출생지 위경도
+  calendar: String  # 역법
+  leapMonth: Boolean  # 윤달 여부
+  sex: String       # 성별
+  timePrec: ExtractTimePrecision  # 시주 정밀도
+  engine: ExtractEngine!   # 계산 엔진(표시용)
+  solarDt: String   # 양력일시
+  adjustedDt: String  # 보정일시
+  fortuneBaseDt: String # 운세 계산 기준일시(옵션)
+  seunFromYear: Int # 세운 목록 시작 연도(옵션)
+  seunToYear: Int   # 세운 목록 종료 연도(옵션)
+  wolunYear: Int    # 월운 목록 대상 연도(옵션)
+  ilunYear: Int     # 일운 목록 대상 연도(옵션)
+  ilunMonth: Int    # 일운 목록 대상 월(옵션)
+}
+
+# 한 기둥: 천간·지지·숨은천간·나음·궁망
+type ExtractPillar {
+  k: ExtractPillarKey!   # 기둥 식별(년/월/일/시)
+  stem: Int!             # 천간 인덱스(0~9)
+  branch: Int!           # 지지 인덱스(0~11)
+  hidden: [Int!]         # 숨은천간 인덱스 목록
+  naEum: String          # 나음(納音) 표기
+  gongMang: [Int!]       # 궁(宮) 망(亡) 인덱스
+}
+
+# 사주 그래프 노드 (천간/지지/오행/십신/십이운성/강도)
+type ExtractSajuNode {
+  id: Int!                # 노드 고유 ID
+  kind: ExtractNodeKind!  # 노드 종류(천간/지지/숨은천간)
+  pillar: ExtractPillarKey!  # 소속 기둥(년/월/일/시)
+  idx: Int                # 기둥 내 인덱스
+  stem: Int               # 천간 인덱스(지지 노드일 때)
+  branch: Int             # 지지 인덱스(천간 노드일 때)
+  el: ExtractFiveEl!      # 오행(목/화/토/금/수)
+  yy: ExtractYinYang!     # 음양
+  tenGod: ExtractTenGod   # 십신
+  twelve: ExtractTwelveFate   # 십이운성
+  strength: Float         # 강도(세기)
+}
+
+# 사주 그래프 엣지 (노드 간 관계·오행 결과·활성 여부)
+type ExtractSajuEdge {
+  id: Int!            # 엣지 고유 ID
+  t: String!          # 관계 타입(예: 합/충/형 등)
+  a: Int!             # 출발 노드 ID
+  b: Int!             # 도착 노드 ID
+  w: Float            # 가중치
+  refs: [Int!]        # 참조 노드 ID 목록
+  result: ExtractFiveEl   # 합/충 등 결과 오행
+  active: Boolean     # 활성 여부
+}
+
+# 증거 규칙 입력 (노드 ID 목록·파라미터)
+type ExtractEvidenceInputs {
+  nodes: [Int!]!   # 규칙에 사용된 노드 ID 목록
+  params: Map      # 규칙 파라미터(옵션)
+}
+
+# 단일 사주 규칙 증거 (ruleId·ruleVer·inputs·notes)
+type ExtractEvidence {
+  ruleId: String!   # 규칙 ID
+  ruleVer: String!  # 규칙 버전
+  sys: String       # 시스템 식별(옵션)
+  inputs: ExtractEvidenceInputs!   # 규칙 입력(노드·params)
+  notes: String     # 비고
+}
+
+# 점수 구성요소 (라벨·가중치·원점수·참조·비고)
+type ExtractScorePart {
+  label: String!   # 구성요소 라벨
+  w: Float!        # 가중치
+  raw: Float!      # 원점수
+  refs: [Int!]     # 참조 노드 ID
+  note: String     # 비고
+}
+
+# 총점·범위·0–100 정규화·신뢰도·parts
+type ExtractScore {
+  total: Float!        # 총점
+  min: Float!          # 최소값(범위)
+  max: Float!          # 최대값(범위)
+  norm0_100: Int!      # 0~100 정규화 점수
+  confidence: Float!   # 신뢰도
+  parts: [ExtractScorePart!]   # 점수 구성요소 목록
+}
+
+# 사실 항목 (id·키·이름·값·참조·증거·선택 점수)
+type ExtractFactItem {
+  id: String!           # 항목 ID
+  k: String!            # 키(분류/타입)
+  n: String!            # 표시 이름
+  v: Any                # 값(유연 타입)
+  refs: [Int!]!         # 참조 노드 ID 목록
+  evidence: ExtractEvidence!   # 규칙 증거
+  score: ExtractScore   # 점수(옵션)
+}
+
+# 평가 항목 (필수 score)
+type ExtractEvalItem {
+  id: String!           # 항목 ID
+  k: String!            # 키(분류)
+  n: String!            # 표시 이름
+  v: Any                # 값
+  refs: [Int!]!         # 참조 노드 ID
+  evidence: ExtractEvidence!   # 규칙 증거
+  score: ExtractScore!  # 점수(필수)
+}
+
+# 운 구간 (대운/세운/월운/일운 공통 메타)
+type ExtractDaeunPeriod {
+  type: String!      # 운 종류(DAEUN/SEUN/WOLUN/ILUN)
+  order: Int!      # 순서(몇 번째 대운)
+  stem: Int!       # 대운 천간 인덱스
+  branch: Int!     # 대운 지지 인덱스
+  stemKo: String   # 천간 한글(예: 갑)
+  stemHanja: String # 천간 한자(예: 甲)
+  branchKo: String  # 지지 한글(예: 자)
+  branchHanja: String # 지지 한자(예: 子)
+  ganjiKo: String    # 간지 한글(예: 갑자)
+  ganjiHanja: String # 간지 한자(예: 甲子)
+  stemEl: ExtractFiveEl # 천간 오행
+  stemYy: ExtractYinYang # 천간 음양
+  stemTenGod: ExtractTenGod # 천간 십성(일간 기준)
+  branchEl: ExtractFiveEl # 지지 오행
+  branchYy: ExtractYinYang # 지지 음양
+  branchTenGod: ExtractTenGod # 지지 십성(일간 기준)
+  branchTwelve: ExtractTwelveFate # 지지 십이운성(일간 기준)
+  ageFrom: Int!    # 적용 나이 시작
+  ageTo: Int!      # 적용 나이 끝
+  startYear: Int!  # 시작 연도
+  year: Int!       # 기준 연도(세운/월운/일운)
+  month: Int!      # 기준 월(월운/일운)
+  day: Int!        # 기준 일(일운)
+}
+
+# 오행 분포 (목·화·토·금·수 비율)
+type ExtractElDistribution {
+  wood: Float!   # 목(木) 비율
+  fire: Float!   # 화(火) 비율
+  earth: Float!  # 토(土) 비율
+  metal: Float!  # 금(金) 비율
+  water: Float!  # 수(水) 비율
+}
+
+# 시주 후보 (순서·기둥·시간대·가중치·추가 노드/엣지/팩트/평가)
+type ExtractHourCandidate {
+  order: Int!           # 후보 순서
+  pillar: ExtractPillar!   # 시주 기둥(천간·지지 등)
+  timeWindow: String    # 해당 시간대 표기
+  weight: Float         # 가중치(선호도)
+  addedNodes: [Int!]    # 이 후보로 추가되는 노드 ID
+  addedEdges: [Int!]    # 추가되는 엣지 ID
+  addedFacts: [String!] # 추가되는 사실 ID
+  addedEvals: [String!] # 추가되는 평가 ID
+}
+
+# 시주 컨텍스트: 상태·고정 노드/엣지/팩트/평가·후보 목록
+type ExtractHourContext {
+  status: ExtractHourPillarStatus!   # 시주 상태(확정/미입력/추정)
+  missingReason: String  # 미입력일 때 사유
+  stableNodes: [Int!]    # 시주와 무관하게 고정된 노드 ID
+  stableEdges: [Int!]    # 고정된 엣지 ID
+  stableFacts: [String!] # 고정된 사실 ID
+  stableEvals: [String!] # 고정된 평가 ID
+  candidates: [ExtractHourCandidate!]   # 시주 후보 목록
+}
+
+# 단일 사주 추출 문서 (입력·기둥·노드·엣지·팩트·평가·일간·대운·오행·시주)
+type ExtractSajuDoc implements Node {
+  id: ID                  # 문서 ID(Node 인터페이스)
+  schemaVer: String!      # 스키마 버전
+  input: ExtractSajuInputDisplay!   # 출생 입력(표시용)
+  pillars: [ExtractPillar!]!   # 년/월/일/시 4기둥
+  nodes: [ExtractSajuNode!]!   # 사주 그래프 노드 목록
+  edges: [ExtractSajuEdge!]    # 노드 간 엣지
+  facts: [ExtractFactItem!]!   # 파생 사실(팩트) 목록
+  evals: [ExtractEvalItem!]!   # 평가 항목 목록
+  dayMaster: Int!         # 일간(일주) 천간 인덱스
+  daeun: ExtractDaeunPeriod      # 기준 시점 대운
+  seun: ExtractDaeunPeriod       # 기준 시점 세운
+  wolun: ExtractDaeunPeriod      # 기준 시점 월운
+  ilun: ExtractDaeunPeriod       # 기준 시점 일운
+  daeunList: [ExtractDaeunPeriod!]   # 대운 구간 목록
+  seunList: [ExtractDaeunPeriod!]    # 세운 범위 목록(요청 시)
+  wolunList: [ExtractDaeunPeriod!]   # 월운 범위 목록(요청 시)
+  ilunList: [ExtractDaeunPeriod!]    # 일운 범위 목록(요청 시)
+  elBalance: ExtractElDistribution   # 오행 분포
+  hourCtx: ExtractHourContext   # 시주 컨텍스트(미입력/추정 시)
+}
+
+# 궁합 입력: A/B 출생 입력·엔진·규칙셋
+input ExtractPairInput {
+  a: ExtractSajuInput!   # A측 출생 입력
+  b: ExtractSajuInput!   # B측 출생 입력
+  engine: ExtractEngineInput!   # 계산 엔진
+  ruleSet: String        # 규칙셋 식별(옵션)
+}
+
+# 궁합 입력 표시용 타입 (리턴 데이터)
+type ExtractPairInputDisplay {
+  a: ExtractSajuInputDisplay!   # A측 입력(표시용)
+  b: ExtractSajuInputDisplay!   # B측 입력(표시용)
+  engine: ExtractEngine!   # 엔진(표시용)
+  ruleSet: String         # 규칙셋
+}
+
+# A/B 사주 문서 쌍
+type ExtractPairCharts {
+  a: ExtractSajuDoc   # A측 사주 추출 문서
+  b: ExtractSajuDoc   # B측 사주 추출 문서
+}
+
+# 궁합 규칙 증거 입력 (A/B 노드 ID·파라미터)
+type ExtractPairEvidenceInputs {
+  nodesA: [Int!]!   # A측 노드 ID 목록
+  nodesB: [Int!]!   # B측 노드 ID 목록
+  params: Map       # 규칙 파라미터(옵션)
+}
+
+# 궁합 규칙 증거
+type ExtractPairEvidence {
+  ruleId: String!   # 규칙 ID
+  ruleVer: String!  # 규칙 버전
+  sys: String       # 시스템 식별(옵션)
+  inputs: ExtractPairEvidenceInputs!   # A/B 노드·params
+  notes: String     # 비고
+}
+
+# 궁합 엣지 (A/B 노드 참조·증거)
+type ExtractPairEdge {
+  id: Int!            # 엣지 고유 ID
+  t: String!          # 관계 타입
+  a: Int!             # A측 노드 ID
+  b: Int!             # B측 노드 ID
+  w: Float            # 가중치
+  refsA: [Int!]       # A측 참조 노드 ID
+  refsB: [Int!]       # B측 참조 노드 ID
+  result: ExtractFiveEl   # 결과 오행
+  active: Boolean     # 활성 여부
+  evidence: ExtractPairEvidence   # 규칙 증거(옵션)
+}
+
+# 궁합 점수 구성요소 (refsA/refsB)
+type ExtractPairScorePart {
+  label: String!   # 구성요소 라벨
+  w: Float!        # 가중치
+  raw: Float!      # 원점수
+  refsA: [Int!]    # A측 참조 노드 ID
+  refsB: [Int!]    # B측 참조 노드 ID
+  note: String     # 비고
+}
+
+# 궁합 총점·범위·정규화·신뢰도·parts
+type ExtractPairScore {
+  total: Float!        # 총점
+  min: Float!          # 최소값(범위)
+  max: Float!          # 최대값(범위)
+  norm0_100: Int!      # 0~100 정규화 점수
+  confidence: Float!   # 신뢰도
+  parts: [ExtractPairScorePart!]   # 궁합 점수 구성요소
+}
+
+# 궁합 사실 항목 (refsA/refsB)
+type ExtractPairFactItem {
+  id: String!           # 항목 ID
+  k: String!            # 키(분류)
+  n: String!            # 표시 이름
+  v: Any                # 값
+  refsA: [Int!]!        # A측 참조 노드 ID
+  refsB: [Int!]!        # B측 참조 노드 ID
+  evidence: ExtractPairEvidence!   # 규칙 증거
+  score: ExtractPairScore   # 점수(옵션)
+}
+
+# 궁합 평가 항목 (k: ExtractPairEvalKind)
+type ExtractPairEvalItem {
+  id: String!             # 항목 ID
+  k: ExtractPairEvalKind!  # 평가 유형(조화/충돌/보완/역할/시기/종합)
+  n: String!              # 표시 이름
+  v: Any                  # 값
+  refsA: [Int!]!          # A측 참조 노드 ID
+  refsB: [Int!]!          # B측 참조 노드 ID
+  evidence: ExtractPairEvidence!   # 규칙 증거
+  score: ExtractPairScore!   # 점수(필수)
+}
+
+# 궁합 지표: 조화·충돌·순·오행보완·용신지지·역할·압박·신뢰도·감수성·시기
+type ExtractPairMetrics {
+  harmonyIndex: Float      # 조화 지수
+  conflictIndex: Float     # 충돌 지수
+  netIndex: Float          # 순(淨) 지수(조화−충돌 등)
+  elementComplement: Float # 오행 보완도
+  usefulGodSupport: Float  # 용신 지지도
+  roleFit: Float           # 역할 적합도
+  pressureRisk: Float      # 압박/리스크
+  confidence: Float        # 신뢰도
+  sensitivity: Float       # 감수성
+  timingAlignment: Float   # 시기 정렬/궁합
+}
+
+# 한쪽 시주 선택 (상태·후보순서·기둥·시간대·가중치)
+type ExtractPairHourChoice {
+  status: ExtractHourPillarStatus!   # 시주 상태(확정/미입력/추정)
+  candidateOrder: Int   # 선택된 후보 순서(옵션)
+  pillar: ExtractPillar   # 선택된 시주 기둥(옵션)
+  timeWindow: String   # 시간대 표기(옵션)
+  weight: Float        # 가중치(옵션)
+}
+
+# 궁합 시주 후보 (A/B 선택·추가 엣지/팩트/평가·메트릭 델타·점수)
+type ExtractPairHourCandidate {
+  order: Int!              # 후보 순서
+  a: ExtractPairHourChoice!   # A측 시주 선택
+  b: ExtractPairHourChoice!   # B측 시주 선택
+  weight: Float            # 조합 가중치
+  addedEdges: [Int!]       # 이 조합으로 추가되는 엣지 ID
+  addedFacts: [String!]    # 추가되는 사실 ID
+  addedEvals: [String!]    # 추가되는 평가 ID
+  metricsDelta: ExtractPairMetrics   # 메트릭 변화량(옵션)
+  overallScore: ExtractPairScore     # 종합 점수(옵션)
+  note: String             # 비고
+}
+
+# 궁합 시주 컨텍스트: A/B 상태·고정 데이터·후보 목록
+type ExtractPairHourContext {
+  statusA: ExtractHourPillarStatus!   # A측 시주 상태
+  statusB: ExtractHourPillarStatus!   # B측 시주 상태
+  missingReasonA: String   # A측 미입력 사유(옵션)
+  missingReasonB: String   # B측 미입력 사유(옵션)
+  stableEdges: [Int!]      # 시주와 무관하게 고정된 엣지 ID
+  stableFacts: [String!]   # 고정된 사실 ID
+  stableEvals: [String!]   # 고정된 평가 ID
+  candidates: [ExtractPairHourCandidate!]   # A·B 시주 조합 후보 목록
+}
+
+# 궁합 추출 문서 (입력·차트·엣지·메트릭·팩트·평가·시주·생성시각)
+type ExtractPairDoc implements Node {
+  id: ID                    # 문서 ID(Node 인터페이스)
+  schemaVer: String!        # 스키마 버전
+  input: ExtractPairInputDisplay!   # 궁합 입력(표시용)
+  charts: ExtractPairCharts # A/B 사주 문서 쌍
+  edges: [ExtractPairEdge!] # 궁합 엣지 목록
+  metrics: ExtractPairMetrics   # 궁합 지표
+  facts: [ExtractPairFactItem!]  # 궁합 사실 목록
+  evals: [ExtractPairEvalItem!]!   # 궁합 평가 목록
+  hourCtx: ExtractPairHourContext   # 궁합 시주 컨텍스트(미입력/추정 시)
+  createdAt: String         # 생성 시각(ISO 등)
 }
 `, BuiltIn: false},
 }

@@ -292,7 +292,7 @@ func buildImagePrompt(userData *PhyAnalysisResponse, partnerSex string) string {
 	return fmt.Sprintf(GetPrompt(promptType),
 		partnerSex, pronouns, userData.Sex, userData.Age,
 		prefs.Eyes.ToString(), prefs.Nose.ToString(), prefs.Mouth.ToString(), prefs.FaceShape,
-		fmt.Sprintf("%d", partnerAge))
+		partnerAge.String())
 }
 
 // GenerateIdealPartnerImage generates an image of the ideal partner based on physiognomy analysis

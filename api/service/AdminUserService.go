@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"sajudating_api/api/admgql/model"
+	"sajudating_api/api/converter"
 	"sajudating_api/api/dao"
 	"sajudating_api/api/dao/entity"
 	"sajudating_api/api/utils"
@@ -298,6 +299,28 @@ func (s *AdminUserService) UpdateAdminUser(ctx context.Context, uid string, emai
 	return &model.SimpleResult{
 		Ok:  true,
 		Msg: utils.StrPtr("User updated successfully"),
+	}, nil
+}
+
+// GetAdminUsers returns all admin users as SimpleResult with nodes and total.
+func (s *AdminUserService) GetAdminUsers(ctx context.Context) (*model.SimpleResult, error) {
+	users, err := s.adminUserRepo.FindAll()
+	if err != nil {
+		return &model.SimpleResult{
+			Ok:  false,
+			Err: utils.StrPtr(fmt.Sprintf("Failed to list admin users: %v", err)),
+		}, nil
+	}
+	nodes := make([]model.Node, len(users))
+	for i := range users {
+		nodes[i] = converter.AdminUserToModel(users[i])
+	}
+	return &model.SimpleResult{
+		Ok:     true,
+		Nodes:  nodes,
+		Total:  utils.IntPtr(len(users)),
+		Limit:  utils.IntPtr(len(users)),
+		Offset: utils.IntPtr(0),
 	}, nil
 }
 

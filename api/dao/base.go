@@ -90,6 +90,7 @@ func createIndexes() error {
 		"admin_users",
 		"admin_user_logs",
 		"local_logs",
+		"itemn_cards",
 	}
 
 	// Create unique index on uid field for all collections
@@ -115,6 +116,43 @@ func createIndexes() error {
 		log.Printf("Successfully ensured email unique index for admin_users")
 	}
 
+	// itemn_cards: unique (card_id, scope) and list filter indexes
+	if err := createItemNCardIndexes(ctx); err != nil {
+		log.Printf("Warning: Failed to create itemn_cards indexes: %v", err)
+	} else {
+		log.Printf("Successfully ensured itemn_cards indexes")
+	}
+
+	return nil
+}
+
+func createItemNCardIndexes(ctx context.Context) error {
+	collection := database.Collection("itemn_cards")
+	// Unique on (card_id, scope) so same card_id can exist for saju and pair
+	_, err := collection.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys:    bson.D{{Key: "card_id", Value: 1}, {Key: "scope", Value: 1}},
+		Options: options.Index().SetUnique(true).SetName("card_id_scope_unique"),
+	})
+	if err != nil && !mongo.IsDuplicateKeyError(err) && !isIndexExistsError(err) {
+		return err
+	}
+	// List filters
+	for _, key := range []string{"scope", "status", "category", "priority"} {
+		_, err = collection.Indexes().CreateOne(ctx, mongo.IndexModel{
+			Keys: bson.D{{Key: key, Value: 1}},
+			Options: options.Index().SetName("idx_" + key),
+		})
+		if err != nil && !isIndexExistsError(err) {
+			return err
+		}
+	}
+	_, err = collection.Indexes().CreateOne(ctx, mongo.IndexModel{
+		Keys: bson.D{{Key: "tags", Value: 1}},
+		Options: options.Index().SetName("idx_tags"),
+	})
+	if err != nil && !isIndexExistsError(err) {
+		return err
+	}
 	return nil
 }
 

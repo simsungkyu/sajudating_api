@@ -1,3 +1,4 @@
+// Package config loads app config from .env and exposes AppConfig plus helpers (e.g. IsDev).
 package config
 
 import (
@@ -15,6 +16,7 @@ type Config struct {
 }
 
 type ServerConfig struct {
+	Env      string // dev, staging, prod
 	Port     string
 	LocalMCP bool
 }
@@ -44,6 +46,7 @@ func LoadConfig() error {
 
 	AppConfig = &Config{
 		Server: ServerConfig{
+			Env:      getEnv("ENV", "dev"),
 			Port:     getEnv("SERVER_PORT", "8080"),
 			LocalMCP: getEnvBool("LOCAL_MCP", false),
 		},
@@ -79,4 +82,12 @@ func getEnvBool(key string, defaultValue bool) bool {
 		return defaultValue
 	}
 	return v == "1" || v == "true" || v == "yes"
+}
+
+// IsDev returns true when ENV is dev (default).
+func IsDev() bool {
+	if AppConfig == nil {
+		return true
+	}
+	return AppConfig.Server.Env == "dev"
 }

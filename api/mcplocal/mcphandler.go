@@ -22,7 +22,7 @@ type helloArgs struct {
 	Name string `json:"name"`
 }
 
-// NewServer creates an MCP server with default implementation info and registers the sample "hello" tool.
+// NewServer creates an MCP server with default implementation info and registers hello + card register/update tools.
 func NewServer() *mcp.Server {
 	s := mcp.NewServer(&mcp.Implementation{
 		Name:    ServerName,
@@ -38,6 +38,41 @@ func NewServer() *mcp.Server {
 		}
 		return &mcp.CallToolResult{
 			Content: []mcp.Content{&mcp.TextContent{Text: "Hello, " + name + "!"}},
+		}, nil, nil
+	})
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "register_card",
+		Description: "Register a single data card (saju or pair). Accepts card_json: JSON string conforming to CardDataStructure (saju) or ChemiStructure (pair, src P|A|B). Required: card_id, scope, trigger, title. Returns ok and uid or error msg.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, args registerCardArgs) (*mcp.CallToolResult, any, error) {
+		ok, uid, msg := runRegisterCard(ctx, args.CardJSON)
+		text := formatToolResult(ok, uid, msg)
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{&mcp.TextContent{Text: text}},
+		}, nil, nil
+	})
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "update_card",
+		Description: "Update an existing data card by uid. Accepts uid and card_json (partial or full card JSON per CardDataStructure/ChemiStructure). Returns ok or error msg.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, args updateCardArgs) (*mcp.CallToolResult, any, error) {
+		ok, msg := runUpdateCard(ctx, args.UID, args.CardJSON)
+		text := formatToolResult(ok, "", msg)
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{&mcp.TextContent{Text: text}},
+		}, nil, nil
+	})
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "list_cards",
+		Description: "Query existing cards. Optional filters: scope (saju|pair), status, category, card_id (substring), limit (default 50, max 200). Returns list of card summaries: card_id, uid, scope, title, status.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, args listCardsArgs) (*mcp.CallToolResult, any, error) {
+		summaries, msg := runListCards(ctx, args.Scope, args.Status, args.Category, args.CardID, args.Limit)
+		if msg != "" {
+			return &mcp.CallToolResult{
+				Content: []mcp.Content{&mcp.TextContent{Text: formatToolResult(false, "", msg)}},
+			}, nil, nil
+		}
+		out, _ := json.Marshal(map[string]any{"ok": true, "cards": summaries})
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{&mcp.TextContent{Text: string(out)}},
 		}, nil, nil
 	})
 	return s

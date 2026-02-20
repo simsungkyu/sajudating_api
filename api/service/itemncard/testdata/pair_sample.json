@@ -1,0 +1,22 @@
+{
+  "card_id": "궁합_합_일지_v1",
+  "version": 1,
+  "status": "published",
+  "rule_set": "korean_standard_v1",
+  "scope": "pair",
+  "title": "A·B 일지 합",
+  "category": "궁합",
+  "tags": ["harmony", "bond"],
+  "domains": ["compatibility"],
+  "priority": 58,
+  "cooldown_group": "",
+  "max_per_user": 0,
+  "trigger": {
+    "all": [],
+    "any": [{ "src": "P", "token": "궁합:합@A.일지-B.일지" }],
+    "not": []
+  },
+  "score": { "base": 50, "bonus_if": [], "penalty_if": [] },
+  "content": { "summary": "일지 합 궁합.", "points": [], "questions": [], "guardrails": [] },
+  "debug": { "description": "test pair" }
+}

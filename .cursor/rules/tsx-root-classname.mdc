@@ -1,0 +1,58 @@
+---
+description: TSX 컴포넌트 최상위 엘리먼트에 컴포넌트 이름 className 부여 (개발 시 검색 용이)
+globs: admweb/**/*.tsx
+alwaysApply: false
+---
+
+# TSX 루트 엘리먼트 className
+
+컴포넌트에서 **가장 먼저 return하는 JSX 엘리먼트**에는 가능한 경우 해당 **컴포넌트 이름**을 `className`으로 넣어 둔다. 개발 시 DevTools/검색으로 해당 컴포넌트를 빠르게 찾을 수 있도록 하기 위함이다.
+
+## 규칙
+
+- **첫 번째로 반환되는 루트 엘리먼트**에 `className`으로 컴포넌트 이름 사용.
+- 컴포넌트 이름은 PascalCase 그대로 사용해도 되고, 기존 프로젝트에서 쓰는 kebab-case 등과 맞추어도 된다.
+- **중복 가능성**이 있거나 **다른 스타일/선택자와 충돌**할 수 있으면 `_`를 앞 또는 뒤에 붙인다 (예: `_DetailTableSection`, `DetailTableSection_`).
+
+## 예시
+
+```tsx
+// ✅ GOOD — 루트에 컴포넌트 이름
+function DetailTableSection({ data }: Props) {
+  return (
+    <section className="DetailTableSection">
+      ...
+    </section>
+  );
+}
+
+// ✅ GOOD — 충돌 우려 시 언더스코어
+function PillarTableSection() {
+  return (
+    <div className="_PillarTableSection">
+      ...
+    </div>
+  );
+}
+
+// ✅ GOOD — Fragment가 루트면 그 다음 첫 엘리먼트에 적용
+function Wrapper() {
+  return (
+    <>
+      <div className="Wrapper">...</div>
+    </>
+  );
+}
+
+// ❌ BAD — 루트 div에 식별용 className 없음
+function SomeCard() {
+  return (
+    <div>
+      <h2>Title</h2>
+      ...
+    </div>
+  );
+}
+```
+
+Fragment(`<>...</>`)만 return하는 경우에는, 실질적으로 DOM에 나가는 **첫 번째 엘리먼트**에 위 className을 붙이면 된다.

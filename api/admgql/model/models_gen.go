@@ -2,10 +2,30 @@
 
 package model
 
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type Node interface {
 	IsNode()
 	GetID() *string
 }
+
+type AdminUser struct {
+	ID        *string `json:"id,omitempty"`
+	UID       string  `json:"uid"`
+	CreatedAt int64   `json:"createdAt"`
+	UpdatedAt int64   `json:"updatedAt"`
+	Username  string  `json:"username"`
+	Email     string  `json:"email"`
+	IsActive  bool    `json:"isActive"`
+}
+
+func (AdminUser) IsNode()             {}
+func (this AdminUser) GetID() *string { return this.ID }
 
 type AiExcutionInput struct {
 	MetaUID          string     `json:"metaUid"`
@@ -117,6 +137,472 @@ type AiMetaType struct {
 func (AiMetaType) IsNode()             {}
 func (this AiMetaType) GetID() *string { return &this.ID }
 
+type ChemiGenerationPairInput struct {
+	BirthA   *SajuBirthInput `json:"birthA"`
+	BirthB   *SajuBirthInput `json:"birthB"`
+	Timezone *string         `json:"timezone,omitempty"`
+}
+
+type ChemiGenerationRequest struct {
+	PairInput *ChemiGenerationPairInput     `json:"pair_input"`
+	Targets   []*ChemiGenerationTargetInput `json:"targets"`
+}
+
+type ChemiGenerationResponse struct {
+	Targets []*ChemiGenerationTargetOutput `json:"targets"`
+}
+
+type ChemiGenerationTargetInput struct {
+	Perspective string `json:"perspective"`
+	MaxChars    int    `json:"max_chars"`
+}
+
+type ChemiGenerationTargetOutput struct {
+	Perspective string `json:"perspective"`
+	MaxChars    int    `json:"max_chars"`
+	Result      string `json:"result"`
+}
+
+type ExtractDaeunPeriod struct {
+	Type         string             `json:"type"`
+	Order        int                `json:"order"`
+	Stem         int                `json:"stem"`
+	Branch       int                `json:"branch"`
+	StemKo       *string            `json:"stemKo,omitempty"`
+	StemHanja    *string            `json:"stemHanja,omitempty"`
+	BranchKo     *string            `json:"branchKo,omitempty"`
+	BranchHanja  *string            `json:"branchHanja,omitempty"`
+	GanjiKo      *string            `json:"ganjiKo,omitempty"`
+	GanjiHanja   *string            `json:"ganjiHanja,omitempty"`
+	StemEl       *ExtractFiveEl     `json:"stemEl,omitempty"`
+	StemYy       *ExtractYinYang    `json:"stemYy,omitempty"`
+	StemTenGod   *ExtractTenGod     `json:"stemTenGod,omitempty"`
+	BranchEl     *ExtractFiveEl     `json:"branchEl,omitempty"`
+	BranchYy     *ExtractYinYang    `json:"branchYy,omitempty"`
+	BranchTenGod *ExtractTenGod     `json:"branchTenGod,omitempty"`
+	BranchTwelve *ExtractTwelveFate `json:"branchTwelve,omitempty"`
+	AgeFrom      int                `json:"ageFrom"`
+	AgeTo        int                `json:"ageTo"`
+	StartYear    int                `json:"startYear"`
+	Year         int                `json:"year"`
+	Month        int                `json:"month"`
+	Day          int                `json:"day"`
+}
+
+type ExtractElDistribution struct {
+	Wood  float64 `json:"wood"`
+	Fire  float64 `json:"fire"`
+	Earth float64 `json:"earth"`
+	Metal float64 `json:"metal"`
+	Water float64 `json:"water"`
+}
+
+type ExtractEngine struct {
+	Name   string         `json:"name"`
+	Ver    string         `json:"ver"`
+	Sys    *string        `json:"sys,omitempty"`
+	Params map[string]any `json:"params,omitempty"`
+}
+
+type ExtractEngineInput struct {
+	Name   string         `json:"name"`
+	Ver    string         `json:"ver"`
+	Sys    *string        `json:"sys,omitempty"`
+	Params map[string]any `json:"params,omitempty"`
+}
+
+type ExtractEvalItem struct {
+	ID       string           `json:"id"`
+	K        string           `json:"k"`
+	N        string           `json:"n"`
+	V        any              `json:"v,omitempty"`
+	Refs     []int            `json:"refs"`
+	Evidence *ExtractEvidence `json:"evidence"`
+	Score    *ExtractScore    `json:"score"`
+}
+
+type ExtractEvidence struct {
+	RuleID  string                 `json:"ruleId"`
+	RuleVer string                 `json:"ruleVer"`
+	Sys     *string                `json:"sys,omitempty"`
+	Inputs  *ExtractEvidenceInputs `json:"inputs"`
+	Notes   *string                `json:"notes,omitempty"`
+}
+
+type ExtractEvidenceInputs struct {
+	Nodes  []int          `json:"nodes"`
+	Params map[string]any `json:"params,omitempty"`
+}
+
+type ExtractFactItem struct {
+	ID       string           `json:"id"`
+	K        string           `json:"k"`
+	N        string           `json:"n"`
+	V        any              `json:"v,omitempty"`
+	Refs     []int            `json:"refs"`
+	Evidence *ExtractEvidence `json:"evidence"`
+	Score    *ExtractScore    `json:"score,omitempty"`
+}
+
+type ExtractGeo struct {
+	Lat float64 `json:"lat"`
+	Lon float64 `json:"lon"`
+}
+
+type ExtractGeoInput struct {
+	Lat float64 `json:"lat"`
+	Lon float64 `json:"lon"`
+}
+
+type ExtractHourCandidate struct {
+	Order      int            `json:"order"`
+	Pillar     *ExtractPillar `json:"pillar"`
+	TimeWindow *string        `json:"timeWindow,omitempty"`
+	Weight     *float64       `json:"weight,omitempty"`
+	AddedNodes []int          `json:"addedNodes,omitempty"`
+	AddedEdges []int          `json:"addedEdges,omitempty"`
+	AddedFacts []string       `json:"addedFacts,omitempty"`
+	AddedEvals []string       `json:"addedEvals,omitempty"`
+}
+
+type ExtractHourContext struct {
+	Status        ExtractHourPillarStatus `json:"status"`
+	MissingReason *string                 `json:"missingReason,omitempty"`
+	StableNodes   []int                   `json:"stableNodes,omitempty"`
+	StableEdges   []int                   `json:"stableEdges,omitempty"`
+	StableFacts   []string                `json:"stableFacts,omitempty"`
+	StableEvals   []string                `json:"stableEvals,omitempty"`
+	Candidates    []*ExtractHourCandidate `json:"candidates,omitempty"`
+}
+
+type ExtractPairCharts struct {
+	A *ExtractSajuDoc `json:"a,omitempty"`
+	B *ExtractSajuDoc `json:"b,omitempty"`
+}
+
+type ExtractPairDoc struct {
+	ID        *string                  `json:"id,omitempty"`
+	SchemaVer string                   `json:"schemaVer"`
+	Input     *ExtractPairInputDisplay `json:"input"`
+	Charts    *ExtractPairCharts       `json:"charts,omitempty"`
+	Edges     []*ExtractPairEdge       `json:"edges,omitempty"`
+	Metrics   *ExtractPairMetrics      `json:"metrics,omitempty"`
+	Facts     []*ExtractPairFactItem   `json:"facts,omitempty"`
+	Evals     []*ExtractPairEvalItem   `json:"evals"`
+	HourCtx   *ExtractPairHourContext  `json:"hourCtx,omitempty"`
+	CreatedAt *string                  `json:"createdAt,omitempty"`
+}
+
+func (ExtractPairDoc) IsNode()             {}
+func (this ExtractPairDoc) GetID() *string { return this.ID }
+
+type ExtractPairEdge struct {
+	ID       int                  `json:"id"`
+	T        string               `json:"t"`
+	A        int                  `json:"a"`
+	B        int                  `json:"b"`
+	W        *float64             `json:"w,omitempty"`
+	RefsA    []int                `json:"refsA,omitempty"`
+	RefsB    []int                `json:"refsB,omitempty"`
+	Result   *ExtractFiveEl       `json:"result,omitempty"`
+	Active   *bool                `json:"active,omitempty"`
+	Evidence *ExtractPairEvidence `json:"evidence,omitempty"`
+}
+
+type ExtractPairEvalItem struct {
+	ID       string               `json:"id"`
+	K        ExtractPairEvalKind  `json:"k"`
+	N        string               `json:"n"`
+	V        any                  `json:"v,omitempty"`
+	RefsA    []int                `json:"refsA"`
+	RefsB    []int                `json:"refsB"`
+	Evidence *ExtractPairEvidence `json:"evidence"`
+	Score    *ExtractPairScore    `json:"score"`
+}
+
+type ExtractPairEvidence struct {
+	RuleID  string                     `json:"ruleId"`
+	RuleVer string                     `json:"ruleVer"`
+	Sys     *string                    `json:"sys,omitempty"`
+	Inputs  *ExtractPairEvidenceInputs `json:"inputs"`
+	Notes   *string                    `json:"notes,omitempty"`
+}
+
+type ExtractPairEvidenceInputs struct {
+	NodesA []int          `json:"nodesA"`
+	NodesB []int          `json:"nodesB"`
+	Params map[string]any `json:"params,omitempty"`
+}
+
+type ExtractPairFactItem struct {
+	ID       string               `json:"id"`
+	K        string               `json:"k"`
+	N        string               `json:"n"`
+	V        any                  `json:"v,omitempty"`
+	RefsA    []int                `json:"refsA"`
+	RefsB    []int                `json:"refsB"`
+	Evidence *ExtractPairEvidence `json:"evidence"`
+	Score    *ExtractPairScore    `json:"score,omitempty"`
+}
+
+type ExtractPairHourCandidate struct {
+	Order        int                    `json:"order"`
+	A            *ExtractPairHourChoice `json:"a"`
+	B            *ExtractPairHourChoice `json:"b"`
+	Weight       *float64               `json:"weight,omitempty"`
+	AddedEdges   []int                  `json:"addedEdges,omitempty"`
+	AddedFacts   []string               `json:"addedFacts,omitempty"`
+	AddedEvals   []string               `json:"addedEvals,omitempty"`
+	MetricsDelta *ExtractPairMetrics    `json:"metricsDelta,omitempty"`
+	OverallScore *ExtractPairScore      `json:"overallScore,omitempty"`
+	Note         *string                `json:"note,omitempty"`
+}
+
+type ExtractPairHourChoice struct {
+	Status         ExtractHourPillarStatus `json:"status"`
+	CandidateOrder *int                    `json:"candidateOrder,omitempty"`
+	Pillar         *ExtractPillar          `json:"pillar,omitempty"`
+	TimeWindow     *string                 `json:"timeWindow,omitempty"`
+	Weight         *float64                `json:"weight,omitempty"`
+}
+
+type ExtractPairHourContext struct {
+	StatusA        ExtractHourPillarStatus     `json:"statusA"`
+	StatusB        ExtractHourPillarStatus     `json:"statusB"`
+	MissingReasonA *string                     `json:"missingReasonA,omitempty"`
+	MissingReasonB *string                     `json:"missingReasonB,omitempty"`
+	StableEdges    []int                       `json:"stableEdges,omitempty"`
+	StableFacts    []string                    `json:"stableFacts,omitempty"`
+	StableEvals    []string                    `json:"stableEvals,omitempty"`
+	Candidates     []*ExtractPairHourCandidate `json:"candidates,omitempty"`
+}
+
+type ExtractPairInput struct {
+	A       *ExtractSajuInput   `json:"a"`
+	B       *ExtractSajuInput   `json:"b"`
+	Engine  *ExtractEngineInput `json:"engine"`
+	RuleSet *string             `json:"ruleSet,omitempty"`
+}
+
+type ExtractPairInputDisplay struct {
+	A       *ExtractSajuInputDisplay `json:"a"`
+	B       *ExtractSajuInputDisplay `json:"b"`
+	Engine  *ExtractEngine           `json:"engine"`
+	RuleSet *string                  `json:"ruleSet,omitempty"`
+}
+
+type ExtractPairMetrics struct {
+	HarmonyIndex      *float64 `json:"harmonyIndex,omitempty"`
+	ConflictIndex     *float64 `json:"conflictIndex,omitempty"`
+	NetIndex          *float64 `json:"netIndex,omitempty"`
+	ElementComplement *float64 `json:"elementComplement,omitempty"`
+	UsefulGodSupport  *float64 `json:"usefulGodSupport,omitempty"`
+	RoleFit           *float64 `json:"roleFit,omitempty"`
+	PressureRisk      *float64 `json:"pressureRisk,omitempty"`
+	Confidence        *float64 `json:"confidence,omitempty"`
+	Sensitivity       *float64 `json:"sensitivity,omitempty"`
+	TimingAlignment   *float64 `json:"timingAlignment,omitempty"`
+}
+
+type ExtractPairScore struct {
+	Total      float64                 `json:"total"`
+	Min        float64                 `json:"min"`
+	Max        float64                 `json:"max"`
+	Norm0_100  int                     `json:"norm0_100"`
+	Confidence float64                 `json:"confidence"`
+	Parts      []*ExtractPairScorePart `json:"parts,omitempty"`
+}
+
+type ExtractPairScorePart struct {
+	Label string  `json:"label"`
+	W     float64 `json:"w"`
+	Raw   float64 `json:"raw"`
+	RefsA []int   `json:"refsA,omitempty"`
+	RefsB []int   `json:"refsB,omitempty"`
+	Note  *string `json:"note,omitempty"`
+}
+
+type ExtractPillar struct {
+	K        ExtractPillarKey `json:"k"`
+	Stem     int              `json:"stem"`
+	Branch   int              `json:"branch"`
+	Hidden   []int            `json:"hidden,omitempty"`
+	NaEum    *string          `json:"naEum,omitempty"`
+	GongMang []int            `json:"gongMang,omitempty"`
+}
+
+type ExtractSajuDoc struct {
+	ID        *string                  `json:"id,omitempty"`
+	SchemaVer string                   `json:"schemaVer"`
+	Input     *ExtractSajuInputDisplay `json:"input"`
+	Pillars   []*ExtractPillar         `json:"pillars"`
+	Nodes     []*ExtractSajuNode       `json:"nodes"`
+	Edges     []*ExtractSajuEdge       `json:"edges,omitempty"`
+	Facts     []*ExtractFactItem       `json:"facts"`
+	Evals     []*ExtractEvalItem       `json:"evals"`
+	DayMaster int                      `json:"dayMaster"`
+	Daeun     *ExtractDaeunPeriod      `json:"daeun,omitempty"`
+	Seun      *ExtractDaeunPeriod      `json:"seun,omitempty"`
+	Wolun     *ExtractDaeunPeriod      `json:"wolun,omitempty"`
+	Ilun      *ExtractDaeunPeriod      `json:"ilun,omitempty"`
+	DaeunList []*ExtractDaeunPeriod    `json:"daeunList,omitempty"`
+	SeunList  []*ExtractDaeunPeriod    `json:"seunList,omitempty"`
+	WolunList []*ExtractDaeunPeriod    `json:"wolunList,omitempty"`
+	IlunList  []*ExtractDaeunPeriod    `json:"ilunList,omitempty"`
+	ElBalance *ExtractElDistribution   `json:"elBalance,omitempty"`
+	HourCtx   *ExtractHourContext      `json:"hourCtx,omitempty"`
+}
+
+func (ExtractSajuDoc) IsNode()             {}
+func (this ExtractSajuDoc) GetID() *string { return this.ID }
+
+type ExtractSajuEdge struct {
+	ID     int            `json:"id"`
+	T      string         `json:"t"`
+	A      int            `json:"a"`
+	B      int            `json:"b"`
+	W      *float64       `json:"w,omitempty"`
+	Refs   []int          `json:"refs,omitempty"`
+	Result *ExtractFiveEl `json:"result,omitempty"`
+	Active *bool          `json:"active,omitempty"`
+}
+
+type ExtractSajuInput struct {
+	DtLocal       string                `json:"dtLocal"`
+	Tz            string                `json:"tz"`
+	Loc           *ExtractGeoInput      `json:"loc,omitempty"`
+	Calendar      *string               `json:"calendar,omitempty"`
+	LeapMonth     *bool                 `json:"leapMonth,omitempty"`
+	Sex           *string               `json:"sex,omitempty"`
+	TimePrec      *ExtractTimePrecision `json:"timePrec,omitempty"`
+	Engine        *ExtractEngineInput   `json:"engine"`
+	SolarDt       *string               `json:"solarDt,omitempty"`
+	AdjustedDt    *string               `json:"adjustedDt,omitempty"`
+	FortuneBaseDt *string               `json:"fortuneBaseDt,omitempty"`
+	SeunFromYear  *int                  `json:"seunFromYear,omitempty"`
+	SeunToYear    *int                  `json:"seunToYear,omitempty"`
+	WolunYear     *int                  `json:"wolunYear,omitempty"`
+	IlunYear      *int                  `json:"ilunYear,omitempty"`
+	IlunMonth     *int                  `json:"ilunMonth,omitempty"`
+}
+
+type ExtractSajuInputDisplay struct {
+	DtLocal       string                `json:"dtLocal"`
+	Tz            string                `json:"tz"`
+	Loc           *ExtractGeo           `json:"loc,omitempty"`
+	Calendar      *string               `json:"calendar,omitempty"`
+	LeapMonth     *bool                 `json:"leapMonth,omitempty"`
+	Sex           *string               `json:"sex,omitempty"`
+	TimePrec      *ExtractTimePrecision `json:"timePrec,omitempty"`
+	Engine        *ExtractEngine        `json:"engine"`
+	SolarDt       *string               `json:"solarDt,omitempty"`
+	AdjustedDt    *string               `json:"adjustedDt,omitempty"`
+	FortuneBaseDt *string               `json:"fortuneBaseDt,omitempty"`
+	SeunFromYear  *int                  `json:"seunFromYear,omitempty"`
+	SeunToYear    *int                  `json:"seunToYear,omitempty"`
+	WolunYear     *int                  `json:"wolunYear,omitempty"`
+	IlunYear      *int                  `json:"ilunYear,omitempty"`
+	IlunMonth     *int                  `json:"ilunMonth,omitempty"`
+}
+
+type ExtractSajuNode struct {
+	ID       int                `json:"id"`
+	Kind     ExtractNodeKind    `json:"kind"`
+	Pillar   ExtractPillarKey   `json:"pillar"`
+	Idx      *int               `json:"idx,omitempty"`
+	Stem     *int               `json:"stem,omitempty"`
+	Branch   *int               `json:"branch,omitempty"`
+	El       ExtractFiveEl      `json:"el"`
+	Yy       ExtractYinYang     `json:"yy"`
+	TenGod   *ExtractTenGod     `json:"tenGod,omitempty"`
+	Twelve   *ExtractTwelveFate `json:"twelve,omitempty"`
+	Strength *float64           `json:"strength,omitempty"`
+}
+
+type ExtractScore struct {
+	Total      float64             `json:"total"`
+	Min        float64             `json:"min"`
+	Max        float64             `json:"max"`
+	Norm0_100  int                 `json:"norm0_100"`
+	Confidence float64             `json:"confidence"`
+	Parts      []*ExtractScorePart `json:"parts,omitempty"`
+}
+
+type ExtractScorePart struct {
+	Label string  `json:"label"`
+	W     float64 `json:"w"`
+	Raw   float64 `json:"raw"`
+	Refs  []int   `json:"refs,omitempty"`
+	Note  *string `json:"note,omitempty"`
+}
+
+type ItemNCard struct {
+	ID            *string  `json:"id,omitempty"`
+	UID           string   `json:"uid"`
+	CardID        string   `json:"cardId"`
+	Version       int      `json:"version"`
+	Status        string   `json:"status"`
+	RuleSet       string   `json:"ruleSet"`
+	Scope         string   `json:"scope"`
+	Title         string   `json:"title"`
+	Category      string   `json:"category"`
+	Tags          []string `json:"tags"`
+	Domains       []string `json:"domains"`
+	Priority      int      `json:"priority"`
+	TriggerJSON   string   `json:"triggerJson"`
+	ScoreJSON     string   `json:"scoreJson"`
+	ContentJSON   string   `json:"contentJson"`
+	CooldownGroup string   `json:"cooldownGroup"`
+	MaxPerUser    int      `json:"maxPerUser"`
+	DebugJSON     string   `json:"debugJson"`
+	DeletedAt     int64    `json:"deletedAt"`
+	CreatedAt     int64    `json:"createdAt"`
+	UpdatedAt     int64    `json:"updatedAt"`
+}
+
+func (ItemNCard) IsNode()             {}
+func (this ItemNCard) GetID() *string { return this.ID }
+
+type ItemNCardInput struct {
+	CardID        string   `json:"cardId"`
+	Version       int      `json:"version"`
+	Status        string   `json:"status"`
+	RuleSet       string   `json:"ruleSet"`
+	Scope         string   `json:"scope"`
+	Title         string   `json:"title"`
+	Category      string   `json:"category"`
+	Tags          []string `json:"tags"`
+	Domains       []string `json:"domains"`
+	Priority      int      `json:"priority"`
+	TriggerJSON   string   `json:"triggerJson"`
+	ScoreJSON     string   `json:"scoreJson"`
+	ContentJSON   string   `json:"contentJson"`
+	CooldownGroup string   `json:"cooldownGroup"`
+	MaxPerUser    int      `json:"maxPerUser"`
+	DebugJSON     string   `json:"debugJson"`
+}
+
+type ItemNCardSearchInput struct {
+	Limit          int      `json:"limit"`
+	Offset         int      `json:"offset"`
+	Scope          *string  `json:"scope,omitempty"`
+	Status         *string  `json:"status,omitempty"`
+	Category       *string  `json:"category,omitempty"`
+	Tags           []string `json:"tags,omitempty"`
+	RuleSet        *string  `json:"ruleSet,omitempty"`
+	Domain         *string  `json:"domain,omitempty"`
+	CooldownGroup  *string  `json:"cooldownGroup,omitempty"`
+	OrderBy        *string  `json:"orderBy,omitempty"`
+	OrderDirection *string  `json:"orderDirection,omitempty"`
+	IncludeDeleted *bool    `json:"includeDeleted,omitempty"`
+}
+
+type ItemnCardsByTokensInput struct {
+	Tokens  []string `json:"tokens"`
+	Limit   *int     `json:"limit,omitempty"`
+	RuleSet *string  `json:"ruleSet,omitempty"`
+}
+
 type Kv struct {
 	K string `json:"k"`
 	V string `json:"v"`
@@ -126,6 +612,18 @@ type KVInput struct {
 	K string `json:"k"`
 	V string `json:"v"`
 }
+
+type LLMRequestResult struct {
+	ID           *string `json:"id,omitempty"`
+	ResponseText *string `json:"responseText,omitempty"`
+	InputTokens  *int    `json:"inputTokens,omitempty"`
+	OutputTokens *int    `json:"outputTokens,omitempty"`
+	TotalTokens  *int    `json:"totalTokens,omitempty"`
+	ErrorMessage *string `json:"errorMessage,omitempty"`
+}
+
+func (LLMRequestResult) IsNode()             {}
+func (this LLMRequestResult) GetID() *string { return this.ID }
 
 type LocalLog struct {
 	ID        *string `json:"id,omitempty"`
@@ -146,6 +644,14 @@ type LocalLogSearchInput struct {
 }
 
 type Mutation struct {
+}
+
+type PairCardsByTokensInput struct {
+	TokensA []string `json:"tokensA"`
+	TokensB []string `json:"tokensB"`
+	PTokens []string `json:"pTokens"`
+	Limit   *int     `json:"limit,omitempty"`
+	RuleSet *string  `json:"ruleSet,omitempty"`
 }
 
 type PhyIdealPartner struct {
@@ -191,6 +697,108 @@ type PhyIdealPartnerSearchInput struct {
 }
 
 type Query struct {
+}
+
+type SajuBirthInput struct {
+	Date          string  `json:"date"`
+	Time          string  `json:"time"`
+	TimePrecision *string `json:"time_precision,omitempty"`
+}
+
+type SajuChart struct {
+	ID            *string           `json:"id,omitempty"`
+	Pillars       *SajuChartPillars `json:"pillars"`
+	Dm            *string           `json:"dm,omitempty"`
+	ItemsSummary  *string           `json:"itemsSummary,omitempty"`
+	Items         []string          `json:"items,omitempty"`
+	RuleSet       *string           `json:"ruleSet,omitempty"`
+	EngineVersion *string           `json:"engineVersion,omitempty"`
+	Mode          *string           `json:"mode,omitempty"`
+	Period        *string           `json:"period,omitempty"`
+	PillarSource  *SajuPillarSource `json:"pillarSource,omitempty"`
+	Tokens        []string          `json:"tokens,omitempty"`
+}
+
+func (SajuChart) IsNode()             {}
+func (this SajuChart) GetID() *string { return this.ID }
+
+type SajuChartInput struct {
+	Birth              *SajuBirthInput `json:"birth"`
+	Timezone           *string         `json:"timezone,omitempty"`
+	Calendar           *string         `json:"calendar,omitempty"`
+	Mode               string          `json:"mode"`
+	TargetYear         *int            `json:"targetYear,omitempty"`
+	TargetMonth        *int            `json:"targetMonth,omitempty"`
+	TargetDay          *int            `json:"targetDay,omitempty"`
+	TargetDaesoonIndex *int            `json:"targetDaesoonIndex,omitempty"`
+	Gender             *string         `json:"gender,omitempty"`
+	IncludeTokens      *bool           `json:"includeTokens,omitempty"`
+}
+
+type SajuChartPillars struct {
+	Y string `json:"y"`
+	M string `json:"m"`
+	D string `json:"d"`
+	H string `json:"h"`
+}
+
+type SajuGenerationRequest struct {
+	UserInput *SajuGenerationUserInput     `json:"user_input"`
+	Targets   []*SajuGenerationTargetInput `json:"targets"`
+}
+
+type SajuGenerationResponse struct {
+	Targets []*SajuGenerationTargetOutput `json:"targets"`
+}
+
+type SajuGenerationTargetInput struct {
+	Kind     string `json:"kind"`
+	Period   string `json:"period"`
+	MaxChars int    `json:"max_chars"`
+}
+
+type SajuGenerationTargetOutput struct {
+	Kind     string `json:"kind"`
+	Period   string `json:"period"`
+	MaxChars int    `json:"max_chars"`
+	Result   string `json:"result"`
+}
+
+type SajuGenerationUserInput struct {
+	Birth    *SajuBirthInput `json:"birth"`
+	Timezone *string         `json:"timezone,omitempty"`
+	RuleSet  *string         `json:"rule_set,omitempty"`
+	Gender   *string         `json:"gender,omitempty"`
+}
+
+type SajuPairChart struct {
+	ID            *string    `json:"id,omitempty"`
+	ChartA        *SajuChart `json:"chartA"`
+	ChartB        *SajuChart `json:"chartB"`
+	PTokens       []string   `json:"pTokens"`
+	PItemsSummary *string    `json:"pItemsSummary,omitempty"`
+	PItems        []string   `json:"pItems,omitempty"`
+	RuleSet       *string    `json:"ruleSet,omitempty"`
+	EngineVersion *string    `json:"engineVersion,omitempty"`
+}
+
+func (SajuPairChart) IsNode()             {}
+func (this SajuPairChart) GetID() *string { return this.ID }
+
+type SajuPairChartInput struct {
+	BirthA        *SajuBirthInput `json:"birthA"`
+	BirthB        *SajuBirthInput `json:"birthB"`
+	Timezone      *string         `json:"timezone,omitempty"`
+	Calendar      *string         `json:"calendar,omitempty"`
+	IncludeTokens *bool           `json:"includeTokens,omitempty"`
+}
+
+type SajuPillarSource struct {
+	BaseDate     string `json:"baseDate"`
+	BaseTimeUsed string `json:"baseTimeUsed"`
+	Mode         string `json:"mode"`
+	Period       string `json:"period"`
+	Description  string `json:"description"`
 }
 
 type SajuProfile struct {
@@ -264,6 +872,26 @@ type SajuProfileSearchInput struct {
 	OrderDirection *string `json:"orderDirection,omitempty"`
 }
 
+type SelectedItemnCard struct {
+	ID             *string  `json:"id,omitempty"`
+	CardID         string   `json:"cardId"`
+	Title          string   `json:"title"`
+	Evidence       []string `json:"evidence"`
+	Score          int      `json:"score"`
+	ContentSummary *string  `json:"contentSummary,omitempty"`
+}
+
+func (SelectedItemnCard) IsNode()             {}
+func (this SelectedItemnCard) GetID() *string { return this.ID }
+
+type SendLLMRequestInput struct {
+	Prompt       string   `json:"prompt"`
+	SystemPrompt *string  `json:"systemPrompt,omitempty"`
+	MaxTokens    *int     `json:"maxTokens,omitempty"`
+	Model        *string  `json:"model,omitempty"`
+	Temperature  *float64 `json:"temperature,omitempty"`
+}
+
 type SimpleResult struct {
 	Ok          bool    `json:"ok"`
 	UID         *string `json:"uid,omitempty"`
@@ -289,3 +917,558 @@ type SystemStats struct {
 
 func (SystemStats) IsNode()             {}
 func (this SystemStats) GetID() *string { return this.ID }
+
+type ExtractFiveEl string
+
+const (
+	ExtractFiveElWood  ExtractFiveEl = "WOOD"
+	ExtractFiveElFire  ExtractFiveEl = "FIRE"
+	ExtractFiveElEarth ExtractFiveEl = "EARTH"
+	ExtractFiveElMetal ExtractFiveEl = "METAL"
+	ExtractFiveElWater ExtractFiveEl = "WATER"
+)
+
+var AllExtractFiveEl = []ExtractFiveEl{
+	ExtractFiveElWood,
+	ExtractFiveElFire,
+	ExtractFiveElEarth,
+	ExtractFiveElMetal,
+	ExtractFiveElWater,
+}
+
+func (e ExtractFiveEl) IsValid() bool {
+	switch e {
+	case ExtractFiveElWood, ExtractFiveElFire, ExtractFiveElEarth, ExtractFiveElMetal, ExtractFiveElWater:
+		return true
+	}
+	return false
+}
+
+func (e ExtractFiveEl) String() string {
+	return string(e)
+}
+
+func (e *ExtractFiveEl) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExtractFiveEl(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExtractFiveEl", str)
+	}
+	return nil
+}
+
+func (e ExtractFiveEl) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExtractFiveEl) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExtractFiveEl) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExtractHourPillarStatus string
+
+const (
+	ExtractHourPillarStatusKnown     ExtractHourPillarStatus = "KNOWN"
+	ExtractHourPillarStatusMissing   ExtractHourPillarStatus = "MISSING"
+	ExtractHourPillarStatusEstimated ExtractHourPillarStatus = "ESTIMATED"
+)
+
+var AllExtractHourPillarStatus = []ExtractHourPillarStatus{
+	ExtractHourPillarStatusKnown,
+	ExtractHourPillarStatusMissing,
+	ExtractHourPillarStatusEstimated,
+}
+
+func (e ExtractHourPillarStatus) IsValid() bool {
+	switch e {
+	case ExtractHourPillarStatusKnown, ExtractHourPillarStatusMissing, ExtractHourPillarStatusEstimated:
+		return true
+	}
+	return false
+}
+
+func (e ExtractHourPillarStatus) String() string {
+	return string(e)
+}
+
+func (e *ExtractHourPillarStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExtractHourPillarStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExtractHourPillarStatus", str)
+	}
+	return nil
+}
+
+func (e ExtractHourPillarStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExtractHourPillarStatus) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExtractHourPillarStatus) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExtractNodeKind string
+
+const (
+	ExtractNodeKindStem   ExtractNodeKind = "STEM"
+	ExtractNodeKindBranch ExtractNodeKind = "BRANCH"
+	ExtractNodeKindHidden ExtractNodeKind = "HIDDEN"
+)
+
+var AllExtractNodeKind = []ExtractNodeKind{
+	ExtractNodeKindStem,
+	ExtractNodeKindBranch,
+	ExtractNodeKindHidden,
+}
+
+func (e ExtractNodeKind) IsValid() bool {
+	switch e {
+	case ExtractNodeKindStem, ExtractNodeKindBranch, ExtractNodeKindHidden:
+		return true
+	}
+	return false
+}
+
+func (e ExtractNodeKind) String() string {
+	return string(e)
+}
+
+func (e *ExtractNodeKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExtractNodeKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExtractNodeKind", str)
+	}
+	return nil
+}
+
+func (e ExtractNodeKind) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExtractNodeKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExtractNodeKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExtractPairEvalKind string
+
+const (
+	ExtractPairEvalKindHarmony    ExtractPairEvalKind = "HARMONY"
+	ExtractPairEvalKindConflict   ExtractPairEvalKind = "CONFLICT"
+	ExtractPairEvalKindComplement ExtractPairEvalKind = "COMPLEMENT"
+	ExtractPairEvalKindRoleFit    ExtractPairEvalKind = "ROLE_FIT"
+	ExtractPairEvalKindTiming     ExtractPairEvalKind = "TIMING"
+	ExtractPairEvalKindOverall    ExtractPairEvalKind = "OVERALL"
+)
+
+var AllExtractPairEvalKind = []ExtractPairEvalKind{
+	ExtractPairEvalKindHarmony,
+	ExtractPairEvalKindConflict,
+	ExtractPairEvalKindComplement,
+	ExtractPairEvalKindRoleFit,
+	ExtractPairEvalKindTiming,
+	ExtractPairEvalKindOverall,
+}
+
+func (e ExtractPairEvalKind) IsValid() bool {
+	switch e {
+	case ExtractPairEvalKindHarmony, ExtractPairEvalKindConflict, ExtractPairEvalKindComplement, ExtractPairEvalKindRoleFit, ExtractPairEvalKindTiming, ExtractPairEvalKindOverall:
+		return true
+	}
+	return false
+}
+
+func (e ExtractPairEvalKind) String() string {
+	return string(e)
+}
+
+func (e *ExtractPairEvalKind) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExtractPairEvalKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExtractPairEvalKind", str)
+	}
+	return nil
+}
+
+func (e ExtractPairEvalKind) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExtractPairEvalKind) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExtractPairEvalKind) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExtractPillarKey string
+
+const (
+	ExtractPillarKeyY ExtractPillarKey = "Y"
+	ExtractPillarKeyM ExtractPillarKey = "M"
+	ExtractPillarKeyD ExtractPillarKey = "D"
+	ExtractPillarKeyH ExtractPillarKey = "H"
+)
+
+var AllExtractPillarKey = []ExtractPillarKey{
+	ExtractPillarKeyY,
+	ExtractPillarKeyM,
+	ExtractPillarKeyD,
+	ExtractPillarKeyH,
+}
+
+func (e ExtractPillarKey) IsValid() bool {
+	switch e {
+	case ExtractPillarKeyY, ExtractPillarKeyM, ExtractPillarKeyD, ExtractPillarKeyH:
+		return true
+	}
+	return false
+}
+
+func (e ExtractPillarKey) String() string {
+	return string(e)
+}
+
+func (e *ExtractPillarKey) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExtractPillarKey(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExtractPillarKey", str)
+	}
+	return nil
+}
+
+func (e ExtractPillarKey) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExtractPillarKey) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExtractPillarKey) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExtractTenGod string
+
+const (
+	ExtractTenGodBigyeon   ExtractTenGod = "BIGYEON"
+	ExtractTenGodGeobjae   ExtractTenGod = "GEOBJAE"
+	ExtractTenGodSikshin   ExtractTenGod = "SIKSHIN"
+	ExtractTenGodSanggwan  ExtractTenGod = "SANGGWAN"
+	ExtractTenGodPyeonjae  ExtractTenGod = "PYEONJAE"
+	ExtractTenGodJeongjae  ExtractTenGod = "JEONGJAE"
+	ExtractTenGodPyeongwan ExtractTenGod = "PYEONGWAN"
+	ExtractTenGodJeonggwan ExtractTenGod = "JEONGGWAN"
+	ExtractTenGodPyeonin   ExtractTenGod = "PYEONIN"
+	ExtractTenGodJeongin   ExtractTenGod = "JEONGIN"
+)
+
+var AllExtractTenGod = []ExtractTenGod{
+	ExtractTenGodBigyeon,
+	ExtractTenGodGeobjae,
+	ExtractTenGodSikshin,
+	ExtractTenGodSanggwan,
+	ExtractTenGodPyeonjae,
+	ExtractTenGodJeongjae,
+	ExtractTenGodPyeongwan,
+	ExtractTenGodJeonggwan,
+	ExtractTenGodPyeonin,
+	ExtractTenGodJeongin,
+}
+
+func (e ExtractTenGod) IsValid() bool {
+	switch e {
+	case ExtractTenGodBigyeon, ExtractTenGodGeobjae, ExtractTenGodSikshin, ExtractTenGodSanggwan, ExtractTenGodPyeonjae, ExtractTenGodJeongjae, ExtractTenGodPyeongwan, ExtractTenGodJeonggwan, ExtractTenGodPyeonin, ExtractTenGodJeongin:
+		return true
+	}
+	return false
+}
+
+func (e ExtractTenGod) String() string {
+	return string(e)
+}
+
+func (e *ExtractTenGod) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExtractTenGod(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExtractTenGod", str)
+	}
+	return nil
+}
+
+func (e ExtractTenGod) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExtractTenGod) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExtractTenGod) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExtractTimePrecision string
+
+const (
+	ExtractTimePrecisionMinute  ExtractTimePrecision = "MINUTE"
+	ExtractTimePrecisionHour    ExtractTimePrecision = "HOUR"
+	ExtractTimePrecisionUnknown ExtractTimePrecision = "UNKNOWN"
+)
+
+var AllExtractTimePrecision = []ExtractTimePrecision{
+	ExtractTimePrecisionMinute,
+	ExtractTimePrecisionHour,
+	ExtractTimePrecisionUnknown,
+}
+
+func (e ExtractTimePrecision) IsValid() bool {
+	switch e {
+	case ExtractTimePrecisionMinute, ExtractTimePrecisionHour, ExtractTimePrecisionUnknown:
+		return true
+	}
+	return false
+}
+
+func (e ExtractTimePrecision) String() string {
+	return string(e)
+}
+
+func (e *ExtractTimePrecision) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExtractTimePrecision(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExtractTimePrecision", str)
+	}
+	return nil
+}
+
+func (e ExtractTimePrecision) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExtractTimePrecision) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExtractTimePrecision) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExtractTwelveFate string
+
+const (
+	ExtractTwelveFateJangsaeng ExtractTwelveFate = "JANGSAENG"
+	ExtractTwelveFateMokyok    ExtractTwelveFate = "MOKYOK"
+	ExtractTwelveFateGwandae   ExtractTwelveFate = "GWANDAE"
+	ExtractTwelveFateGeonrok   ExtractTwelveFate = "GEONROK"
+	ExtractTwelveFateJewang    ExtractTwelveFate = "JEWANG"
+	ExtractTwelveFateSwoe      ExtractTwelveFate = "SWOE"
+	ExtractTwelveFateByeong    ExtractTwelveFate = "BYEONG"
+	ExtractTwelveFateSa        ExtractTwelveFate = "SA"
+	ExtractTwelveFateMyo       ExtractTwelveFate = "MYO"
+	ExtractTwelveFateJeol      ExtractTwelveFate = "JEOL"
+	ExtractTwelveFateTae       ExtractTwelveFate = "TAE"
+	ExtractTwelveFateYang      ExtractTwelveFate = "YANG"
+)
+
+var AllExtractTwelveFate = []ExtractTwelveFate{
+	ExtractTwelveFateJangsaeng,
+	ExtractTwelveFateMokyok,
+	ExtractTwelveFateGwandae,
+	ExtractTwelveFateGeonrok,
+	ExtractTwelveFateJewang,
+	ExtractTwelveFateSwoe,
+	ExtractTwelveFateByeong,
+	ExtractTwelveFateSa,
+	ExtractTwelveFateMyo,
+	ExtractTwelveFateJeol,
+	ExtractTwelveFateTae,
+	ExtractTwelveFateYang,
+}
+
+func (e ExtractTwelveFate) IsValid() bool {
+	switch e {
+	case ExtractTwelveFateJangsaeng, ExtractTwelveFateMokyok, ExtractTwelveFateGwandae, ExtractTwelveFateGeonrok, ExtractTwelveFateJewang, ExtractTwelveFateSwoe, ExtractTwelveFateByeong, ExtractTwelveFateSa, ExtractTwelveFateMyo, ExtractTwelveFateJeol, ExtractTwelveFateTae, ExtractTwelveFateYang:
+		return true
+	}
+	return false
+}
+
+func (e ExtractTwelveFate) String() string {
+	return string(e)
+}
+
+func (e *ExtractTwelveFate) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExtractTwelveFate(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExtractTwelveFate", str)
+	}
+	return nil
+}
+
+func (e ExtractTwelveFate) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExtractTwelveFate) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExtractTwelveFate) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type ExtractYinYang string
+
+const (
+	ExtractYinYangYin  ExtractYinYang = "YIN"
+	ExtractYinYangYang ExtractYinYang = "YANG"
+)
+
+var AllExtractYinYang = []ExtractYinYang{
+	ExtractYinYangYin,
+	ExtractYinYangYang,
+}
+
+func (e ExtractYinYang) IsValid() bool {
+	switch e {
+	case ExtractYinYangYin, ExtractYinYangYang:
+		return true
+	}
+	return false
+}
+
+func (e ExtractYinYang) String() string {
+	return string(e)
+}
+
+func (e *ExtractYinYang) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ExtractYinYang(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ExtractYinYang", str)
+	}
+	return nil
+}
+
+func (e ExtractYinYang) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *ExtractYinYang) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e ExtractYinYang) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}

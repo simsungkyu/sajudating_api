@@ -216,12 +216,12 @@ const AIExecutionViewModal: React.FC<AIExecutionViewModalProps> = ({
                 <Field label="입력 토큰" value={node.inputTokens || 0} />
                 <Field label="출력 토큰" value={node.outputTokens || 0} />
                 <Field label="총 사용 토큰" value={node.totalTokens || 0} />
-                {node.errorText && (
+                {node.errorMessage && (
                   <Box>
                     <Typography variant="body2" color="text.secondary" sx={{ minWidth: 160, mb: 0.5 }}>
                       오류 메시지
                     </Typography>
-                    <Alert severity="error" sx={{ mt: 0.5 }}>{node.errorText}</Alert>
+                    <Alert severity="error" sx={{ mt: 0.5 }}>{node.errorMessage}</Alert>
                   </Box>
                 )}
               </Stack>

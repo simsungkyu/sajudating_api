@@ -1,8 +1,12 @@
 overwrite: true
-schema: "../api/admgql/admgql.graphql"
+schema:
+  - "../api/admgql/admgql.graphql"
+  - "../api/admgql/extracted_sajupair.graphql"
 documents: "./src/graphql/*.graphql"
 generates:
   src/graphql/generated.ts:
+    config:
+      enumsAsTypes: true
     plugins:
       - "typescript"
       - "typescript-operations"

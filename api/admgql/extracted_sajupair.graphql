@@ -1,0 +1,488 @@
+# extracted_sajupair.graphql
+# extract_saju.go + extract_pair.go 기반 추출 전용 타입 스키마
+
+# 유연한 값 / 키-값 맵 (규칙·엔진 파라미터 등)
+scalar Any
+scalar Map
+
+# 사주 기둥 식별: 년·월·일·시
+enum ExtractPillarKey {
+  Y   # 년주
+  M   # 월주
+  D   # 일주
+  H   # 시주
+}
+
+# 노드 종류: 천간/지지/숨은천간
+enum ExtractNodeKind {
+  STEM    # 천간
+  BRANCH  # 지지
+  HIDDEN  # 숨은천간
+}
+
+# 오행: 목·화·토·금·수
+enum ExtractFiveEl {
+  WOOD   # 목
+  FIRE   # 화
+  EARTH  # 토
+  METAL  # 금
+  WATER  # 수
+}
+
+# 음양
+enum ExtractYinYang {
+  YIN   # 음
+  YANG  # 양
+}
+
+# 십신: 비견·겁재·식신·상관·편재·정재·편관·정관·편인·정인
+enum ExtractTenGod {
+  BIGYEON   # 비견
+  GEOBJAE   # 겁재
+  SIKSHIN   # 식신
+  SANGGWAN  # 상관
+  PYEONJAE  # 편재
+  JEONGJAE  # 정재
+  PYEONGWAN # 편관
+  JEONGGWAN # 정관
+  PYEONIN   # 편인
+  JEONGIN   # 정인
+}
+
+# 십이운성: 장생·목욕·관대·건록·제왕·쇠·병·사·묘·절·태·양
+enum ExtractTwelveFate {
+  JANGSAENG # 장생
+  MOKYOK   # 목욕
+  GWANDAE  # 관대
+  GEONROK  # 건록
+  JEWANG   # 제왕
+  SWOE     # 쇠
+  BYEONG   # 병
+  SA       # 사
+  MYO      # 묘
+  JEOL     # 절
+  TAE      # 태
+  YANG     # 양
+}
+
+# 시주 정밀도: 분 단위 / 시 단위 / 미상
+enum ExtractTimePrecision {
+  MINUTE  # 분 단위
+  HOUR    # 시 단위
+  UNKNOWN # 미상
+}
+
+# 시주 상태: 확정 / 미입력 / 추정
+enum ExtractHourPillarStatus {
+  KNOWN     # 확정
+  MISSING   # 미입력
+  ESTIMATED # 추정
+}
+
+# 궁합 평가 유형: 조화·충돌·보완·역할·시기·종합
+enum ExtractPairEvalKind {
+  HARMONY    # 조화
+  CONFLICT   # 충돌
+  COMPLEMENT # 보완
+  ROLE_FIT   # 역할
+  TIMING     # 시기
+  OVERALL    # 종합
+}
+
+# 위경도 (출생지)
+type ExtractGeo {
+  lat: Float!   # 위도
+  lon: Float!   # 경도
+}
+input ExtractGeoInput {
+  lat: Float!   # 위도
+  lon: Float!   # 경도
+}
+
+# 계산 엔진 정보 (이름·버전·시스템·파라미터)
+type ExtractEngine {
+  name: String!   # 엔진 이름
+  ver: String!    # 버전
+  sys: String     # 시스템 식별(옵션)
+  params: Map     # 엔진 파라미터 맵
+}
+input ExtractEngineInput {
+  name: String!   # 엔진 이름
+  ver: String!    # 버전
+  sys: String     # 시스템 식별(옵션)
+  params: Map     # 엔진 파라미터 맵
+}
+
+# 출생 입력: 현지 시각·타임존·위치·역법·성별·시주정밀도·엔진
+input ExtractSajuInput {
+  dtLocal: String!   # 현지 출생일시 문자열
+  tz: String!        # 타임존(예: Asia/Seoul)
+  loc: ExtractGeoInput   # 출생지 위경도(옵션)
+  calendar: String   # 역법(음력/양력 등)
+  leapMonth: Boolean # 윤달 여부
+  sex: String        # 성별
+  timePrec: ExtractTimePrecision   # 시주 정밀도(분/시/미상)
+  engine: ExtractEngineInput!   # 사용 계산 엔진
+  solarDt: String    # 양력 변환일시(옵션)
+  adjustedDt: String # 보정된 일시(옵션)
+  fortuneBaseDt: String # 운세 계산 기준일시(옵션; 없으면 dtLocal)
+  seunFromYear: Int # 세운 목록 시작 연도(옵션)
+  seunToYear: Int   # 세운 목록 종료 연도(옵션)
+  wolunYear: Int    # 월운 목록 대상 연도(옵션)
+  ilunYear: Int     # 일운 목록 대상 연도(옵션)
+  ilunMonth: Int    # 일운 목록 대상 월(옵션, 1..12)
+}
+
+# 출생 입력 표시용 타입 (리턴 데이터)
+type ExtractSajuInputDisplay {
+  dtLocal: String!   # 현지 출생일시
+  tz: String!       # 타임존
+  loc: ExtractGeo   # 출생지 위경도
+  calendar: String  # 역법
+  leapMonth: Boolean  # 윤달 여부
+  sex: String       # 성별
+  timePrec: ExtractTimePrecision  # 시주 정밀도
+  engine: ExtractEngine!   # 계산 엔진(표시용)
+  solarDt: String   # 양력일시
+  adjustedDt: String  # 보정일시
+  fortuneBaseDt: String # 운세 계산 기준일시(옵션)
+  seunFromYear: Int # 세운 목록 시작 연도(옵션)
+  seunToYear: Int   # 세운 목록 종료 연도(옵션)
+  wolunYear: Int    # 월운 목록 대상 연도(옵션)
+  ilunYear: Int     # 일운 목록 대상 연도(옵션)
+  ilunMonth: Int    # 일운 목록 대상 월(옵션)
+}
+
+# 한 기둥: 천간·지지·숨은천간·나음·궁망
+type ExtractPillar {
+  k: ExtractPillarKey!   # 기둥 식별(년/월/일/시)
+  stem: Int!             # 천간 인덱스(0~9)
+  branch: Int!           # 지지 인덱스(0~11)
+  hidden: [Int!]         # 숨은천간 인덱스 목록
+  naEum: String          # 나음(納音) 표기
+  gongMang: [Int!]       # 궁(宮) 망(亡) 인덱스
+}
+
+# 사주 그래프 노드 (천간/지지/오행/십신/십이운성/강도)
+type ExtractSajuNode {
+  id: Int!                # 노드 고유 ID
+  kind: ExtractNodeKind!  # 노드 종류(천간/지지/숨은천간)
+  pillar: ExtractPillarKey!  # 소속 기둥(년/월/일/시)
+  idx: Int                # 기둥 내 인덱스
+  stem: Int               # 천간 인덱스(지지 노드일 때)
+  branch: Int             # 지지 인덱스(천간 노드일 때)
+  el: ExtractFiveEl!      # 오행(목/화/토/금/수)
+  yy: ExtractYinYang!     # 음양
+  tenGod: ExtractTenGod   # 십신
+  twelve: ExtractTwelveFate   # 십이운성
+  strength: Float         # 강도(세기)
+}
+
+# 사주 그래프 엣지 (노드 간 관계·오행 결과·활성 여부)
+type ExtractSajuEdge {
+  id: Int!            # 엣지 고유 ID
+  t: String!          # 관계 타입(예: 합/충/형 등)
+  a: Int!             # 출발 노드 ID
+  b: Int!             # 도착 노드 ID
+  w: Float            # 가중치
+  refs: [Int!]        # 참조 노드 ID 목록
+  result: ExtractFiveEl   # 합/충 등 결과 오행
+  active: Boolean     # 활성 여부
+}
+
+# 증거 규칙 입력 (노드 ID 목록·파라미터)
+type ExtractEvidenceInputs {
+  nodes: [Int!]!   # 규칙에 사용된 노드 ID 목록
+  params: Map      # 규칙 파라미터(옵션)
+}
+
+# 단일 사주 규칙 증거 (ruleId·ruleVer·inputs·notes)
+type ExtractEvidence {
+  ruleId: String!   # 규칙 ID
+  ruleVer: String!  # 규칙 버전
+  sys: String       # 시스템 식별(옵션)
+  inputs: ExtractEvidenceInputs!   # 규칙 입력(노드·params)
+  notes: String     # 비고
+}
+
+# 점수 구성요소 (라벨·가중치·원점수·참조·비고)
+type ExtractScorePart {
+  label: String!   # 구성요소 라벨
+  w: Float!        # 가중치
+  raw: Float!      # 원점수
+  refs: [Int!]     # 참조 노드 ID
+  note: String     # 비고
+}
+
+# 총점·범위·0–100 정규화·신뢰도·parts
+type ExtractScore {
+  total: Float!        # 총점
+  min: Float!          # 최소값(범위)
+  max: Float!          # 최대값(범위)
+  norm0_100: Int!      # 0~100 정규화 점수
+  confidence: Float!   # 신뢰도
+  parts: [ExtractScorePart!]   # 점수 구성요소 목록
+}
+
+# 사실 항목 (id·키·이름·값·참조·증거·선택 점수)
+type ExtractFactItem {
+  id: String!           # 항목 ID
+  k: String!            # 키(분류/타입)
+  n: String!            # 표시 이름
+  v: Any                # 값(유연 타입)
+  refs: [Int!]!         # 참조 노드 ID 목록
+  evidence: ExtractEvidence!   # 규칙 증거
+  score: ExtractScore   # 점수(옵션)
+}
+
+# 평가 항목 (필수 score)
+type ExtractEvalItem {
+  id: String!           # 항목 ID
+  k: String!            # 키(분류)
+  n: String!            # 표시 이름
+  v: Any                # 값
+  refs: [Int!]!         # 참조 노드 ID
+  evidence: ExtractEvidence!   # 규칙 증거
+  score: ExtractScore!  # 점수(필수)
+}
+
+# 운 구간 (대운/세운/월운/일운 공통 메타)
+type ExtractDaeunPeriod {
+  type: String!      # 운 종류(DAEUN/SEUN/WOLUN/ILUN)
+  order: Int!      # 순서(몇 번째 대운)
+  stem: Int!       # 대운 천간 인덱스
+  branch: Int!     # 대운 지지 인덱스
+  stemKo: String   # 천간 한글(예: 갑)
+  stemHanja: String # 천간 한자(예: 甲)
+  branchKo: String  # 지지 한글(예: 자)
+  branchHanja: String # 지지 한자(예: 子)
+  ganjiKo: String    # 간지 한글(예: 갑자)
+  ganjiHanja: String # 간지 한자(예: 甲子)
+  stemEl: ExtractFiveEl # 천간 오행
+  stemYy: ExtractYinYang # 천간 음양
+  stemTenGod: ExtractTenGod # 천간 십성(일간 기준)
+  branchEl: ExtractFiveEl # 지지 오행
+  branchYy: ExtractYinYang # 지지 음양
+  branchTenGod: ExtractTenGod # 지지 십성(일간 기준)
+  branchTwelve: ExtractTwelveFate # 지지 십이운성(일간 기준)
+  ageFrom: Int!    # 적용 나이 시작
+  ageTo: Int!      # 적용 나이 끝
+  startYear: Int!  # 시작 연도
+  year: Int!       # 기준 연도(세운/월운/일운)
+  month: Int!      # 기준 월(월운/일운)
+  day: Int!        # 기준 일(일운)
+}
+
+# 오행 분포 (목·화·토·금·수 비율)
+type ExtractElDistribution {
+  wood: Float!   # 목(木) 비율
+  fire: Float!   # 화(火) 비율
+  earth: Float!  # 토(土) 비율
+  metal: Float!  # 금(金) 비율
+  water: Float!  # 수(水) 비율
+}
+
+# 시주 후보 (순서·기둥·시간대·가중치·추가 노드/엣지/팩트/평가)
+type ExtractHourCandidate {
+  order: Int!           # 후보 순서
+  pillar: ExtractPillar!   # 시주 기둥(천간·지지 등)
+  timeWindow: String    # 해당 시간대 표기
+  weight: Float         # 가중치(선호도)
+  addedNodes: [Int!]    # 이 후보로 추가되는 노드 ID
+  addedEdges: [Int!]    # 추가되는 엣지 ID
+  addedFacts: [String!] # 추가되는 사실 ID
+  addedEvals: [String!] # 추가되는 평가 ID
+}
+
+# 시주 컨텍스트: 상태·고정 노드/엣지/팩트/평가·후보 목록
+type ExtractHourContext {
+  status: ExtractHourPillarStatus!   # 시주 상태(확정/미입력/추정)
+  missingReason: String  # 미입력일 때 사유
+  stableNodes: [Int!]    # 시주와 무관하게 고정된 노드 ID
+  stableEdges: [Int!]    # 고정된 엣지 ID
+  stableFacts: [String!] # 고정된 사실 ID
+  stableEvals: [String!] # 고정된 평가 ID
+  candidates: [ExtractHourCandidate!]   # 시주 후보 목록
+}
+
+# 단일 사주 추출 문서 (입력·기둥·노드·엣지·팩트·평가·일간·대운·오행·시주)
+type ExtractSajuDoc implements Node {
+  id: ID                  # 문서 ID(Node 인터페이스)
+  schemaVer: String!      # 스키마 버전
+  input: ExtractSajuInputDisplay!   # 출생 입력(표시용)
+  pillars: [ExtractPillar!]!   # 년/월/일/시 4기둥
+  nodes: [ExtractSajuNode!]!   # 사주 그래프 노드 목록
+  edges: [ExtractSajuEdge!]    # 노드 간 엣지
+  facts: [ExtractFactItem!]!   # 파생 사실(팩트) 목록
+  evals: [ExtractEvalItem!]!   # 평가 항목 목록
+  dayMaster: Int!         # 일간(일주) 천간 인덱스
+  daeun: ExtractDaeunPeriod      # 기준 시점 대운
+  seun: ExtractDaeunPeriod       # 기준 시점 세운
+  wolun: ExtractDaeunPeriod      # 기준 시점 월운
+  ilun: ExtractDaeunPeriod       # 기준 시점 일운
+  daeunList: [ExtractDaeunPeriod!]   # 대운 구간 목록
+  seunList: [ExtractDaeunPeriod!]    # 세운 범위 목록(요청 시)
+  wolunList: [ExtractDaeunPeriod!]   # 월운 범위 목록(요청 시)
+  ilunList: [ExtractDaeunPeriod!]    # 일운 범위 목록(요청 시)
+  elBalance: ExtractElDistribution   # 오행 분포
+  hourCtx: ExtractHourContext   # 시주 컨텍스트(미입력/추정 시)
+}
+
+# 궁합 입력: A/B 출생 입력·엔진·규칙셋
+input ExtractPairInput {
+  a: ExtractSajuInput!   # A측 출생 입력
+  b: ExtractSajuInput!   # B측 출생 입력
+  engine: ExtractEngineInput!   # 계산 엔진
+  ruleSet: String        # 규칙셋 식별(옵션)
+}
+
+# 궁합 입력 표시용 타입 (리턴 데이터)
+type ExtractPairInputDisplay {
+  a: ExtractSajuInputDisplay!   # A측 입력(표시용)
+  b: ExtractSajuInputDisplay!   # B측 입력(표시용)
+  engine: ExtractEngine!   # 엔진(표시용)
+  ruleSet: String         # 규칙셋
+}
+
+# A/B 사주 문서 쌍
+type ExtractPairCharts {
+  a: ExtractSajuDoc   # A측 사주 추출 문서
+  b: ExtractSajuDoc   # B측 사주 추출 문서
+}
+
+# 궁합 규칙 증거 입력 (A/B 노드 ID·파라미터)
+type ExtractPairEvidenceInputs {
+  nodesA: [Int!]!   # A측 노드 ID 목록
+  nodesB: [Int!]!   # B측 노드 ID 목록
+  params: Map       # 규칙 파라미터(옵션)
+}
+
+# 궁합 규칙 증거
+type ExtractPairEvidence {
+  ruleId: String!   # 규칙 ID
+  ruleVer: String!  # 규칙 버전
+  sys: String       # 시스템 식별(옵션)
+  inputs: ExtractPairEvidenceInputs!   # A/B 노드·params
+  notes: String     # 비고
+}
+
+# 궁합 엣지 (A/B 노드 참조·증거)
+type ExtractPairEdge {
+  id: Int!            # 엣지 고유 ID
+  t: String!          # 관계 타입
+  a: Int!             # A측 노드 ID
+  b: Int!             # B측 노드 ID
+  w: Float            # 가중치
+  refsA: [Int!]       # A측 참조 노드 ID
+  refsB: [Int!]       # B측 참조 노드 ID
+  result: ExtractFiveEl   # 결과 오행
+  active: Boolean     # 활성 여부
+  evidence: ExtractPairEvidence   # 규칙 증거(옵션)
+}
+
+# 궁합 점수 구성요소 (refsA/refsB)
+type ExtractPairScorePart {
+  label: String!   # 구성요소 라벨
+  w: Float!        # 가중치
+  raw: Float!      # 원점수
+  refsA: [Int!]    # A측 참조 노드 ID
+  refsB: [Int!]    # B측 참조 노드 ID
+  note: String     # 비고
+}
+
+# 궁합 총점·범위·정규화·신뢰도·parts
+type ExtractPairScore {
+  total: Float!        # 총점
+  min: Float!          # 최소값(범위)
+  max: Float!          # 최대값(범위)
+  norm0_100: Int!      # 0~100 정규화 점수
+  confidence: Float!   # 신뢰도
+  parts: [ExtractPairScorePart!]   # 궁합 점수 구성요소
+}
+
+# 궁합 사실 항목 (refsA/refsB)
+type ExtractPairFactItem {
+  id: String!           # 항목 ID
+  k: String!            # 키(분류)
+  n: String!            # 표시 이름
+  v: Any                # 값
+  refsA: [Int!]!        # A측 참조 노드 ID
+  refsB: [Int!]!        # B측 참조 노드 ID
+  evidence: ExtractPairEvidence!   # 규칙 증거
+  score: ExtractPairScore   # 점수(옵션)
+}
+
+# 궁합 평가 항목 (k: ExtractPairEvalKind)
+type ExtractPairEvalItem {
+  id: String!             # 항목 ID
+  k: ExtractPairEvalKind!  # 평가 유형(조화/충돌/보완/역할/시기/종합)
+  n: String!              # 표시 이름
+  v: Any                  # 값
+  refsA: [Int!]!          # A측 참조 노드 ID
+  refsB: [Int!]!          # B측 참조 노드 ID
+  evidence: ExtractPairEvidence!   # 규칙 증거
+  score: ExtractPairScore!   # 점수(필수)
+}
+
+# 궁합 지표: 조화·충돌·순·오행보완·용신지지·역할·압박·신뢰도·감수성·시기
+type ExtractPairMetrics {
+  harmonyIndex: Float      # 조화 지수
+  conflictIndex: Float     # 충돌 지수
+  netIndex: Float          # 순(淨) 지수(조화−충돌 등)
+  elementComplement: Float # 오행 보완도
+  usefulGodSupport: Float  # 용신 지지도
+  roleFit: Float           # 역할 적합도
+  pressureRisk: Float      # 압박/리스크
+  confidence: Float        # 신뢰도
+  sensitivity: Float       # 감수성
+  timingAlignment: Float   # 시기 정렬/궁합
+}
+
+# 한쪽 시주 선택 (상태·후보순서·기둥·시간대·가중치)
+type ExtractPairHourChoice {
+  status: ExtractHourPillarStatus!   # 시주 상태(확정/미입력/추정)
+  candidateOrder: Int   # 선택된 후보 순서(옵션)
+  pillar: ExtractPillar   # 선택된 시주 기둥(옵션)
+  timeWindow: String   # 시간대 표기(옵션)
+  weight: Float        # 가중치(옵션)
+}
+
+# 궁합 시주 후보 (A/B 선택·추가 엣지/팩트/평가·메트릭 델타·점수)
+type ExtractPairHourCandidate {
+  order: Int!              # 후보 순서
+  a: ExtractPairHourChoice!   # A측 시주 선택
+  b: ExtractPairHourChoice!   # B측 시주 선택
+  weight: Float            # 조합 가중치
+  addedEdges: [Int!]       # 이 조합으로 추가되는 엣지 ID
+  addedFacts: [String!]    # 추가되는 사실 ID
+  addedEvals: [String!]    # 추가되는 평가 ID
+  metricsDelta: ExtractPairMetrics   # 메트릭 변화량(옵션)
+  overallScore: ExtractPairScore     # 종합 점수(옵션)
+  note: String             # 비고
+}
+
+# 궁합 시주 컨텍스트: A/B 상태·고정 데이터·후보 목록
+type ExtractPairHourContext {
+  statusA: ExtractHourPillarStatus!   # A측 시주 상태
+  statusB: ExtractHourPillarStatus!   # B측 시주 상태
+  missingReasonA: String   # A측 미입력 사유(옵션)
+  missingReasonB: String   # B측 미입력 사유(옵션)
+  stableEdges: [Int!]      # 시주와 무관하게 고정된 엣지 ID
+  stableFacts: [String!]   # 고정된 사실 ID
+  stableEvals: [String!]   # 고정된 평가 ID
+  candidates: [ExtractPairHourCandidate!]   # A·B 시주 조합 후보 목록
+}
+
+# 궁합 추출 문서 (입력·차트·엣지·메트릭·팩트·평가·시주·생성시각)
+type ExtractPairDoc implements Node {
+  id: ID                    # 문서 ID(Node 인터페이스)
+  schemaVer: String!        # 스키마 버전
+  input: ExtractPairInputDisplay!   # 궁합 입력(표시용)
+  charts: ExtractPairCharts # A/B 사주 문서 쌍
+  edges: [ExtractPairEdge!] # 궁합 엣지 목록
+  metrics: ExtractPairMetrics   # 궁합 지표
+  facts: [ExtractPairFactItem!]  # 궁합 사실 목록
+  evals: [ExtractPairEvalItem!]!   # 궁합 평가 목록
+  hourCtx: ExtractPairHourContext   # 궁합 시주 컨텍스트(미입력/추정 시)
+  createdAt: String         # 생성 시각(ISO 등)
+}

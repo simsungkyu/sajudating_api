@@ -1,0 +1,12 @@
+{
+  "card_id": "십성_정재_강함_v1",
+  "scope": "saju",
+  "title": "정재가 강하게 드러남",
+  "trigger": {
+    "all": [{"token": "십성:정재"}, {"token": "십성:정재#H"}],
+    "any": [],
+    "not": []
+  },
+  "score": {"base": 50, "bonus_if": [], "penalty_if": []},
+  "content": {"summary": "요약", "points": [], "questions": [], "guardrails": []}
+}
